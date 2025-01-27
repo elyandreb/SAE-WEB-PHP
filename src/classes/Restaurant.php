@@ -9,17 +9,30 @@ class Restaurant{
     private string $ville;
     private string $region;
     private string $lien_site;
+    private string $heureDebut;
 
-    public function __construct(int $siret, string $nom_res, string $coordonnees, string $departement, string $ville, string $region, string $lien_site){
+    private string $heureFin;
+
+    private string $jourOuverture;
+
+    public function __construct(int $siret, string $nom_res, string $coordonnees, string $adresse, string $lien_site, string $horaires, string $jourOuverture){
         $this->siret = $siret;
         $this->nom_res = $nom_res;
         $this->coordonnees = $coordonnees;
-        $this->departement = $departement;
-        $this->ville = $ville;
-        $this->region = $region;
+        $this->adresse = $adresse;
         $this->lien_site = $lien_site;
+        $this->horaire = $horaires;
+        $this->jourOuverture = $jourOuverture;
     }
-
+    public function getHeureDebut(): string{
+        return $this->heureDebut;
+    }
+    public function getHeureFin(): string{
+        return $this->heureFin;
+    }
+    public function getJourOuverture(): string{
+        return $this->jourOuverture;
+    }
     public function getSiret(): int{
         return $this->siret;
     }
@@ -41,7 +54,6 @@ class Restaurant{
     public function getLienSite(): string{
         return $this->lien_site;
     }
-    
     public function setSiret(int $siret): void{
         $this->siret = $siret;
     }
