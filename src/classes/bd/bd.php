@@ -16,6 +16,10 @@ class model_bd {
             echo "Erreur de connexion : " . $e->getMessage();
         }
     }
+
+    public function getBD():PDO {
+        return $this->pdo;
+    }
 }
 
 ?>
