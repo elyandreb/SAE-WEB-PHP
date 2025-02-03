@@ -5,15 +5,10 @@ class Restaurant{
     private int $siret;
     private string $nom_res;
     private string $coordonnees;
-    private string $departement;
-    private string $ville;
-    private string $region;
+    private string $adresse;
     private string $lien_site;
-    private string $heureDebut;
-
-    private string $heureFin;
-
     private string $jourOuverture;
+    private string $horaire;
 
     public function __construct(int $siret, string $nom_res, string $coordonnees, string $adresse, string $lien_site, string $horaires, string $jourOuverture){
         $this->siret = $siret;
@@ -24,12 +19,6 @@ class Restaurant{
         $this->horaire = $horaires;
         $this->jourOuverture = $jourOuverture;
     }
-    public function getHeureDebut(): string{
-        return $this->heureDebut;
-    }
-    public function getHeureFin(): string{
-        return $this->heureFin;
-    }
     public function getJourOuverture(): string{
         return $this->jourOuverture;
     }
@@ -39,21 +28,22 @@ class Restaurant{
     public function getNomRes(): string{
         return $this->nom_res;
     }
+    public function getHoraires(): string{
+        return $this->horaire;
+    }
     public function getCoordonnees(): string{
         return $this->coordonnees;
     }
-    public function getDepartement(): string{
-        return $this->departement;
-    }
-    public function getVille(): string{
-        return $this->ville;
-    }
-    public function getRegion(): string{
-        return $this->region;
+    public function getAdresse(): string{
+        return $this->adresse;
     }
     public function getLienSite(): string{
         return $this->lien_site;
     }
+    public function setAdresse(string $adresse): void{
+        $this->adresse = $adresse;
+    }
+
     public function setSiret(int $siret): void{
         $this->siret = $siret;
     }
@@ -62,15 +52,6 @@ class Restaurant{
     }
     public function setCoordonnees(string $coordonnees): void{
         $this->coordonnees = $coordonnees;
-    }
-    public function setDepartement(string $departement): void{
-        $this->departement = $departement;
-    }
-    public function setVille(string $ville): void{
-        $this->ville = $ville;
-    }
-    public function setRegion(string $region): void{
-        $this->region = $region;
     }
     public function setLienSite(string $lien_site): void{
         $this->lien_site = $lien_site;

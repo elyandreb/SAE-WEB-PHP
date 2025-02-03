@@ -9,3 +9,6 @@
 
 # Build data
 /build/
+
+composer.phar
+vendor/
