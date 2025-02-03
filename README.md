@@ -33,4 +33,6 @@ php -r "unlink('composer-setup.php');"
 # Pour lancer les tests
 ## a la racine 
 
-src/tests/vendor/bin/phpunit src/tests/*test* --testdox --debug
+src/tests/
+
+vendor/bin/phpunit src/tests/*test* --testdox --debug
