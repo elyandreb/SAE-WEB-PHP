@@ -1,5 +1,9 @@
 <?php
 
+namespace BD;
+
+use \PDO;
+
 class model_bd {
     private $pdo;
 
