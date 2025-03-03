@@ -548,5 +548,26 @@ class model_bd {
             );
         }
     }
+
+    public function loginUser($email, $mdp) {
+        $query = "SELECT * FROM UTILISATEUR WHERE email_u = :email";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+            $stmt->execute();
+            
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($user && password_verify($mdp, $user['mdp_u'])) {
+                return $user; // Retourne les infos de l'utilisateur si l'authentification est correcte
+            }
+            
+            return false; // Mauvais identifiants
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+    
 }
 ?>
