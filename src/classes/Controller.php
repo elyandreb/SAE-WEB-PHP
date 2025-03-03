@@ -9,11 +9,11 @@ class Controller{
         $this->restaurants = $restaurants;
     }
 
-public function showRestaurants(): void
+public function showRestaurants(): void {
     {
         $cpt = 0;
         foreach ($this->restaurants as $restaurant) {
-            if ($cpt >= 3) {
+            if ($cpt >= 5) {
                 break;
             }
             echo $restaurant['region'] . '<br>';
@@ -21,3 +21,6 @@ public function showRestaurants(): void
         }
     }
 }
+
+?>
+
