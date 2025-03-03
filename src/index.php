@@ -4,7 +4,7 @@ require_once __DIR__ . '/classes/autoloader/autoload.php'; // Charge l'autoload
 use classes\Provider;
 use classes\Controller;
 session_start();
-
+include 'templates/header.php';
 try {
     $action = $_GET['action'] ?? 'home';
 
