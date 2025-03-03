@@ -248,5 +248,22 @@ class model_bd {
             return false;
         }
     }
+    
+    public function init_resto_json() {
+        $data = json_decode(file_get_contents('../data/restaurants_orleans.json'), true);
+        foreach ($data as $item) {
+            $this->addRestaurant(
+                $item['siret'],
+                $item['name'],
+                $item['com_nom'],
+                $item['departement'],
+                $item['region'],
+                "{$item['coordinates'][0]},{$item['coordinates'][1]}",
+                $item['website'],
+                $item['opening_hours'],
+                $item['phone'],
+            );
+        }
+    }
 }
 ?>
