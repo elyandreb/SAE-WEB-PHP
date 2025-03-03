@@ -5,77 +5,545 @@ namespace BD;
 use \PDO;
 
 class model_bd {
-    private $pdo;
+    private $db;
 
-    public function __construct() {
-        $host = 'db.mexkcuymbqnzbkixjugo.supabase.co'; // Hôte Supabase
-        $db = 'postgres'; // Nom de la base de données
-        $user = 'postgres'; // Utilisateur
-        $pass = 'LtdLLEeV,lg'; // Mot de passe
-        $port = '5432'; // Port
+    public function __construct($dbPath = 'restaurant.db') {
         try {
-            $dsn = "pgsql:host=$host;port=$port;dbname=$db";
-            $this->pdo = new PDO($dsn, $user, $pass, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-
-            $stmt = $this->pdo->query("SELECT COUNT(*) FROM RESTAURANT");
-            $count = $stmt->fetchColumn();
-
-            if ($count == 0) {
-        
-                $data = json_decode(file_get_contents('../data/restaurants_orleans.json'), true);
-
-                foreach ($data as $item) {
-                    $stmt = $this->pdo->prepare("
-                        INSERT INTO RESTAURANT (
-                            siret, nom_res, commune, departement, region, coordonnees, lien_site, num_tel, horaires_ouvert
-                        ) VALUES (:siret, :nom_res, :commune, :departement, :region, :coordonnees, :lien_site, :num_tel, :horaires_ouvert)
-                        ON CONFLICT (siret) DO NOTHING
-                    ");
-                    $stmt->bindParam(':siret', $item['siret']);
-                    $stmt->bindParam(':nom_res', $item['name']);
-                    $stmt->bindParam(':commune', $item['com_nom']);
-                    $stmt->bindParam(':departement', $item['departement']);
-                    $stmt->bindParam(':region', $item['region']);
-                    $stmt->bindParam(':coordonnees', "{$item['coordinates'][0]},{$item['coordinates'][1]}");
-                    $stmt->bindParam(':lien_site', $item['website']);
-                    $stmt->bindParam(':num_tel', $item['phone']);
-                    $stmt->bindParam(':horaires_ouvert', $item['opening_hours']);
-                    $stmt->execute();
-
-                    if (!empty($item['cuisine'])) {
-                        foreach ($item['cuisine'] as $cuisine) {
-                            $stmt = $this->pdo->prepare("
-                                INSERT INTO TYPE_CUISINE (nom_type) VALUES (:cuisine)
-                                ON CONFLICT (nom_type) DO NOTHING
-                            ");
-                            $stmt->bindParam(':cuisine', $cuisine);
-                            $stmt->execute();
-
-                            $stmt = $this->pdo->prepare("
-                            INSERT INTO ETRE (id_res, id_type)
-                            VALUES ((SELECT id_res FROM RESTAURANT WHERE siret = :siret), (SELECT id_type FROM TYPE_CUISINE WHERE nom_type = :cuisine))
-                            ON CONFLICT DO NOTHING
-                            ");
-                            $stmt->bindParam(':siret', $item['siret']);
-                            $stmt->bindParam(':cuisine', $cuisine);
-                            $stmt->execute();
-                        }
-                    }
-                }
-
-                $this->pdo->commit();
-            } 
+            $this->db = new PDO('sqlite:' . $dbPath);
+            $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->createTables();
+        } catch (PDOException $e) {
+            die("Erreur de connexion à la base de données: " . $e->getMessage());
         }
-            catch (PDOException $e) {
-                $this->pdo->rollback();
-                echo "Erreur : " . $e->getMessage();
-            }     
+    }
+
+    private function createTables() {
+        // Création des tables
+        $queries = [
+            // Table TYPE_CUISINE
+            "CREATE TABLE IF NOT EXISTS TYPE_CUISINE (
+                id_type INTEGER PRIMARY KEY,
+                nom_type VARCHAR NOT NULL
+            )",
+
+            // Table RESTAURANT avec le champ téléphone ajouté
+            "CREATE TABLE IF NOT EXISTS RESTAURANT (
+                siret INTEGER PRIMARY KEY,
+                nom_res VARCHAR NOT NULL,
+                commune VARCHAR NOT NULL,
+                departement VARCHAR NOT NULL,
+                region VARCHAR NOT NULL,
+                coordonnees VARCHAR,
+                lien_site VARCHAR,
+                horaires_ouvert VARCHAR,
+                telephone VARCHAR
+            )",
+
+            // Table UTILISATEUR
+            "CREATE TABLE IF NOT EXISTS UTILISATEUR (
+                id_u INTEGER PRIMARY KEY,
+                nom_u VARCHAR NOT NULL,
+                prenom_u VARCHAR NOT NULL,
+                email_u VARCHAR NOT NULL UNIQUE,
+                mdp_u VARCHAR NOT NULL,
+                le_role VARCHAR NOT NULL
+            )",
+
+            // Table FAVORIS
+            "CREATE TABLE IF NOT EXISTS FAVORIS (
+                siret INTEGER NOT NULL,
+                id_u INTEGER NOT NULL,
+                PRIMARY KEY (siret, id_u),
+                FOREIGN KEY (siret) REFERENCES RESTAURANT(siret),
+                FOREIGN KEY (id_u) REFERENCES UTILISATEUR(id_u)
+            )",
+
+            // Table ETRE
+            "CREATE TABLE IF NOT EXISTS ETRE (
+                siret INTEGER NOT NULL,
+                id_type INTEGER NOT NULL,
+                PRIMARY KEY (siret, id_type),
+                FOREIGN KEY (siret) REFERENCES RESTAURANT(siret),
+                FOREIGN KEY (id_type) REFERENCES TYPE_CUISINE(id_type)
+            )",
+
+            // Table AIMER
+            "CREATE TABLE IF NOT EXISTS AIMER (
+                id_c INTEGER NOT NULL,
+                id_u INTEGER NOT NULL,
+                PRIMARY KEY (id_c, id_u),
+                FOREIGN KEY (id_c) REFERENCES CRITIQUE(id_c),
+                FOREIGN KEY (id_u) REFERENCES UTILISATEUR(id_u)
+            )",
+
+            // Table CRITIQUE
+            "CREATE TABLE IF NOT EXISTS CRITIQUE (
+                id_c INTEGER PRIMARY KEY,
+                note_r INTEGER NOT NULL,
+                commentaire VARCHAR,
+                date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                siret INTEGER NOT NULL,
+                id_u INTEGER NOT NULL,
+                note_p INTEGER,
+                note_s INTEGER,
+                FOREIGN KEY (siret) REFERENCES RESTAURANT(siret),
+                FOREIGN KEY (id_u) REFERENCES UTILISATEUR(id_u)
+            )"
+        ];
+
+        try {
+            $this->db->beginTransaction();
+            
+            foreach ($queries as $query) {
+                $this->db->exec($query);
+            }
+            
+            $this->db->commit();
+        } catch (PDOException $e) {
+            $this->db->rollBack();
+            die("Erreur lors de la création des tables: " . $e->getMessage());
+        }
+    }
+
+    public function addRestaurant($siret, $nom, $commune, $departement, $region, $coordonnees, $lien_site, $horaires, $telephone = null) {
+        $query = "INSERT INTO RESTAURANT (siret, nom_res, commune, departement, region, coordonnees, lien_site, horaires_ouvert, telephone) 
+                  VALUES (:siret, :nom, :commune, :departement, :region, :coordonnees, :lien_site, :horaires, :telephone)";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':siret', $siret, PDO::PARAM_INT);
+            $stmt->bindParam(':nom', $nom, PDO::PARAM_STR);
+            $stmt->bindParam(':commune', $commune, PDO::PARAM_STR);
+            $stmt->bindParam(':departement', $departement, PDO::PARAM_STR);
+            $stmt->bindParam(':region', $region, PDO::PARAM_STR);
+            $stmt->bindParam(':coordonnees', $coordonnees, PDO::PARAM_STR);
+            $stmt->bindParam(':lien_site', $lien_site, PDO::PARAM_STR);
+            $stmt->bindParam(':horaires', $horaires, PDO::PARAM_STR);
+            $stmt->bindParam(':telephone', $telephone, PDO::PARAM_STR);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    public function getRestaurants() {
+        $query = "SELECT * FROM RESTAURANT";
+        
+        try {
+            $stmt = $this->db->query($query);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
+
+    // Méthode pour obtenir ou créer un type de cuisine
+    public function getOrCreateTypeCuisine($nom) {
+        // Vérifier si ce type de cuisine existe déjà
+        $query = "SELECT id_type FROM TYPE_CUISINE WHERE LOWER(nom_type) = LOWER(:nom)";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':nom', $nom, PDO::PARAM_STR);
+            $stmt->execute();
+            
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($result) {
+                // Le type de cuisine existe déjà
+                return $result['id_type'];
+            } else {
+                // Créer un nouveau type de cuisine
+                $this->addTypeCuisine($nom);
+                return $this->db->lastInsertId();
+            }
+        } catch (PDOException $e) {
+            // En cas d'erreur, on crée quand même un nouveau type
+            $this->addTypeCuisine($nom);
+            return $this->db->lastInsertId();
+        }
+    }
+
+    // Méthodes pour gérer les utilisateurs
+    public function addUser($nom, $prenom, $email, $mdp, $role) {
+        $query = "INSERT INTO UTILISATEUR (nom_u, prenom_u, email_u, mdp_u, le_role) 
+                  VALUES (:nom, :prenom, :email, :mdp, :role)";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':nom', $nom, PDO::PARAM_STR);
+            $stmt->bindParam(':prenom', $prenom, PDO::PARAM_STR);
+            $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+            $stmt->bindParam(':mdp', password_hash($mdp, PASSWORD_DEFAULT), PDO::PARAM_STR);
+            $stmt->bindParam(':role', $role, PDO::PARAM_STR);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    // Méthodes pour gérer les critiques
+    public function addCritique($note_r, $commentaire, $siret, $id_u, $note_p = null, $note_s = null) {
+        $query = "INSERT INTO CRITIQUE (note_r, commentaire, siret, id_u, note_p, note_s) 
+                  VALUES (:note_r, :commentaire, :siret, :id_u, :note_p, :note_s)";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':note_r', $note_r, PDO::PARAM_INT);
+            $stmt->bindParam(':commentaire', $commentaire, PDO::PARAM_STR);
+            $stmt->bindParam(':siret', $siret, PDO::PARAM_INT);
+            $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
+            $stmt->bindParam(':note_p', $note_p, PDO::PARAM_INT);
+            $stmt->bindParam(':note_s', $note_s, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    // Méthodes pour gérer les types de cuisine
+    public function addTypeCuisine($nom) {
+        $query = "INSERT INTO TYPE_CUISINE (nom_type) VALUES (:nom)";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':nom', $nom, PDO::PARAM_STR);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    // Méthodes pour gérer les associations
+    public function addRestaurantTypeCuisine($siret, $id_type) {
+        $query = "INSERT INTO ETRE (siret, id_type) VALUES (:siret, :id_type)";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':siret', $siret, PDO::PARAM_INT);
+            $stmt->bindParam(':id_type', $id_type, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    public function addFavoris($siret, $id_u) {
+        $query = "INSERT INTO FAVORIS (siret, id_u) VALUES (:siret, :id_u)";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':siret', $siret, PDO::PARAM_INT);
+            $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    public function likeReview($id_c, $id_u) {
+        $query = "INSERT INTO AIMER (id_c, id_u) VALUES (:id_c, :id_u)";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id_c', $id_c, PDO::PARAM_INT);
+            $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    // Méthodes UPDATE
+    public function updateRestaurant($siret, $nom, $commune, $departement, $region, $coordonnees, $lien_site, $horaires, $telephone = null) {
+        $query = "UPDATE RESTAURANT SET 
+                nom_res = :nom, 
+                commune = :commune, 
+                departement = :departement, 
+                region = :region, 
+                coordonnees = :coordonnees, 
+                lien_site = :lien_site, 
+                horaires_ouvert = :horaires, 
+                telephone = :telephone 
+                WHERE siret = :siret";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':siret', $siret, PDO::PARAM_INT);
+            $stmt->bindParam(':nom', $nom, PDO::PARAM_STR);
+            $stmt->bindParam(':commune', $commune, PDO::PARAM_STR);
+            $stmt->bindParam(':departement', $departement, PDO::PARAM_STR);
+            $stmt->bindParam(':region', $region, PDO::PARAM_STR);
+            $stmt->bindParam(':coordonnees', $coordonnees, PDO::PARAM_STR);
+            $stmt->bindParam(':lien_site', $lien_site, PDO::PARAM_STR);
+            $stmt->bindParam(':horaires', $horaires, PDO::PARAM_STR);
+            $stmt->bindParam(':telephone', $telephone, PDO::PARAM_STR);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    public function updateRestaurantPartial($siret, $fields = []) {
+        if (empty($fields)) {
+            return false;
         }
         
+        $setClause = [];
+        foreach ($fields as $field => $value) {
+            $setClause[] = "$field = :$field";
+        }
+        
+        $query = "UPDATE RESTAURANT SET " . implode(', ', $setClause) . " WHERE siret = :siret";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':siret', $siret, PDO::PARAM_INT);
+            
+            foreach ($fields as $field => $value) {
+                $stmt->bindParam(":$field", $value);
+            }
+            
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
 
-    public function getBD():PDO {
-        return $this->pdo;
+    public function updateUser($id_u, $nom, $prenom, $email, $role) {
+        $query = "UPDATE UTILISATEUR SET 
+                nom_u = :nom, 
+                prenom_u = :prenom, 
+                email_u = :email, 
+                le_role = :role 
+                WHERE id_u = :id_u";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
+            $stmt->bindParam(':nom', $nom, PDO::PARAM_STR);
+            $stmt->bindParam(':prenom', $prenom, PDO::PARAM_STR);
+            $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+            $stmt->bindParam(':role', $role, PDO::PARAM_STR);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    public function updateUserPassword($id_u, $mdp) {
+        $query = "UPDATE UTILISATEUR SET mdp_u = :mdp WHERE id_u = :id_u";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
+            $stmt->bindParam(':mdp', password_hash($mdp, PASSWORD_DEFAULT), PDO::PARAM_STR);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    public function updateCritique($id_c, $note_r, $commentaire, $note_p = null, $note_s = null) {
+        $query = "UPDATE CRITIQUE SET 
+                note_r = :note_r, 
+                commentaire = :commentaire, 
+                note_p = :note_p, 
+                note_s = :note_s 
+                WHERE id_c = :id_c";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id_c', $id_c, PDO::PARAM_INT);
+            $stmt->bindParam(':note_r', $note_r, PDO::PARAM_INT);
+            $stmt->bindParam(':commentaire', $commentaire, PDO::PARAM_STR);
+            $stmt->bindParam(':note_p', $note_p, PDO::PARAM_INT);
+            $stmt->bindParam(':note_s', $note_s, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    public function updateTypeCuisine($id_type, $nom) {
+        $query = "UPDATE TYPE_CUISINE SET nom_type = :nom WHERE id_type = :id_type";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id_type', $id_type, PDO::PARAM_INT);
+            $stmt->bindParam(':nom', $nom, PDO::PARAM_STR);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    // Méthodes DELETE
+    public function deleteRestaurant($siret) {
+        try {
+            $this->db->beginTransaction();
+            
+            // Suppression des enregistrements associés dans d'autres tables
+            $this->db->exec("DELETE FROM FAVORIS WHERE siret = $siret");
+            $this->db->exec("DELETE FROM ETRE WHERE siret = $siret");
+            
+            // Récupération des ID des critiques liées au restaurant
+            $stmt = $this->db->prepare("SELECT id_c FROM CRITIQUE WHERE siret = :siret");
+            $stmt->bindParam(':siret', $siret, PDO::PARAM_INT);
+            $stmt->execute();
+            $critiques = $stmt->fetchAll(PDO::FETCH_COLUMN);
+            
+            // Suppression des likes associés aux critiques
+            foreach ($critiques as $id_c) {
+                $this->db->exec("DELETE FROM AIMER WHERE id_c = $id_c");
+            }
+            
+            // Suppression des critiques
+            $this->db->exec("DELETE FROM CRITIQUE WHERE siret = $siret");
+            
+            // Suppression du restaurant
+            $stmt = $this->db->prepare("DELETE FROM RESTAURANT WHERE siret = :siret");
+            $stmt->bindParam(':siret', $siret, PDO::PARAM_INT);
+            $result = $stmt->execute();
+            
+            $this->db->commit();
+            return $result;
+        } catch (PDOException $e) {
+            $this->db->rollBack();
+            return false;
+        }
+    }
+
+    public function deleteUser($id_u) {
+        try {
+            $this->db->beginTransaction();
+            
+            // Suppression des enregistrements associés dans d'autres tables
+            $this->db->exec("DELETE FROM FAVORIS WHERE id_u = $id_u");
+            
+            // Récupération des ID des critiques liées à l'utilisateur
+            $stmt = $this->db->prepare("SELECT id_c FROM CRITIQUE WHERE id_u = :id_u");
+            $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
+            $stmt->execute();
+            $critiques = $stmt->fetchAll(PDO::FETCH_COLUMN);
+            
+            // Suppression des likes associés aux critiques
+            foreach ($critiques as $id_c) {
+                $this->db->exec("DELETE FROM AIMER WHERE id_c = $id_c");
+            }
+            
+            // Suppression des critiques de l'utilisateur
+            $this->db->exec("DELETE FROM CRITIQUE WHERE id_u = $id_u");
+            
+            // Suppression des likes faits par l'utilisateur
+            $this->db->exec("DELETE FROM AIMER WHERE id_u = $id_u");
+            
+            // Suppression de l'utilisateur
+            $stmt = $this->db->prepare("DELETE FROM UTILISATEUR WHERE id_u = :id_u");
+            $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
+            $result = $stmt->execute();
+            
+            $this->db->commit();
+            return $result;
+        } catch (PDOException $e) {
+            $this->db->rollBack();
+            return false;
+        }
+    }
+
+    public function deleteCritique($id_c) {
+        try {
+            $this->db->beginTransaction();
+            
+            // Suppression des likes associés à cette critique
+            $this->db->exec("DELETE FROM AIMER WHERE id_c = $id_c");
+            
+            // Suppression da critique
+            $stmt = $this->db->prepare("DELETE FROM CRITIQUE WHERE id_c = :id_c");
+            $stmt->bindParam(':id_c', $id_c, PDO::PARAM_INT);
+            $result = $stmt->execute();
+            
+            $this->db->commit();
+            return $result;
+        } catch (PDOException $e) {
+            $this->db->rollBack();
+            return false;
+        }
+    }
+
+    public function deleteTypeCuisine($id_type) {
+        try {
+            $this->db->beginTransaction();
+            
+            // Suppression des associations avec les restaurants
+            $this->db->exec("DELETE FROM ETRE WHERE id_type = $id_type");
+            
+            // Suppression de type de cuisine
+            $stmt = $this->db->prepare("DELETE FROM TYPE_CUISINE WHERE id_type = :id_type");
+            $stmt->bindParam(':id_type', $id_type, PDO::PARAM_INT);
+            $result = $stmt->execute();
+            
+            $this->db->commit();
+            return $result;
+        } catch (PDOException $e) {
+            $this->db->rollBack();
+            return false;
+        }
+    }
+
+    public function deleteFavori($siret, $id_u) {
+        $query = "DELETE FROM FAVORIS WHERE siret = :siret AND id_u = :id_u";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':siret', $siret, PDO::PARAM_INT);
+            $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    public function unlikeReview($id_c, $id_u) {
+        $query = "DELETE FROM AIMER WHERE id_c = :id_c AND id_u = :id_u";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id_c', $id_c, PDO::PARAM_INT);
+            $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    public function removeRestaurantTypeCuisine($siret, $id_type) {
+        $query = "DELETE FROM ETRE WHERE siret = :siret AND id_type = :id_type";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':siret', $siret, PDO::PARAM_INT);
+            $stmt->bindParam(':id_type', $id_type, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+    public function init_resto_json() {
+        $data = json_decode(file_get_contents('../data/restaurants_orleans.json'), true);
+        foreach ($data as $item) {
+            $this->addRestaurant(
+                $item['siret'],
+                $item['name'],
+                $item['com_nom'],
+                $item['departement'],
+                $item['region'],
+                "{$item['coordinates'][0]},{$item['coordinates'][1]}",
+                $item['website'],
+                $item['opening_hours'],
+                $item['phone'],
+            );
+        }
     }
 }
-
 ?>
