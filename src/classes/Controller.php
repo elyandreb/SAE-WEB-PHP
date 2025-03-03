@@ -22,4 +22,9 @@ public function showRestaurants(): void {
     }
 }
 
+public function askAvis(): void{
+    echo 'Avis';
+}
+
+
 }
