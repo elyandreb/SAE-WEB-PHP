@@ -248,7 +248,131 @@ class model_bd {
             return false;
         }
     }
-    
+
+    // Méthodes UPDATE
+    public function updateRestaurant($siret, $nom, $commune, $departement, $region, $coordonnees, $lien_site, $horaires, $telephone = null) {
+        $query = "UPDATE RESTAURANT SET 
+                nom_res = :nom, 
+                commune = :commune, 
+                departement = :departement, 
+                region = :region, 
+                coordonnees = :coordonnees, 
+                lien_site = :lien_site, 
+                horaires_ouvert = :horaires, 
+                telephone = :telephone 
+                WHERE siret = :siret";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':siret', $siret, PDO::PARAM_INT);
+            $stmt->bindParam(':nom', $nom, PDO::PARAM_STR);
+            $stmt->bindParam(':commune', $commune, PDO::PARAM_STR);
+            $stmt->bindParam(':departement', $departement, PDO::PARAM_STR);
+            $stmt->bindParam(':region', $region, PDO::PARAM_STR);
+            $stmt->bindParam(':coordonnees', $coordonnees, PDO::PARAM_STR);
+            $stmt->bindParam(':lien_site', $lien_site, PDO::PARAM_STR);
+            $stmt->bindParam(':horaires', $horaires, PDO::PARAM_STR);
+            $stmt->bindParam(':telephone', $telephone, PDO::PARAM_STR);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    public function updateRestaurantPartial($siret, $fields = []) {
+        if (empty($fields)) {
+            return false;
+        }
+        
+        $setClause = [];
+        foreach ($fields as $field => $value) {
+            $setClause[] = "$field = :$field";
+        }
+        
+        $query = "UPDATE RESTAURANT SET " . implode(', ', $setClause) . " WHERE siret = :siret";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':siret', $siret, PDO::PARAM_INT);
+            
+            foreach ($fields as $field => $value) {
+                $stmt->bindParam(":$field", $value);
+            }
+            
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    public function updateUser($id_u, $nom, $prenom, $email, $role) {
+        $query = "UPDATE UTILISATEUR SET 
+                nom_u = :nom, 
+                prenom_u = :prenom, 
+                email_u = :email, 
+                le_role = :role 
+                WHERE id_u = :id_u";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
+            $stmt->bindParam(':nom', $nom, PDO::PARAM_STR);
+            $stmt->bindParam(':prenom', $prenom, PDO::PARAM_STR);
+            $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+            $stmt->bindParam(':role', $role, PDO::PARAM_STR);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    public function updateUserPassword($id_u, $mdp) {
+        $query = "UPDATE UTILISATEUR SET mdp_u = :mdp WHERE id_u = :id_u";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
+            $stmt->bindParam(':mdp', password_hash($mdp, PASSWORD_DEFAULT), PDO::PARAM_STR);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    public function updateCritique($id_c, $note_r, $commentaire, $note_p = null, $note_s = null) {
+        $query = "UPDATE CRITIQUE SET 
+                note_r = :note_r, 
+                commentaire = :commentaire, 
+                note_p = :note_p, 
+                note_s = :note_s 
+                WHERE id_c = :id_c";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id_c', $id_c, PDO::PARAM_INT);
+            $stmt->bindParam(':note_r', $note_r, PDO::PARAM_INT);
+            $stmt->bindParam(':commentaire', $commentaire, PDO::PARAM_STR);
+            $stmt->bindParam(':note_p', $note_p, PDO::PARAM_INT);
+            $stmt->bindParam(':note_s', $note_s, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    public function updateTypeCuisine($id_type, $nom) {
+        $query = "UPDATE TYPE_CUISINE SET nom_type = :nom WHERE id_type = :id_type";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id_type', $id_type, PDO::PARAM_INT);
+            $stmt->bindParam(':nom', $nom, PDO::PARAM_STR);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
     public function init_resto_json() {
         $data = json_decode(file_get_contents('../data/restaurants_orleans.json'), true);
         foreach ($data as $item) {
