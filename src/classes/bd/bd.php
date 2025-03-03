@@ -373,6 +373,157 @@ class model_bd {
         }
     }
 
+    // Méthodes DELETE
+    public function deleteRestaurant($siret) {
+        try {
+            $this->db->beginTransaction();
+            
+            // Suppression des enregistrements associés dans d'autres tables
+            $this->db->exec("DELETE FROM FAVORIS WHERE siret = $siret");
+            $this->db->exec("DELETE FROM ETRE WHERE siret = $siret");
+            
+            // Récupération des ID des critiques liées au restaurant
+            $stmt = $this->db->prepare("SELECT id_c FROM CRITIQUE WHERE siret = :siret");
+            $stmt->bindParam(':siret', $siret, PDO::PARAM_INT);
+            $stmt->execute();
+            $critiques = $stmt->fetchAll(PDO::FETCH_COLUMN);
+            
+            // Suppression des likes associés aux critiques
+            foreach ($critiques as $id_c) {
+                $this->db->exec("DELETE FROM AIMER WHERE id_c = $id_c");
+            }
+            
+            // Suppression des critiques
+            $this->db->exec("DELETE FROM CRITIQUE WHERE siret = $siret");
+            
+            // Suppression du restaurant
+            $stmt = $this->db->prepare("DELETE FROM RESTAURANT WHERE siret = :siret");
+            $stmt->bindParam(':siret', $siret, PDO::PARAM_INT);
+            $result = $stmt->execute();
+            
+            $this->db->commit();
+            return $result;
+        } catch (PDOException $e) {
+            $this->db->rollBack();
+            return false;
+        }
+    }
+
+    public function deleteUser($id_u) {
+        try {
+            $this->db->beginTransaction();
+            
+            // Suppression des enregistrements associés dans d'autres tables
+            $this->db->exec("DELETE FROM FAVORIS WHERE id_u = $id_u");
+            
+            // Récupération des ID des critiques liées à l'utilisateur
+            $stmt = $this->db->prepare("SELECT id_c FROM CRITIQUE WHERE id_u = :id_u");
+            $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
+            $stmt->execute();
+            $critiques = $stmt->fetchAll(PDO::FETCH_COLUMN);
+            
+            // Suppression des likes associés aux critiques
+            foreach ($critiques as $id_c) {
+                $this->db->exec("DELETE FROM AIMER WHERE id_c = $id_c");
+            }
+            
+            // Suppression des critiques de l'utilisateur
+            $this->db->exec("DELETE FROM CRITIQUE WHERE id_u = $id_u");
+            
+            // Suppression des likes faits par l'utilisateur
+            $this->db->exec("DELETE FROM AIMER WHERE id_u = $id_u");
+            
+            // Suppression de l'utilisateur
+            $stmt = $this->db->prepare("DELETE FROM UTILISATEUR WHERE id_u = :id_u");
+            $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
+            $result = $stmt->execute();
+            
+            $this->db->commit();
+            return $result;
+        } catch (PDOException $e) {
+            $this->db->rollBack();
+            return false;
+        }
+    }
+
+    public function deleteCritique($id_c) {
+        try {
+            $this->db->beginTransaction();
+            
+            // Suppression des likes associés à cette critique
+            $this->db->exec("DELETE FROM AIMER WHERE id_c = $id_c");
+            
+            // Suppression da critique
+            $stmt = $this->db->prepare("DELETE FROM CRITIQUE WHERE id_c = :id_c");
+            $stmt->bindParam(':id_c', $id_c, PDO::PARAM_INT);
+            $result = $stmt->execute();
+            
+            $this->db->commit();
+            return $result;
+        } catch (PDOException $e) {
+            $this->db->rollBack();
+            return false;
+        }
+    }
+
+    public function deleteTypeCuisine($id_type) {
+        try {
+            $this->db->beginTransaction();
+            
+            // Suppression des associations avec les restaurants
+            $this->db->exec("DELETE FROM ETRE WHERE id_type = $id_type");
+            
+            // Suppression de type de cuisine
+            $stmt = $this->db->prepare("DELETE FROM TYPE_CUISINE WHERE id_type = :id_type");
+            $stmt->bindParam(':id_type', $id_type, PDO::PARAM_INT);
+            $result = $stmt->execute();
+            
+            $this->db->commit();
+            return $result;
+        } catch (PDOException $e) {
+            $this->db->rollBack();
+            return false;
+        }
+    }
+
+    public function deleteFavori($siret, $id_u) {
+        $query = "DELETE FROM FAVORIS WHERE siret = :siret AND id_u = :id_u";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':siret', $siret, PDO::PARAM_INT);
+            $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    public function unlikeReview($id_c, $id_u) {
+        $query = "DELETE FROM AIMER WHERE id_c = :id_c AND id_u = :id_u";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id_c', $id_c, PDO::PARAM_INT);
+            $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    public function removeRestaurantTypeCuisine($siret, $id_type) {
+        $query = "DELETE FROM ETRE WHERE siret = :siret AND id_type = :id_type";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':siret', $siret, PDO::PARAM_INT);
+            $stmt->bindParam(':id_type', $id_type, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
     public function init_resto_json() {
         $data = json_decode(file_get_contents('../data/restaurants_orleans.json'), true);
         foreach ($data as $item) {
