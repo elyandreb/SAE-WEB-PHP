@@ -532,15 +532,16 @@ class model_bd {
         }
     }
     public function init_resto_json() {
-        $data = json_decode(file_get_contents('../data/restaurants_orleans.json'), true);
+        $data = json_decode(file_get_contents(__DIR__ . '/../../data/restaurants_orleans.json'), true);
         foreach ($data as $item) {
+            $coords = isset($item['coordinates'][0], $item['coordinates'][1]) ? "{$item['coordinates'][0]},{$item['coordinates'][1]}" : null; // Permet de mettre null si on ne trouve pas les coordonnées
             $this->addRestaurant(
                 $item['siret'],
                 $item['name'],
                 $item['com_nom'],
                 $item['departement'],
                 $item['region'],
-                "{$item['coordinates'][0]},{$item['coordinates'][1]}",
+                $coords,
                 $item['website'],
                 $item['opening_hours'],
                 $item['phone'],
