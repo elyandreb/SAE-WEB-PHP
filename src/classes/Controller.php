@@ -22,5 +22,4 @@ public function showRestaurants(): void {
     }
 }
 
-?>
-
+}
