@@ -89,4 +89,7 @@ button:hover {
     background-color: #66091A;
 }
 
-
+.error-message {
+    margin-top: 10px;
+    color: black;
+}
