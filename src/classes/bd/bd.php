@@ -1,8 +1,9 @@
 <?php
 
-namespace BD;
+namespace bd;
 
 use \PDO;
+use \PDOException;
 
 class model_bd {
     private $db;
@@ -13,7 +14,8 @@ class model_bd {
             $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->createTables();
         } catch (PDOException $e) {
-            die("Erreur de connexion à la base de données: " . $e->getMessage());
+            error_log("Database connection error: " . $e->getMessage());
+            throw new \Exception("Erreur de connexion à la base de données: " . $e->getMessage());
         }
     }
 
