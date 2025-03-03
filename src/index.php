@@ -3,10 +3,16 @@
 require_once __DIR__ . '/classes/autoloader/autoload.php'; // Charge l'autoload
 use classes\Provider;
 use classes\Controller;
-
+session_start();
 
 try {
     $action = $_GET['action'] ?? 'home';
+
+    // Vérifier si l'utilisateur est connecté
+    if (!isset($_SESSION['utilisateur'])) {
+        require_once __DIR__ . '/templates/login_form.php';
+        exit;
+    }
 
     // Gérer le logout en premier
     if ($action === 'logout') {
