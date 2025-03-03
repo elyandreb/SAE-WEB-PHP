@@ -14,7 +14,7 @@
         </div>
         <div class="right-side">
             <h2>Connexion</h2>
-            <form action="classes/login.php" method="POST">
+            <form action="/classes/login.php" method="POST">
                 <label for="email">Email</label>
                 <input type="email" name="email" required>
 
