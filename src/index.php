@@ -30,7 +30,7 @@ try {
     
     
     if ($action === 'ask_avis') {
-        $controller->askAvis();
+        $controller->addAvisToResto();
         header('Location: templates/FormAvis.php');
     }
 

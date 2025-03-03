@@ -22,19 +22,20 @@ class Controller{
         }
     }
 
-    public function addAvisToResto($id): void{
-        {
-            foreach ($this->restaurants as $restaurant) {
-                try {
-                    if ($restaurant['id'] == $id) {
-                        return $restaurant;
-                    }
-                } catch (Exception $e) {
-                    echo 'Error: ' . $e->getMessage();
-                }
-                
-            }
-        }
+    public function addAvisToResto(): void{
+        echo "Ajouter un avis pour le restaurant $id";
+        //{
+        //    foreach ($this->restaurants as $restaurant) {
+        //        try {
+        //            if ($restaurant['id'] == $id) {
+        //                return $restaurant;
+        //            }
+        //        } catch (Exception $e) {
+        //            echo 'Error: ' . $e->getMessage();
+        //        }
+        //        
+        //    }
+        //}
     }
 
 

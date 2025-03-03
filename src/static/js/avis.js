@@ -14,7 +14,6 @@ document.getElementById("avisForm").addEventListener("submit", function(event) {
     })
     .then(response => response.text())
     .then(data => {
-        alert(data);
         chargerAvis(); // Recharge les avis après envoi
     });
 });
