@@ -1,77 +1,103 @@
 <?php
-
 class model_bd {
-    private $pdo;
+    private $db;
 
-    public function __construct() {
-        $host = 'db.mexkcuymbqnzbkixjugo.supabase.co'; // Hôte Supabase
-        $db = 'postgres'; // Nom de la base de données
-        $user = 'postgres'; // Utilisateur
-        $pass = 'LtdLLEeV,lg'; // Mot de passe
-        $port = '5432'; // Port
+    public function __construct($dbPath = 'restaurant.db') {
         try {
-            $dsn = "pgsql:host=$host;port=$port;dbname=$db";
-            $this->pdo = new PDO($dsn, $user, $pass, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-
-            $stmt = $this->pdo->query("SELECT COUNT(*) FROM RESTAURANT");
-            $count = $stmt->fetchColumn();
-
-            if ($count == 0) {
-        
-                $data = json_decode(file_get_contents('../data/restaurants_orleans.json'), true);
-
-                foreach ($data as $item) {
-                    $stmt = $this->pdo->prepare("
-                        INSERT INTO RESTAURANT (
-                            siret, nom_res, commune, departement, region, coordonnees, lien_site, num_tel, horaires_ouvert
-                        ) VALUES (:siret, :nom_res, :commune, :departement, :region, :coordonnees, :lien_site, :num_tel, :horaires_ouvert)
-                        ON CONFLICT (siret) DO NOTHING
-                    ");
-                    $stmt->bindParam(':siret', $item['siret']);
-                    $stmt->bindParam(':nom_res', $item['name']);
-                    $stmt->bindParam(':commune', $item['com_nom']);
-                    $stmt->bindParam(':departement', $item['departement']);
-                    $stmt->bindParam(':region', $item['region']);
-                    $stmt->bindParam(':coordonnees', "{$item['coordinates'][0]},{$item['coordinates'][1]}");
-                    $stmt->bindParam(':lien_site', $item['website']);
-                    $stmt->bindParam(':num_tel', $item['phone']);
-                    $stmt->bindParam(':horaires_ouvert', $item['opening_hours']);
-                    $stmt->execute();
-
-                    if (!empty($item['cuisine'])) {
-                        foreach ($item['cuisine'] as $cuisine) {
-                            $stmt = $this->pdo->prepare("
-                                INSERT INTO TYPE_CUISINE (nom_type) VALUES (:cuisine)
-                                ON CONFLICT (nom_type) DO NOTHING
-                            ");
-                            $stmt->bindParam(':cuisine', $cuisine);
-                            $stmt->execute();
-
-                            $stmt = $this->pdo->prepare("
-                            INSERT INTO ETRE (id_res, id_type)
-                            VALUES ((SELECT id_res FROM RESTAURANT WHERE siret = :siret), (SELECT id_type FROM TYPE_CUISINE WHERE nom_type = :cuisine))
-                            ON CONFLICT DO NOTHING
-                            ");
-                            $stmt->bindParam(':siret', $item['siret']);
-                            $stmt->bindParam(':cuisine', $cuisine);
-                            $stmt->execute();
-                        }
-                    }
-                }
-
-                $this->pdo->commit();
-            } 
+            $this->db = new PDO('sqlite:' . $dbPath);
+            $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->createTables();
+        } catch (PDOException $e) {
+            die("Erreur de connexion à la base de données: " . $e->getMessage());
         }
-            catch (PDOException $e) {
-                $this->pdo->rollback();
-                echo "Erreur : " . $e->getMessage();
-            }     
-        }
-        
+    }
 
-    public function getBD():PDO {
-        return $this->pdo;
+    private function createTables() {
+        // Création des tables
+        $queries = [
+            // Table TYPE_CUISINE
+            "CREATE TABLE IF NOT EXISTS TYPE_CUISINE (
+                id_type INTEGER PRIMARY KEY,
+                nom_type VARCHAR NOT NULL
+            )",
+
+            // Table RESTAURANT avec le champ téléphone ajouté
+            "CREATE TABLE IF NOT EXISTS RESTAURANT (
+                siret INTEGER PRIMARY KEY,
+                nom_res VARCHAR NOT NULL,
+                commune VARCHAR NOT NULL,
+                departement VARCHAR NOT NULL,
+                region VARCHAR NOT NULL,
+                coordonnees VARCHAR,
+                lien_site VARCHAR,
+                horaires_ouvert VARCHAR,
+                telephone VARCHAR
+            )",
+
+            // Table UTILISATEUR
+            "CREATE TABLE IF NOT EXISTS UTILISATEUR (
+                id_u INTEGER PRIMARY KEY,
+                nom_u VARCHAR NOT NULL,
+                prenom_u VARCHAR NOT NULL,
+                email_u VARCHAR NOT NULL UNIQUE,
+                mdp_u VARCHAR NOT NULL,
+                le_role VARCHAR NOT NULL
+            )",
+
+            // Table FAVORIS
+            "CREATE TABLE IF NOT EXISTS FAVORIS (
+                siret INTEGER NOT NULL,
+                id_u INTEGER NOT NULL,
+                PRIMARY KEY (siret, id_u),
+                FOREIGN KEY (siret) REFERENCES RESTAURANT(siret),
+                FOREIGN KEY (id_u) REFERENCES UTILISATEUR(id_u)
+            )",
+
+            // Table ETRE
+            "CREATE TABLE IF NOT EXISTS ETRE (
+                siret INTEGER NOT NULL,
+                id_type INTEGER NOT NULL,
+                PRIMARY KEY (siret, id_type),
+                FOREIGN KEY (siret) REFERENCES RESTAURANT(siret),
+                FOREIGN KEY (id_type) REFERENCES TYPE_CUISINE(id_type)
+            )",
+
+            // Table AIMER
+            "CREATE TABLE IF NOT EXISTS AIMER (
+                id_c INTEGER NOT NULL,
+                id_u INTEGER NOT NULL,
+                PRIMARY KEY (id_c, id_u),
+                FOREIGN KEY (id_c) REFERENCES CRITIQUE(id_c),
+                FOREIGN KEY (id_u) REFERENCES UTILISATEUR(id_u)
+            )",
+
+            // Table CRITIQUE
+            "CREATE TABLE IF NOT EXISTS CRITIQUE (
+                id_c INTEGER PRIMARY KEY,
+                note_r INTEGER NOT NULL,
+                commentaire VARCHAR,
+                date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                siret INTEGER NOT NULL,
+                id_u INTEGER NOT NULL,
+                note_p INTEGER,
+                note_s INTEGER,
+                FOREIGN KEY (siret) REFERENCES RESTAURANT(siret),
+                FOREIGN KEY (id_u) REFERENCES UTILISATEUR(id_u)
+            )"
+        ];
+
+        try {
+            $this->db->beginTransaction();
+            
+            foreach ($queries as $query) {
+                $this->db->exec($query);
+            }
+            
+            $this->db->commit();
+        } catch (PDOException $e) {
+            $this->db->rollBack();
+            die("Erreur lors de la création des tables: " . $e->getMessage());
+        }
     }
 }
-
 ?>
