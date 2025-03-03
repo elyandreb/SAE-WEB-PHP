@@ -27,11 +27,11 @@ try {
 
     } 
 
-
+    
     
     if ($action === 'ask_avis') {
         $controller->askAvis();
-        header('Location: templates/avis.php');
+        header('Location: templates/FormAvis.php');
     }
 
 
