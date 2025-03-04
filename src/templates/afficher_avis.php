@@ -17,7 +17,7 @@ $index = 0;
 
 foreach ($avis as $a) {
     echo "<div>";
-    echo "<strong>" . htmlspecialchars($a['nom']) . "</strong> - " . date("d/m/Y", strtotime($a['date_publication'])) . "<br>";
+    echo "<strong>" ."Nom utilisateur" . "</strong> - " . date("d/m/Y", strtotime($a['date_publication'])) . "<br>";
     echo "Réception : " . str_repeat("<img src='../static/img/star.svg' alt='star' style='width:20px;height:20px;'>", $a['note_reception']) . "<br>";
     echo "Plats : " . str_repeat("<img src='../static/img/star.svg' alt='star' style='width:20px;height:20px;'>", $a['note_plats']) . "<br>";
     echo "Service : " . str_repeat("<img src='../static/img/star.svg' alt='star' style='width:20px;height:20px;'>", $a['note_service']) . "<br>";

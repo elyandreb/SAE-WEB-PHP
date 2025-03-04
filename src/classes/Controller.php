@@ -17,8 +17,11 @@ class Controller{
             $isFavorite = isset($_SESSION['favoris']) && in_array($idRestaurant, $_SESSION['favoris']);
             $heartIcon = $isFavorite ? '../static/img/coeur.svg' : '../static/img/coeur_vide.svg';
     
+            
+            
             echo '<div class="restaurant" data-id="' . $idRestaurant . '">';
             echo '<span>' . $restaurant['name'] . '</span>';
+            echo '<p> '.$restaurant['opening_hours'].'</p>';
             echo '<button onclick="toggleFavoris(event, this, \'' . $idRestaurant . '\')">';
             echo '<img src="' . $heartIcon . '" alt="Favori">';
             echo '</button>';

@@ -2,7 +2,6 @@ document.getElementById("avisForm").addEventListener("submit", function(event) {
     event.preventDefault();
 
     let formData = new FormData();
-    formData.append("nom", document.getElementById("nom").value);
     formData.append("note_reception", document.getElementById("note_reception").value);
     formData.append("note_plats", document.getElementById("note_plats").value);
     formData.append("note_service", document.getElementById("note_service").value);

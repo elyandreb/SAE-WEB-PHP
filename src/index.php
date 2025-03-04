@@ -29,7 +29,6 @@ if (preg_match('#^toggle-favoris/(.+)$#', $action, $matches)) {
 
 <?php
 try {
- 
     // Gérer le logout en premier
     if ($action === 'logout') {
         session_unset();
