@@ -7,31 +7,18 @@ use classes\Controller;
 // Récupérer l'action dès le début
 $action = $_GET['action'] ?? 'home';
 
-// Traitement immédiat de l'action AJAX pour toggle-favoris
-if (preg_match('#^toggle-favoris/(.+)$#', $action, $matches)) {
-    $restaurants = Provider::getRestaurants('restaurants_orleans');
-    $controller = new Controller($restaurants);
-    $idRestaurant = urldecode($matches[1]);
-    $controller->toggleFavorite($idRestaurant);
-    exit; // Arrêter l'exécution après l'envoi de la réponse JSON
-}
-?>
-<!doctype html>
-<html>
-<head>
-    <title>IU</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../static/css/style.css">
-    <script src="../static/js/favoris.js" defer></script>
-</head>
-<body>
 
-session_start();
-
-
-<?php
 try {
+
+    // Traitement immédiat de l'action AJAX pour toggle-favoris
+    if (preg_match('#^toggle-favoris/(.+)$#', $action, $matches)) {
+        $restaurants = Provider::getRestaurants('restaurants_orleans');
+        $controller = new Controller($restaurants);
+        $idRestaurant = urldecode($matches[1]);
+        $controller->toggleFavorite($idRestaurant);
+        exit; // Arrêter l'exécution après l'envoi de la réponse JSON
+    }
+
 
     // Vérifier si l'utilisateur est connecté
     if (!isset($_SESSION['user_name'])) {
@@ -46,7 +33,13 @@ try {
         header('Location: index.php');
         exit;
     }
-
+    if ($action === 'les_restaurants') {
+        $restaurants = Provider::getRestaurants(fichier: 'restaurants_orleans');
+        $controller = new Controller(restaurants: $restaurants);
+        $controller->showRestaurants();
+        header('Location: restaurants.php');
+        exit;
+    }
 
     if ($action === 'home') {
         require_once __DIR__ . '/templates/header.php';
