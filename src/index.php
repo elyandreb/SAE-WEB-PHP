@@ -43,24 +43,12 @@ try {
     if ($action === 'login') {
         $controllerLogin = new ControllerLogin($db);
         $controllerLogin->login();
-
-    
         exit;
     }
     
-    
-    
-
     $restaurants = Provider::getRestaurants(fichier: 'restaurants_orleans');
 
-    // Traitement immédiat de l'action AJAX pour toggle-favoris
-    if (preg_match('#^toggle-favoris/(.+)$#', $action, $matches)) {
-     $controller = new Controller($restaurants);
-     $idRestaurant = urldecode($matches[1]);
-     $controller->toggleFavorite($idRestaurant);
-     exit; // Arrêter l'exécution après l'envoi de la réponse JSON
-    }
-
+    //Renvoie à la page d'accueil avec l'affichage des restaurants
     if ($action === 'home') {
         require_once __DIR__ . '/views/header.php';
        
@@ -68,6 +56,7 @@ try {
         $controller->showRestaurants();
 
     } 
+    //!!Gestion du bouton des favoris !!!A débugger
     elseif (preg_match('#toggle-favoris/(.+)#', $action, $matches)) {
         $idRestaurant = urldecode($matches[1]);
         $controller->toggleFavorite($idRestaurant);
@@ -76,7 +65,8 @@ try {
 
     $avis = $db->getAvis();
     $_SESSION['avis'] = $avis; // Stocker les avis dans la session
-    
+
+    //Pour ajouter un avis
     if ($action === 'add_avis') {
         $controller_avis = new ControllerAvis(model_bd: $db);
         $controller_avis-> add_avis();
@@ -84,6 +74,8 @@ try {
         header('Location: views/add_avis.php');
         exit;
     }
+
+    //!! Pour les avis
     elseif ($action === 'les_avis') {
         $avis = $db->getAvis();
         $_SESSION['avis'] = $avis; // Stocker les avis dans la session
@@ -92,6 +84,16 @@ try {
         exit;
     }
 
+    //!!Pour les favoris
+    // Traitement immédiat de l'action AJAX pour toggle-favoris
+    if (preg_match('#^toggle-favoris/(.+)$#', $action, $matches)) {
+     $controller = new Controller($restaurants);
+     $idRestaurant = urldecode($matches[1]);
+     $controller->toggleFavorite($idRestaurant);
+     exit; // Arrêter l'exécution après l'envoi de la réponse JSON
+    }
+
+    
    
 
 } catch (Exception $e) {
