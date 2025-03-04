@@ -21,8 +21,8 @@ try {
         header('Location: index.php');
         exit;
     }
-    print_r($action);
     if ($action === 'home') {
+        require_once __DIR__ . '/templates/header.php';
         $restaurants = Provider::getRestaurants(fichier: 'restaurants_orleans');
         $controller = new Controller(restaurants: $restaurants);
         $controller->showRestaurants();
