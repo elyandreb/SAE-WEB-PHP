@@ -9,17 +9,34 @@ class Controller{
         $this->restaurants = $restaurants;
     }
 
-public function showRestaurants(): void {
-    {
-        $cpt = 0;
-        foreach ($this->restaurants as $restaurant) {
-            if ($cpt >= 5) {
-                break;
+    public function showRestaurants(): void {
+        {
+            $cpt = 0;
+            foreach ($this->restaurants as $restaurant) {
+                if ($cpt >= 5) {
+                    break;
+                }
+                echo $restaurant['region'] . '<br>';
+                $cpt++;
             }
-            echo $restaurant['region'] . '<br>';
-            $cpt++;
         }
     }
-}
+
+    public function addAvisToResto(): void{
+        echo "Ajouter un avis pour le restaurant $id";
+        //{
+        //    foreach ($this->restaurants as $restaurant) {
+        //        try {
+        //            if ($restaurant['id'] == $id) {
+        //                return $restaurant;
+        //            }
+        //        } catch (Exception $e) {
+        //            echo 'Error: ' . $e->getMessage();
+        //        }
+        //        
+        //    }
+        //}
+    }
+
 
 }
