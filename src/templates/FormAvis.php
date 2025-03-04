@@ -17,9 +17,7 @@
     </div>
     <body>
     <form id="avisForm" style="width: 50%; margin: auto;">
-        <label>Nom :</label>
-        <input type="text" id="nom" required style="width: 100%;"><br><br>
-
+       
         <label>Réception :</label>
         <input type="number" id="note_reception" min="1" max="5" required style="width: 100%;"><br>
 
@@ -47,7 +45,6 @@
 session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $nom = $_POST["nom"];
     $note_reception = $_POST["note_reception"];
     $note_plats = $_POST["note_plats"];
     $note_service = $_POST["note_service"];
@@ -55,7 +52,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $date_publication = date("Y-m-d H:i:s");
 
     $_SESSION['avis'][] = [
-        'nom' => $nom,
         'note_reception' => $note_reception,
         'note_plats' => $note_plats,
         'note_service' => $note_service,

@@ -71,3 +71,14 @@ form button {
     border: none;
     border-radius: 5px;
 }
+
+.restaurants {
+    display : flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+.restaurant{
+    flex-basis: 45%;
+    border: thin solid black ;
+}
