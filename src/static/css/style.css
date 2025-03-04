@@ -38,47 +38,4 @@ body{
 .subtitle{
     font-size: 1.5em;
 }
-form {
-    border: 1px solid #ccc;
-    padding: 20px;
-    border-radius: 10px;
-    background-color: #fff;
-    max-width: 500px;
-    margin: 20px auto;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
 
-form label {
-    display: block;
-    margin-bottom: 5px;
- 
-}
-
-form input, form textarea {
-    width: 100%;
-    padding: 2px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-form button {
-    width: 100%;
-    padding: 10px;
-    background-color: #6D071A;
-    color: white;
-    font-weight: bold;
-    border: none;
-    border-radius: 5px;
-}
-
-.restaurants {
-    display : flex;
-    flex-wrap: wrap;
-    justify-content: space-evenly;
-}
-
-.restaurant{
-    flex-basis: 45%;
-    border: thin solid black ;
-}

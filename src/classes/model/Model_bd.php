@@ -1,14 +1,13 @@
 <?php
-
-namespace bd;
+namespace classes\model;
 
 use \PDO;
 use \PDOException;
 
-class model_bd {
+class Model_bd {
     private $db;
 
-    public function __construct($dbPath = 'restaurant.db') {
+    public function __construct($dbPath = '../restaurant.db') {
         try {
             $this->db = new PDO('sqlite:' . $dbPath);
             $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -589,9 +588,11 @@ class model_bd {
             $stmt->bindParam(':role', $role, PDO::PARAM_STR);
             return $stmt->execute();
         } catch (PDOException $e) {
+            error_log("Erreur lors de l'inscription: " . $e->getMessage());
             return false;
         }
     }
+    
     
     public function getUserIdByEmail($email) {
         $query = "SELECT id_u FROM UTILISATEUR WHERE email_u = :email";

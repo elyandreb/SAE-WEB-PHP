@@ -1,13 +1,13 @@
 <?php
 
-namespace classes;
+namespace classes\provider;
 
 use \Exception;
 
 class Provider{
     public static function getRestaurants($fichier)
     {
-        $source = __DIR__ . '/../data/'. $fichier .".json";
+        $source = __DIR__ . '/../../data/'. $fichier .".json";
         $content = file_get_contents($source);
         $restaurants = json_decode($content, true);
 
