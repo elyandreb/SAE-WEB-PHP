@@ -25,7 +25,7 @@ try {
         $controller = new Controller(restaurants: $restaurants);
         $controller->showRestaurants();
 
-    } 
+    }
 
     
     
