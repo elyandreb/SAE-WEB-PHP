@@ -1,0 +1,96 @@
+/* Reset des marges et padding */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* Page d'inscription */
+.register-container {
+    display: flex;
+    height: 100vh;
+}
+
+/* Partie gauche */
+.left-side {
+    flex: 1;
+    background-color: #4A0E16;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+}
+
+.left-side h1 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+.image-container {
+    width: 100%;
+    height: 70%;
+    background: url('../img/restaurant.svg') center/cover no-repeat;
+    border-radius: 10px;
+}
+
+/* Partie droite */
+.right-side {
+    flex: 1;
+    background-color: #800020;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.right-side h2 {
+    color: white;
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+form {
+    width: 80%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    color: white;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: none;
+    border-radius: 5px;
+}
+
+button {
+    background-color: #4A0E16;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #66091A;
+}
+
+/* Message d'erreur */
+.error-message {
+    margin-top: 10px;
+    color: black;
+}
