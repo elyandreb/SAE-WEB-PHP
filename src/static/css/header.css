@@ -20,7 +20,18 @@ nav {
     gap: 15px;
 }
 
-/* Boutons de connexion */
+/* Liens */
+.link {
+    font-weight: bold;
+}
+nav a {
+    color: black;
+    text-decoration: none;
+}
+.logout {
+    color: #800020;
+}
+
 .btn {
     background-color: #800020;
     color: white;
@@ -34,19 +45,43 @@ nav {
     background-color: #66091A;
 }
 
-/* Liens pour les utilisateurs connectés */
-nav a {
-    color: black;
-    text-decoration: none;
-    font-weight: bold;
+/* Icône profil */
+.profile-menu {
+    position: relative;
+    display: inline-block;
 }
 
-nav a:hover {
-    text-decoration: underline;
-}
-
-/* Icône du profil */
-.profile-icon img {
+.profile-icon {
     height: 35px;
     border-radius: 50%;
+    cursor: pointer;
+}
+
+/* Menu déroulant */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    min-width: 150px;
+    z-index: 10;
+}
+
+.dropdown-menu a, .dropdown-menu button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    text-align: left;
+    border: none;
+    background: none;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.dropdown-menu a:hover, .dropdown-menu button:hover {
+    background-color: #f5f5f5;
 }
