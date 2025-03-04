@@ -23,7 +23,7 @@ class Controller{
     }
 
     public function addAvisToResto(): void{
-        echo "Ajouter un avis pour le restaurant $id";
+        echo "Ajouter un avis pour le restaurant";
         //{
         //    foreach ($this->restaurants as $restaurant) {
         //        try {
