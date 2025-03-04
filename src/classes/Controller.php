@@ -10,33 +10,45 @@ class Controller{
     }
 
     public function showRestaurants(): void {
-        {
-            $cpt = 0;
-            foreach ($this->restaurants as $restaurant) {
-                if ($cpt >= 5) {
-                    break;
-                }
-                echo $restaurant['region'] . '<br>';
-                $cpt++;
-            }
+        echo '<div class="restaurants">';
+        foreach ($this->restaurants as $restaurant) {
+            // Utiliser osm_id comme identifiant unique
+            $idRestaurant = $restaurant['osm_id'];
+            $isFavorite = isset($_SESSION['favoris']) && in_array($idRestaurant, $_SESSION['favoris']);
+            $heartIcon = $isFavorite ? '../static/img/coeur.svg' : '../static/img/coeur_vide.svg';
+    
+            echo '<div class="restaurant" data-id="' . $idRestaurant . '">';
+            echo '<span>' . $restaurant['name'] . '</span>';
+            echo '<button onclick="toggleFavoris(event, this, \'' . $idRestaurant . '\')">';
+            echo '<img src="' . $heartIcon . '" alt="Favori">';
+            echo '</button>';
+            echo '</div>';
+        }
+        echo '</div>';
+    }
+    
+
+    public function toggleFavorite(string $idRestaurant): void {
+        if (!isset($_SESSION['favoris'])) {
+            $_SESSION['favoris'] = [];
+        }
+        if (in_array($idRestaurant, $_SESSION['favoris'])) {
+            // Supprimer du favori
+            $_SESSION['favoris'] = array_filter($_SESSION['favoris'], function($id) use ($idRestaurant) {
+                return $id !== $idRestaurant;
+            });
+            echo json_encode(['status' => 'success', 'favoris' => false]);
+        } else {
+            // Ajouter aux favoris
+            $_SESSION['favoris'][] = $idRestaurant;
+            echo json_encode(['status' => 'success', 'favoris' => true]);
         }
     }
+    
 
     public function addAvisToResto(): void{
-        echo "Ajouter un avis pour le restaurant $id";
-        //{
-        //    foreach ($this->restaurants as $restaurant) {
-        //        try {
-        //            if ($restaurant['id'] == $id) {
-        //                return $restaurant;
-        //            }
-        //        } catch (Exception $e) {
-        //            echo 'Error: ' . $e->getMessage();
-        //        }
-        //        
-        //    }
-        //}
+        echo "Ajouter un avis pour le restaurant ";
+        // Implémentation à venir...
     }
-
 
 }
