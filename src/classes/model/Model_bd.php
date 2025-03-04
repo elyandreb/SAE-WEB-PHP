@@ -1,5 +1,4 @@
 <?php
-
 namespace classes\model;
 
 use \PDO;
@@ -589,9 +588,11 @@ class Model_bd {
             $stmt->bindParam(':role', $role, PDO::PARAM_STR);
             return $stmt->execute();
         } catch (PDOException $e) {
+            error_log("Erreur lors de l'inscription: " . $e->getMessage());
             return false;
         }
     }
+    
     
     public function getUserIdByEmail($email) {
         $query = "SELECT id_u FROM UTILISATEUR WHERE email_u = :email";

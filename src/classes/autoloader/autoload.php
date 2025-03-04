@@ -18,6 +18,7 @@ spl_autoload_register(static function(string $fqcn) {
         // Si c'est dans le namespace BD :
         $path = __DIR__ . '../../model/' . $className . '.php';
     }
+
     
     require_once $path;
 });

@@ -16,11 +16,7 @@
         <div class="right-side">
             <h2>Inscription</h2>
 
-            <?php if (!empty($errorMessage)): ?>
-                <div class="error-message"><?php echo $errorMessage; ?></div>
-            <?php endif; ?>
-
-            <form action="/classes/register.php" method="POST">
+            <form action="/index.php?action=register" method="POST">
                 <label for="nom">Nom</label>
                 <input type="text" name="nom" required>
 

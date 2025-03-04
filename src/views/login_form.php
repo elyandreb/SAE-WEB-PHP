@@ -15,7 +15,7 @@
         </div>
         <div class="right-side">
             <h2>Connexion</h2>
-            <form action="/classes/login.php" method="POST">
+            <form action="/index.php?action=login" method="POST">
                 <label for="email">Email</label>
                 <input type="email" name="email" required>
 
@@ -24,9 +24,6 @@
 
                 <button type="submit">Se connecter</button>
             </form>
-            <?php if (!empty($errorMessage)): ?>
-                <div class="error-message"><?php echo $errorMessage; ?></div>
-            <?php endif; ?>
         </div>
     </div>
 </body>
