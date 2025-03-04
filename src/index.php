@@ -27,8 +27,18 @@ if (preg_match('#^toggle-favoris/(.+)$#', $action, $matches)) {
 </head>
 <body>
 
+session_start();
+
+
 <?php
 try {
+
+    // Vérifier si l'utilisateur est connecté
+    if (!isset($_SESSION['user_name'])) {
+        require_once __DIR__ . '/templates/login_form.php';
+        exit;
+    }
+
     // Gérer le logout en premier
     if ($action === 'logout') {
         session_unset();
@@ -36,11 +46,10 @@ try {
         header('Location: index.php');
         exit;
     }
-    $restaurants = Provider::getRestaurants(fichier: 'restaurants_orleans');
-    $controller = new Controller(restaurants: $restaurants);
 
 
     if ($action === 'home') {
+        require_once __DIR__ . '/templates/header.php';
         $restaurants = Provider::getRestaurants(fichier: 'restaurants_orleans');
         $controller = new Controller(restaurants: $restaurants);
         $controller->showRestaurants();
