@@ -40,25 +40,3 @@
 
    
 </div>
-
-<?php
-session_start();
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $note_reception = $_POST["note_reception"];
-    $note_plats = $_POST["note_plats"];
-    $note_service = $_POST["note_service"];
-    $commentaire = $_POST["commentaire"];
-    $date_publication = date("Y-m-d H:i:s");
-
-    $_SESSION['avis'][] = [
-        'note_reception' => $note_reception,
-        'note_plats' => $note_plats,
-        'note_service' => $note_service,
-        'commentaire' => $commentaire,
-        'date_publication' => $date_publication
-    ];
-
-    //!! Ajouter le code pour ajouter l'avis dans la base de données
-    echo "Avis ajouté avec succès !";
-}

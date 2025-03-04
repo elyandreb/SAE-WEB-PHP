@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once 'bd/model_bd.php';
-use bd\model_bd;
+use model\model_bd;
 
 $db = new model_bd();
 $email = $_POST['email'] ?? '';

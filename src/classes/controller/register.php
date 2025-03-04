@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once 'bd/model_bd.php';
-use bd\model_bd;
+use model\model_bd;
 
 $db = new model_bd();
 $errorMessage = '';
@@ -41,5 +41,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Inclure le formulaire
-include '../templates/register_form.php';
+include '../views/register_form.php';
 ?>

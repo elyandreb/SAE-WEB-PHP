@@ -39,7 +39,7 @@
                 <button type="submit">S'inscrire</button>
             </form>
 
-            <p>Déjà un compte ? <a href="/templates/login_form.php">Se connecter</a></p>
+            <p>Déjà un compte ? <a href="/views/login_form.php">Se connecter</a></p>
         </div>
     </div>
 </body>
