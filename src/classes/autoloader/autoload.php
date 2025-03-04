@@ -16,7 +16,7 @@ spl_autoload_register(static function(string $fqcn) {
     }
     elseif ($segments[1] === 'model') {
         // Si c'est dans le namespace BD :
-        $path = __DIR__ . '/../model/' . $className . '.php';
+        $path = __DIR__ . '../../model/' . $className . '.php';
     }
     
     require_once $path;

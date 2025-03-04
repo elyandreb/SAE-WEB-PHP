@@ -56,10 +56,9 @@ try {
         exit;
 
     } elseif ($action === 'ask_avis') {
-        $controller_avis = new ControllerAvis();
-        $controller_avis->showRestaurants();
+        $controller_avis = new ControllerAvis(model_bd: $db);
+        $controller_avis-> add_avis();
 
-        $controller->addAvisToResto();
         header('Location: views/add_avis.php');
         exit;
     }
