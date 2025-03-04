@@ -10,7 +10,7 @@ class Critique {
 
     public function __construct(int $id, int $id_res, int $id_u, string $commentaire, int $note, string $date_critique){
         $this->id = $id;
-        $this->id_res = $id_res;  // Correction : id_restaurant => id_res
+        $this->id_res = $id_res; 
         $this->id_u = $id_u;
         $this->commentaire = $commentaire;
         $this->note = $note;
