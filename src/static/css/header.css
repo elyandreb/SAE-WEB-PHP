@@ -1,0 +1,52 @@
+/* Header */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 30px;
+    background-color: white;
+    border-bottom: 1px solid #ccc;
+}
+
+/* Logo */
+.logo img {
+    height: 50px;
+}
+
+/* Navigation */
+nav {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Boutons de connexion */
+.btn {
+    background-color: #800020;
+    color: white;
+    padding: 10px 15px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.btn:hover {
+    background-color: #66091A;
+}
+
+/* Liens pour les utilisateurs connectés */
+nav a {
+    color: black;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+/* Icône du profil */
+.profile-icon img {
+    height: 35px;
+    border-radius: 50%;
+}

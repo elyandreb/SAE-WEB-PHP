@@ -548,5 +548,59 @@ class model_bd {
             );
         }
     }
+
+    public function loginUser($email, $mdp) {
+        $query = "SELECT * FROM UTILISATEUR WHERE email_u = :email";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+            $stmt->execute();
+            
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($user && password_verify($mdp, $user['mdp_u'])) {
+                return $user; // Retourne les infos de l'utilisateur si l'authentification est correcte
+            }
+            
+            return false; // Mauvais identifiants
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    public function checkEmailExists($email) {
+        $query = "SELECT COUNT(*) FROM UTILISATEUR WHERE email_u = :email";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetchColumn() > 0;
+    }
+    
+    public function registerUser($nom, $prenom, $email, $mdp, $role) {
+        $query = "INSERT INTO UTILISATEUR (nom_u, prenom_u, email_u, mdp_u, le_role) 
+                  VALUES (:nom, :prenom, :email, :mdp, :role)";
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':nom', $nom, PDO::PARAM_STR);
+            $stmt->bindParam(':prenom', $prenom, PDO::PARAM_STR);
+            $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+            $stmt->bindParam(':mdp', password_hash($mdp, PASSWORD_DEFAULT), PDO::PARAM_STR);
+            $stmt->bindParam(':role', $role, PDO::PARAM_STR);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+    
+    public function getUserIdByEmail($email) {
+        $query = "SELECT id_u FROM UTILISATEUR WHERE email_u = :email";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
+    
+    
 }
 ?>
