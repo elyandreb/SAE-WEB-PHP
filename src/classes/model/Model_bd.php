@@ -138,6 +138,25 @@ class Model_bd {
         }
     }
 
+    public function getCritiquesByUser($id_u) {
+        $query = "SELECT CRITIQUE.*, RESTAURANT.nom_res 
+                  FROM CRITIQUE 
+                  JOIN RESTAURANT ON CRITIQUE.siret = RESTAURANT.siret 
+                  WHERE CRITIQUE.id_u = :id_u 
+                  ORDER BY CRITIQUE.date_creation DESC";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération des critiques : " . $e->getMessage());
+            return [];
+        }
+    }
+
     // Méthode pour obtenir ou créer un type de cuisine
     public function getOrCreateTypeCuisine($nom) {
         // Vérifier si ce type de cuisine existe déjà
