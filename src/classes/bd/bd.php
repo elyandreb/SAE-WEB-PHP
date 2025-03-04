@@ -534,18 +534,33 @@ class model_bd {
     public function init_resto_json() {
         $data = json_decode(file_get_contents(__DIR__ . '/../../data/restaurants_orleans.json'), true);
         foreach ($data as $item) {
-            $coords = isset($item['coordinates'][0], $item['coordinates'][1]) ? "{$item['coordinates'][0]},{$item['coordinates'][1]}" : null; // Permet de mettre null si on ne trouve pas les coordonnées
-            $this->addRestaurant(
-                $item['siret'],
-                $item['name'],
-                $item['com_nom'],
-                $item['departement'],
-                $item['region'],
-                $coords,
-                $item['website'],
-                $item['opening_hours'],
-                $item['phone'],
-            );
+            $coords = isset($item['geo_point_2d']['lon'], $item['geo_point_2d']['lat']) 
+                ? "{$item['geo_point_2d']['lon']},{$item['geo_point_2d']['lat']}" 
+                : null;
+            
+            // Ajouter le restaurant
+                $this->addRestaurant(
+                    $siret = $item['siret'],
+                    $item['name'],
+                    $item['com_nom'],
+                    $item['departement'],
+                    $item['region'],
+                    $coords,
+                    $item['website'] ?? null,
+                    $item['opening_hours'] ?? null,
+                    $item['phone'] ?? null,
+                );
+    
+                // Gérer les types de cuisine
+                if (!empty($item['cuisine'])) {
+                    $cuisines = is_array($item['cuisine']) ? $item['cuisine'] : [$item['cuisine']];
+                    foreach ($cuisines as $cuisine) {
+                        if ($cuisine) {
+                            $id_type = $this->getOrCreateTypeCuisine($cuisine);
+                            $this->addRestaurantTypeCuisine($siret, $id_type);
+                        }
+                    }
+                }
         }
     }
 }
