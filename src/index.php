@@ -4,12 +4,12 @@ require_once __DIR__ . '/classes/autoloader/autoload.php'; // Charge l'autoload
 use classes\Provider;
 use classes\Controller;
 session_start();
-include 'templates/header.php';
+
 try {
     $action = $_GET['action'] ?? 'home';
 
     // Vérifier si l'utilisateur est connecté
-    if (!isset($_SESSION['utilisateur'])) {
+    if (!isset($_SESSION['user_name'])) {
         require_once __DIR__ . '/templates/login_form.php';
         exit;
     }
