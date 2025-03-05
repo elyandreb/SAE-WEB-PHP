@@ -68,11 +68,16 @@ try {
         require_once __DIR__ . '/views/les_restaurants.php';
         exit ;
     }
-    elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'add_avis') {
-        $controller_avis = new ControllerAvis(model_bd: $db);
-        $controller_avis->add_avis();
-        header('Location: views/add_avis.php');
-        exit;
+    elseif ($action === 'add_avis') {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $controller_avis = new ControllerAvis(model_bd: $db);
+            $controller_avis->add_avis();
+            header('Location: index.php?action=home');
+            exit;
+        } else {
+            require_once __DIR__ . '/views/add_avis.php';
+            exit;
+        }
     }
     
     
@@ -82,11 +87,22 @@ try {
         exit;
     }
     elseif ($action === 'les_avis') {
-        $_SESSION['avis'] = $avis; // Stocker les avis dans la session
-        
-        header('Location: views/les_avis.php');
+        if (!isset($_GET['siret'])) {
+            die('Erreur : SIRET manquant.');
+        }
+    
+        $siret = $_GET['siret'];
+    
+        // Récupérer les avis depuis le modèle
+        $controller_avis = new ControllerAvis($db);
+        $controller_avis->get_avis();
+    
+        // Afficher la page correspondante
+        require_once __DIR__ . '/views/les_avis.php';
         exit;
     }
+    
+    
     
     elseif ($action === 'remove_avis') {
         $controller_avis = new ControllerAvis(model_bd: $db);

@@ -10,7 +10,6 @@
 <body>
 
     <?php
-    session_start();
     $restaurants = $_SESSION['restaurants'];
         $index = 0;
         
@@ -30,7 +29,7 @@
             echo '</button>';
 
 
-            echo '<button class="btn" onclick="location.href=\'/index.php?action=add_avis&siret=' . urlencode($idRestaurant) . '&nom_res=' . urlencode($restaurant['nom_res']) . '\'">Ajouter un avis</button>';
+            echo '<button class="btn" onclick="location.href=\'index.php?action=add_avis&siret=' . urlencode($idRestaurant) . '\'">Ajouter un avis</button>';
             echo '<button class="btn" onclick="location.href=\'/index.php?action=les_avis\'">Les avis</button>';
         echo '</div>';
         

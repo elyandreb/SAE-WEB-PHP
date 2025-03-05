@@ -21,22 +21,19 @@ class ControllerAvis {
         $note_service = (int) $_POST['note_service'];
         $commentaire = htmlspecialchars($_POST['commentaire']);
     
-        // Vérifie que les notes sont valides
         if ($note_reception < 1 || $note_reception > 5 ||
             $note_plats < 1 || $note_plats > 5 ||
             $note_service < 1 || $note_service > 5) {
             die('Erreur : Notes invalides.');
         }
     
-        // Ajout dans la base de données (exemple avec PDO)
-       
-        $model_bd-> addCritique($note_r, $commentaire, $siret, $id_u, $note_p = null, $note_s = null) ;
-        echo 'Avis ajouté avec succès !';
-     
-
+        // Ajout dans la base de données
+        $this->model_bd->addCritique($note_reception, $commentaire, $siret, $id_u, $note_plats, $note_service);
+    
+        // Redirection correcte après l'ajout
+        header('Location: index.php?action=les_avis&siret=' . urlencode(string: $siret));
+        exit;
     }
-    
-    
 
     public function get_avis(): void {
         $avis = $this->model_bd->getAvis();
@@ -45,7 +42,6 @@ class ControllerAvis {
     
     
     public function remove_avis(): void {
-        header('Content-Type: application/json');
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $id_critique = filter_input(INPUT_POST, 'id_critique', FILTER_VALIDATE_INT);
 
