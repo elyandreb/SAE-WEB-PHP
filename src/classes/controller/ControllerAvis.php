@@ -9,29 +9,33 @@ class ControllerAvis {
         $this->model_bd = $model_bd;
     }
 
-    public function add_avis(): void {
-        if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            $note_r = filter_input(INPUT_POST, "note_reception", FILTER_VALIDATE_INT);
-            $note_p = filter_input(INPUT_POST, "note_plats", FILTER_VALIDATE_INT);
-            $note_s = filter_input(INPUT_POST, "note_service", FILTER_VALIDATE_INT);
-            $commentaire = filter_input(INPUT_POST, "commentaire", FILTER_SANITIZE_STRING);
-            $siret = filter_input(INPUT_POST, "siret", FILTER_SANITIZE_STRING);
-            $id_u = filter_input(INPUT_POST, "id_u", FILTER_VALIDATE_INT);
-    
-            if (!$note_r || !$note_p || !$note_s || !$siret || !$id_u) {
-                echo json_encode(["status" => "error", "message" => "Données manquantes ou invalides."]);
-                return;
-            }
-    
-            $success = $this->model_bd->addCritique($note_r, $commentaire, $siret, $id_u, $note_p, $note_s);
-            
-            header('Content-Type: application/json'); // 🔥 Indique qu'on renvoie du JSON
-            echo json_encode($success 
-                ? ["status" => "success", "message" => "Avis ajouté avec succès !"] 
-                : ["status" => "error", "message" => "Erreur lors de l'ajout de l'avis."]
-            );
+    public function add_avis() {
+        if (!isset($_POST['siret'], $_POST['id_u'], $_POST['note_reception'], $_POST['note_plats'], $_POST['note_service'], $_POST['commentaire'])) {
+            die('Erreur : Données manquantes.');
         }
+    
+        $siret = htmlspecialchars($_POST['siret']);
+        $id_u = htmlspecialchars($_POST['id_u']);
+        $note_reception = (int) $_POST['note_reception'];
+        $note_plats = (int) $_POST['note_plats'];
+        $note_service = (int) $_POST['note_service'];
+        $commentaire = htmlspecialchars($_POST['commentaire']);
+    
+        // Vérifie que les notes sont valides
+        if ($note_reception < 1 || $note_reception > 5 ||
+            $note_plats < 1 || $note_plats > 5 ||
+            $note_service < 1 || $note_service > 5) {
+            die('Erreur : Notes invalides.');
+        }
+    
+        // Ajout dans la base de données (exemple avec PDO)
+       
+        $model_bd-> addCritique($note_r, $commentaire, $siret, $id_u, $note_p = null, $note_s = null) ;
+        echo 'Avis ajouté avec succès !';
+     
+
     }
+    
     
 
     public function get_avis(): void {

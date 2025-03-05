@@ -68,19 +68,14 @@ try {
         require_once __DIR__ . '/views/les_restaurants.php';
         exit ;
     }
-
-    elseif (preg_match('#toggle-favoris/(.+)#', $action, $matches)) {
-        $idRestaurant = urldecode($matches[1]);
-        $controller->toggleFavorite($idRestaurant);
-        exit;
-    }
-    
-    elseif ($action === 'add_avis') {
+    elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'add_avis') {
         $controller_avis = new ControllerAvis(model_bd: $db);
-        $controller_avis-> add_avis();
+        $controller_avis->add_avis();
         header('Location: views/add_avis.php');
         exit;
     }
+    
+    
     elseif ($action === 'get_avis') {
         $controller_avis = new ControllerAvis(model_bd: $db);
         $controller_avis->get_avis();
@@ -94,12 +89,19 @@ try {
     }
     
     elseif ($action === 'remove_avis') {
-        var_dump($_POST);
         $controller_avis = new ControllerAvis(model_bd: $db);
         $controller_avis->remove_avis();
         header('Location: views/les_avis.php');
         exit;
     }
+
+    elseif (preg_match('#toggle-favoris/(.+)#', $action, $matches)) {
+        $idRestaurant = urldecode($matches[1]);
+        $controller->toggleFavorite($idRestaurant);
+        exit;
+    }
+    
+    
     
 } catch (Exception $e) {
     echo ''. $e->getMessage();
