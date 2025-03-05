@@ -24,7 +24,7 @@
         echo "Service : " . str_repeat("<img src='../static/img/star.svg' alt='star' style='width:20px;height:20px;'>", $a['note_s']) . "<br>";
     
         echo "<p>" . htmlspecialchars($a['commentaire']) . "</p>";
-        echo "<button type='submit' class='supprimerAvis button-red' data-index='$index'>Supprimer</button>";
+
         echo '<button class="btn" onclick="location.href=\'/index.php?action=remove_avis\'">Supprimer</button>';
         
         $index++;

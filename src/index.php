@@ -17,6 +17,7 @@ $action = $_GET['action'] ?? 'home';
 
 try {
     $db = new Model_bd();
+    $db-> init_resto_json();
 
 
     // Gérer le logout en premier
@@ -43,8 +44,6 @@ try {
     if ($action === 'login') {
         $controllerLogin = new ControllerLogin($db);
         $controllerLogin->login();
-
-    
         exit;
     }
     
@@ -60,14 +59,16 @@ try {
 
     $avis = $db->getAvis();
     $_SESSION['avis'] = $avis; // Stocker les avis dans la session
+
+    $restaurants =$db->getRestaurants();
+    $_SESSION['restaurants'] = $restaurants;
     
     if ($action === 'home') {
         require_once __DIR__ . '/views/header.php';
-       
-        $controller = new Controller(restaurants: $restaurants);
-        $controller->showRestaurants();
+        require_once __DIR__ . '/views/les_restaurants.php';
+        exit ;
+    }
 
-    } 
     elseif (preg_match('#toggle-favoris/(.+)#', $action, $matches)) {
         $idRestaurant = urldecode($matches[1]);
         $controller->toggleFavorite($idRestaurant);
@@ -85,14 +86,13 @@ try {
         $controller_avis->get_avis();
         exit;
     }
-    
     elseif ($action === 'les_avis') {
-        $avis = $db->getAvis();
         $_SESSION['avis'] = $avis; // Stocker les avis dans la session
         
         header('Location: views/les_avis.php');
         exit;
     }
+    
     elseif ($action === 'remove_avis') {
         var_dump($_POST);
         $controller_avis = new ControllerAvis(model_bd: $db);
