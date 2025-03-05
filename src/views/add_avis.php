@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../static/css/avis.css">
     <script src="../static/js/avis.js" defer></script>
 </head>
+
 <body>
 <div class="flex">
     <div>
@@ -16,9 +17,13 @@
     <div >
         <h2 class ="subtitle"> Nom du restaurant </h2>
     </div>
-    <body>
-    <form id="avisForm" style="width: 50%; margin: auto;">
-        
+
+    <form action="/index.php?action=add_avis" method="POST" id="avisForm" style="width: 50%; margin: auto;">
+
+        <input type="hidden" id="siret" value="123456789">
+
+        <input type="hidden" id="id_u" value="1">
+
         <label>Réception :</label>
         <input type="number" id="note_reception" min="1" max="5" required style="width: 100%;"><br>
 
@@ -33,11 +38,6 @@
 
         <button type="submit" class="button-red" style="width: 100%; ">Envoyer</button>
     </form>
-    
-    <h2>Avis des clients :</h2>
-    <div id="listeAvis"></div>
-
-
     
 </body>
 

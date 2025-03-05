@@ -6,7 +6,10 @@ $isLoggedIn = isset($_SESSION['user_id']);
 </head>
 <header>
     <div class="logo">
-        <img src="../static/img/logo.svg" alt="IUTables'O">
+        <button onclick="location.href='/index.php?action=home'">
+            <img src="../static/img/logo.svg" alt="IUTables'O">
+        </button>
+    
     </div>
     
     <nav>

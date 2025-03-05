@@ -137,6 +137,15 @@ class Model_bd {
             return [];
         }
     }
+    public function getAvis(){
+        $query = "SELECT * FROM CRITIQUE";
+        try {
+            $stmt = $this->db->query($query);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
 
     // Méthode pour obtenir ou créer un type de cuisine
     public function getOrCreateTypeCuisine($nom) {

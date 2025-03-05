@@ -48,9 +48,6 @@ try {
         exit;
     }
     
-    
-    
-
     $restaurants = Provider::getRestaurants(fichier: 'restaurants_orleans');
 
     // Traitement immédiat de l'action AJAX pour toggle-favoris
@@ -61,6 +58,9 @@ try {
      exit; // Arrêter l'exécution après l'envoi de la réponse JSON
     }
 
+    $avis = $db->getAvis();
+    $_SESSION['avis'] = $avis; // Stocker les avis dans la session
+    
     if ($action === 'home') {
         require_once __DIR__ . '/views/header.php';
        
@@ -73,17 +73,19 @@ try {
         $controller->toggleFavorite($idRestaurant);
         exit;
     }
-
-    $avis = $db->getAvis();
-    $_SESSION['avis'] = $avis; // Stocker les avis dans la session
     
-    if ($action === 'add_avis') {
+    elseif ($action === 'add_avis') {
         $controller_avis = new ControllerAvis(model_bd: $db);
         $controller_avis-> add_avis();
-
         header('Location: views/add_avis.php');
         exit;
     }
+    elseif ($action === 'get_avis') {
+        $controller_avis = new ControllerAvis(model_bd: $db);
+        $controller_avis->get_avis();
+        exit;
+    }
+    
     elseif ($action === 'les_avis') {
         $avis = $db->getAvis();
         $_SESSION['avis'] = $avis; // Stocker les avis dans la session
@@ -91,9 +93,14 @@ try {
         header('Location: views/les_avis.php');
         exit;
     }
-
-   
-
+    elseif ($action === 'remove_avis') {
+        var_dump($_POST);
+        $controller_avis = new ControllerAvis(model_bd: $db);
+        $controller_avis->remove_avis();
+        header('Location: views/les_avis.php');
+        exit;
+    }
+    
 } catch (Exception $e) {
     echo ''. $e->getMessage();
 }

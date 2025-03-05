@@ -23,6 +23,10 @@ class Controller{
             echo '<button onclick="toggleFavoris(event, this, \'' . $idRestaurant . '\')">';
             echo '<img src="' . $heartIcon . '" alt="Favori">';
             echo '</button>';
+            
+
+            echo '<button class="btn" onclick="location.href=\'/index.php?action=add_avis\'">Détails</button>';
+            echo '<button class="btn" onclick="location.href=\'/index.php?action=les_avis\'">Les avis</button>';
             echo '</div>';
         }
         echo '</div>';
