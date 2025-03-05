@@ -1,14 +1,13 @@
 <?php
-
-namespace bd;
+namespace classes\model;
 
 use \PDO;
 use \PDOException;
 
-class model_bd {
+class Model_bd {
     private $db;
 
-    public function __construct($dbPath = 'restaurant.db') {
+    public function __construct($dbPath = '../restaurant.db') {
         try {
             $this->db = new PDO('sqlite:' . $dbPath);
             $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -135,6 +134,25 @@ class model_bd {
             $stmt = $this->db->query($query);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
+            return [];
+        }
+    }
+
+    public function getCritiquesByUser($id_u) {
+        $query = "SELECT CRITIQUE.*, RESTAURANT.nom_res 
+                  FROM CRITIQUE 
+                  JOIN RESTAURANT ON CRITIQUE.siret = RESTAURANT.siret 
+                  WHERE CRITIQUE.id_u = :id_u 
+                  ORDER BY CRITIQUE.date_creation DESC";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération des critiques : " . $e->getMessage());
             return [];
         }
     }
@@ -534,18 +552,33 @@ class model_bd {
     public function init_resto_json() {
         $data = json_decode(file_get_contents(__DIR__ . '/../../data/restaurants_orleans.json'), true);
         foreach ($data as $item) {
-            $coords = isset($item['coordinates'][0], $item['coordinates'][1]) ? "{$item['coordinates'][0]},{$item['coordinates'][1]}" : null; // Permet de mettre null si on ne trouve pas les coordonnées
+            $coords = isset($item['geo_point_2d']['lon'], $item['geo_point_2d']['lat']) 
+                ? "{$item['geo_point_2d']['lon']},{$item['geo_point_2d']['lat']}" 
+                : null;
+            
+            // Ajouter le restaurant
             $this->addRestaurant(
-                $item['siret'],
+                $siret = $item['siret'],
                 $item['name'],
                 $item['com_nom'],
                 $item['departement'],
                 $item['region'],
                 $coords,
-                $item['website'],
-                $item['opening_hours'],
-                $item['phone'],
+                $item['website'] ?? null,
+                $item['opening_hours'] ?? null,
+                $item['phone'] ?? null,
             );
+
+            // Gérer les types de cuisine
+            if (!empty($item['cuisine'])) {
+                $cuisines = is_array($item['cuisine']) ? $item['cuisine'] : [$item['cuisine']];
+                foreach ($cuisines as $cuisine) {
+                    if ($cuisine) {
+                        $id_type = $this->getOrCreateTypeCuisine($cuisine);
+                        $this->addRestaurantTypeCuisine($siret, $id_type);
+                    }
+                }
+            }
         }
     }
 
@@ -589,9 +622,11 @@ class model_bd {
             $stmt->bindParam(':role', $role, PDO::PARAM_STR);
             return $stmt->execute();
         } catch (PDOException $e) {
+            error_log("Erreur lors de l'inscription: " . $e->getMessage());
             return false;
         }
     }
+    
     
     public function getUserIdByEmail($email) {
         $query = "SELECT id_u FROM UTILISATEUR WHERE email_u = :email";

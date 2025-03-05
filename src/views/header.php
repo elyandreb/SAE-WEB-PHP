@@ -16,9 +16,12 @@ $isLoggedIn = isset($_SESSION['user_id']);
             <a href="profil.php" class="profile-icon">
                 <img src="../static/img/user.svg" alt="Profil">
             </a>
+            <form action="/index.php?action=logout" method="POST">
+                <button class="btn" type="submit">Se déconnecter</button>
+            </form>
         <?php else: ?>
-            <a href="/templates/register_form.php" class="btn">S'inscrire</a>
-            <a href="/templates/login_form.php" class="btn">Se connecter</a>
+            <a href="/views/register_form.php" class="btn">S'inscrire</a>
+            <a href="/views/login_form.php" class="btn">Se connecter</a>
         <?php endif; ?>
     </nav>
 </header>

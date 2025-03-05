@@ -1,6 +1,6 @@
 <?php
 
-namespace classes;
+namespace classes\controller;
 class Controller{
     private $restaurants;
 
@@ -13,11 +13,9 @@ class Controller{
         echo '<div class="restaurants">';
         foreach ($this->restaurants as $restaurant) {
             // Utiliser osm_id comme identifiant unique
-            $idRestaurant = $restaurant['osm_id'];
+            $idRestaurant = $restaurant['siret'];
             $isFavorite = isset($_SESSION['favoris']) && in_array($idRestaurant, $_SESSION['favoris']);
             $heartIcon = $isFavorite ? '../static/img/coeur.svg' : '../static/img/coeur_vide.svg';
-    
-            
             
             echo '<div class="restaurant" data-id="' . $idRestaurant . '">';
             echo '<span>' . $restaurant['name'] . '</span>';
@@ -48,10 +46,4 @@ class Controller{
         }
     }
     
-
-    public function addAvisToResto(): void{
-        echo "Ajouter un avis pour le restaurant ";
-        // Implémentation à venir...
-    }
-
 }
