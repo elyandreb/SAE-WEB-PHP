@@ -63,7 +63,7 @@ try {
         exit;
     }
 
-    $avis = $db->getAvis();
+    $avis = $db->getCritiquesByUser($_SESSION['user_id']);
     $_SESSION['avis'] = $avis; // Stocker les avis dans la session
 
     //Pour ajouter un avis
@@ -77,7 +77,7 @@ try {
 
     //!! Pour les avis
     elseif ($action === 'les_avis') {
-        $avis = $db->getAvis();
+        $avis = $db->getCritiquesByUser($_SESSION['user_id']);
         $_SESSION['avis'] = $avis; // Stocker les avis dans la session
         
         header('Location: views/les_avis.php');
