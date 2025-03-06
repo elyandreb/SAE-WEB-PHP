@@ -634,7 +634,10 @@ class Model_bd {
                     }
                 }
             }
+
         }
+        // Ajoute un administrateur par défaut
+        $this->addUser('Admin','Admin','admin@admin.com','admin','admin');
     }
 
     public function loginUser($email, $mdp) {
