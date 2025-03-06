@@ -10,11 +10,11 @@ class ControllerAvis {
     }
 
     public function add_avis() {
-        if (!isset($_POST['siret'], $_POST['id_u'], $_POST['note_reception'], $_POST['note_plats'], $_POST['note_service'], $_POST['commentaire'])) {
+        if (!isset($_POST['id_res'], $_POST['id_u'], $_POST['note_reception'], $_POST['note_plats'], $_POST['note_service'], $_POST['commentaire'])) {
             die('Erreur : Données manquantes.');
         }
-    
-        $siret = htmlspecialchars($_POST['siret']);
+
+        $id_res = htmlspecialchars($_POST['id_res']);
         $id_u = htmlspecialchars($_POST['id_u']);
         $note_reception = (int) $_POST['note_reception'];
         $note_plats = (int) $_POST['note_plats'];
@@ -28,31 +28,31 @@ class ControllerAvis {
         }
     
         // Ajout dans la base de données
-        $this->model_bd->addCritique($note_reception, $commentaire, $siret, $id_u, $note_plats, $note_service);
-    
-        // Redirection correcte après l'ajout
-        header('Location: index.php?action=les_avis&siret=' . urlencode(string: $siret));
+        $this->model_bd->addCritique($note_reception, $commentaire, $id_res, $id_u, $note_plats, $note_service);
+        header('Location: index.php?action=les_avis&id_res=' . urlencode(string: $id_res));
         exit;
     }
 
-    public function get_avis(): void {
-        $avis = $this->model_bd->getAvis();
-        
+    public function get_avis($id_u, $id_res): array {
+        return $this->model_bd->getCritiquesByUserResto($id_u, $id_res);
+
     }
     
     
-    public function remove_avis(): void {
-        if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            $id_critique = filter_input(INPUT_POST, 'id_critique', FILTER_VALIDATE_INT);
-
-            if ($id_critique === false || $id_critique === null) {
+    public function remove_avis($id_c): void {
+        if ($_SERVER["REQUEST_METHOD"] === "GET") {
+            $id_c = filter_var($id_c, FILTER_VALIDATE_INT);
+            
+            if ($id_c === false || $id_c === null) {
                 echo json_encode(["status" => "error", "message" => "ID de critique invalide."]);
                 return;
             }
-
-            $success = $this->model_bd->deleteCritique($id_critique);
+    
+            $success = $this->model_bd->deleteCritique($id_c);
+           
             if ($success) {
-                echo json_encode(["status" => "success", "message" => "Avis supprimé avec succès !"]);
+                header("Location: index.php?action=les_avis&id_res=" . urlencode($_GET['id_res']));
+                exit;
             } else {
                 echo json_encode(["status" => "error", "message" => "Erreur lors de la suppression de l'avis."]);
             }
@@ -60,4 +60,5 @@ class ControllerAvis {
             echo json_encode(["status" => "error", "message" => "Méthode non autorisée."]);
         }
     }
+    
 }

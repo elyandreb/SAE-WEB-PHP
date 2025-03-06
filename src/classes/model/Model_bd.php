@@ -256,7 +256,7 @@ class Model_bd {
 
     // Méthodes pour gérer les critiques
     public function addCritique($note_r, $commentaire, $id_res, $id_u, $note_p = null, $note_s = null) {
-        $query = "INSERT INTO CRITIQUE (note_r, commentaire, id_res, id_u, note_p, note_s) 
+        $query = "INSERT INTO CRITIQUE (note_r, commentaire, id_res, id_u, note_p, note_s)
                   VALUES (:note_r, :commentaire, :id_res, :id_u, :note_p, :note_s)";
         
         try {
@@ -528,9 +528,11 @@ class Model_bd {
             $this->db->beginTransaction();
             
             // Suppression des likes associés à cette critique
-            $this->db->exec("DELETE FROM AIMER WHERE id_c = $id_c");
+            $stmt = $this->db->prepare("DELETE FROM AIMER WHERE id_c = :id_c");
+            $stmt->bindParam(':id_c', $id_c, PDO::PARAM_INT);
+            $stmt->execute();
             
-            // Suppression da critique
+            // Suppression de la critique
             $stmt = $this->db->prepare("DELETE FROM CRITIQUE WHERE id_c = :id_c");
             $stmt->bindParam(':id_c', $id_c, PDO::PARAM_INT);
             $result = $stmt->execute();
@@ -542,6 +544,7 @@ class Model_bd {
             return false;
         }
     }
+    
 
     public function deleteTypeCuisine($id_type) {
         try {
@@ -732,5 +735,13 @@ class Model_bd {
             return false;
         }
     }
+    public function getUserById($userId) {
+        $query = "SELECT * FROM UTILISATEUR WHERE id_u = :id";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':id', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    
 }
 ?>

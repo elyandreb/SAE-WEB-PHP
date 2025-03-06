@@ -5,19 +5,20 @@
     <title>Les restaurants</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="../static/css/restaurant.css">
 </head>
 <body>
 
     <?php
-    $restaurants = $_SESSION['restaurants'];
+        session_start();
+        $restaurants = $_SESSION['restaurants'];
         $index = 0;
         
         echo '<div class="restaurants">';
         foreach ($restaurants as $restaurant) {
         
-            // Utiliser osm_id comme identifiant unique
-            $idRestaurant = $restaurant['siret'];
+        
+            $idRestaurant = $restaurant['id_res'];
             $isFavorite = isset($_SESSION['favoris']) && in_array($idRestaurant, $_SESSION['favoris']);
             $heartIcon = $isFavorite ? '../static/img/coeur.svg' : '../static/img/coeur_vide.svg';
 
@@ -29,8 +30,8 @@
             echo '</button>';
 
 
-            echo '<button class="btn" onclick="location.href=\'index.php?action=add_avis&siret=' . urlencode($idRestaurant) . '\'">Ajouter un avis</button>';
-            echo '<button class="btn" onclick="location.href=\'/index.php?action=les_avis\'">Les avis</button>';
+            echo '<button class="btn" onclick="location.href=\'index.php?action=add_avis&id_res=' . urlencode($idRestaurant) .'&nomRes=' . urlencode($restaurant['nom_res']) . '\'">Ajouter un avis</button>';
+            echo '<button class="btn" onclick="location.href=\'/index.php?action=les_avis&id_res=' . urlencode($idRestaurant) . '\'">Les avis</button>';
         echo '</div>';
         
     }
