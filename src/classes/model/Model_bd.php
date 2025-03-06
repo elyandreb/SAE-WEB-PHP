@@ -1,14 +1,13 @@
 <?php
-
-namespace bd;
+namespace classes\model;
 
 use \PDO;
 use \PDOException;
 
-class model_bd {
+class Model_bd {
     private $db;
 
-    public function __construct($dbPath = 'restaurant.db') {
+    public function __construct($dbPath = '../restaurant.db') {
         try {
             $this->db = new PDO('sqlite:' . $dbPath);
             $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -135,6 +134,25 @@ class model_bd {
             $stmt = $this->db->query($query);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
+            return [];
+        }
+    }
+
+    public function getCritiquesByUser($id_u) {
+        $query = "SELECT CRITIQUE.*, RESTAURANT.nom_res 
+                  FROM CRITIQUE 
+                  JOIN RESTAURANT ON CRITIQUE.siret = RESTAURANT.siret 
+                  WHERE CRITIQUE.id_u = :id_u 
+                  ORDER BY CRITIQUE.date_creation DESC";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération des critiques : " . $e->getMessage());
             return [];
         }
     }
@@ -539,29 +557,85 @@ class model_bd {
                 : null;
             
             // Ajouter le restaurant
-                $this->addRestaurant(
-                    $siret = $item['siret'],
-                    $item['name'],
-                    $item['com_nom'],
-                    $item['departement'],
-                    $item['region'],
-                    $coords,
-                    $item['website'] ?? null,
-                    $item['opening_hours'] ?? null,
-                    $item['phone'] ?? null,
-                );
-    
-                // Gérer les types de cuisine
-                if (!empty($item['cuisine'])) {
-                    $cuisines = is_array($item['cuisine']) ? $item['cuisine'] : [$item['cuisine']];
-                    foreach ($cuisines as $cuisine) {
-                        if ($cuisine) {
-                            $id_type = $this->getOrCreateTypeCuisine($cuisine);
-                            $this->addRestaurantTypeCuisine($siret, $id_type);
-                        }
+            $this->addRestaurant(
+                $siret = $item['siret'],
+                $item['name'],
+                $item['com_nom'],
+                $item['departement'],
+                $item['region'],
+                $coords,
+                $item['website'] ?? null,
+                $item['opening_hours'] ?? null,
+                $item['phone'] ?? null,
+            );
+
+            // Gérer les types de cuisine
+            if (!empty($item['cuisine'])) {
+                $cuisines = is_array($item['cuisine']) ? $item['cuisine'] : [$item['cuisine']];
+                foreach ($cuisines as $cuisine) {
+                    if ($cuisine) {
+                        $id_type = $this->getOrCreateTypeCuisine($cuisine);
+                        $this->addRestaurantTypeCuisine($siret, $id_type);
                     }
                 }
+            }
         }
     }
+
+    public function loginUser($email, $mdp) {
+        $query = "SELECT * FROM UTILISATEUR WHERE email_u = :email";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+            $stmt->execute();
+            
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($user && password_verify($mdp, $user['mdp_u'])) {
+                return $user; // Retourne les infos de l'utilisateur si l'authentification est correcte
+            }
+            
+            return false; // Mauvais identifiants
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    public function checkEmailExists($email) {
+        $query = "SELECT COUNT(*) FROM UTILISATEUR WHERE email_u = :email";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetchColumn() > 0;
+    }
+    
+    public function registerUser($nom, $prenom, $email, $mdp, $role) {
+        $query = "INSERT INTO UTILISATEUR (nom_u, prenom_u, email_u, mdp_u, le_role) 
+                  VALUES (:nom, :prenom, :email, :mdp, :role)";
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':nom', $nom, PDO::PARAM_STR);
+            $stmt->bindParam(':prenom', $prenom, PDO::PARAM_STR);
+            $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+            $stmt->bindParam(':mdp', password_hash($mdp, PASSWORD_DEFAULT), PDO::PARAM_STR);
+            $stmt->bindParam(':role', $role, PDO::PARAM_STR);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Erreur lors de l'inscription: " . $e->getMessage());
+            return false;
+        }
+    }
+    
+    
+    public function getUserIdByEmail($email) {
+        $query = "SELECT id_u FROM UTILISATEUR WHERE email_u = :email";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
+    
+    
 }
 ?>

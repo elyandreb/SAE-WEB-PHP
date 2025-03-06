@@ -1,10 +1,11 @@
+<?php include 'header.php'; ?>
 <!doctype html>
 <html>
 <head>
     <title>IU </title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="../static/css/avis.css">
     <script src="../static/js/avis.js" defer></script>
 </head>
 <body>
@@ -17,9 +18,7 @@
     </div>
     <body>
     <form id="avisForm" style="width: 50%; margin: auto;">
-        <label>Nom :</label>
-        <input type="text" id="nom" required style="width: 100%;"><br><br>
-
+        
         <label>Réception :</label>
         <input type="number" id="note_reception" min="1" max="5" required style="width: 100%;"><br>
 
@@ -34,35 +33,13 @@
 
         <button type="submit" class="button-red" style="width: 100%; ">Envoyer</button>
     </form>
-
+    
     <h2>Avis des clients :</h2>
     <div id="listeAvis"></div>
 
+
+    
 </body>
 
    
 </div>
-
-<?php
-session_start();
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $nom = $_POST["nom"];
-    $note_reception = $_POST["note_reception"];
-    $note_plats = $_POST["note_plats"];
-    $note_service = $_POST["note_service"];
-    $commentaire = $_POST["commentaire"];
-    $date_publication = date("Y-m-d H:i:s");
-
-    $_SESSION['avis'][] = [
-        'nom' => $nom,
-        'note_reception' => $note_reception,
-        'note_plats' => $note_plats,
-        'note_service' => $note_service,
-        'commentaire' => $commentaire,
-        'date_publication' => $date_publication
-    ];
-
-    //!! Ajouter le code pour ajouter l'avis dans la base de données
-    echo "Avis ajouté avec succès !";
-}
