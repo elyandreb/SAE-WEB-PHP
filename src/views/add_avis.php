@@ -19,9 +19,9 @@
 
     <form action="index.php?action=add_avis" method="POST" id="avisForm" style="width: 50%; margin: auto;">
 
-        <input type="hidden" name="siret" id="siret" value="<?= htmlspecialchars($_GET['siret'] ?? '') ?>">
+        <input type="hidden" name="id_res" id="id_res" value="<?= htmlspecialchars($_GET['id_res'] ?? '') ?>">
 
-        <input type="hidden" name="siret" id="siret" value="<?= htmlspecialchars($_GET['nom'] ?? '') ?>">
+        <input type="hidden" name="id_res" id="id_res" value="<?= htmlspecialchars($_GET['nom'] ?? '') ?>">
 
 
         <input type="hidden" name="id_u" id="id_u" value="1">

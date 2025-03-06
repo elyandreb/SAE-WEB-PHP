@@ -82,7 +82,7 @@ try {
     }
     elseif ($action === 'add_avis') {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $controller_avis = new ControllerAvis(model_bd: $db);
+            $controller_avis = new ControllerAvis();
             $controller_avis->add_avis();
             header('Location: index.php?action=home');
             exit;
@@ -94,7 +94,7 @@ try {
     
     
     elseif ($action === 'get_avis') {
-        $controller_avis = new ControllerAvis(model_bd: $db);
+        $controller_avis = new ControllerAvis();
         $controller_avis->get_avis();
         exit;
     }
@@ -119,7 +119,7 @@ try {
     
     
     elseif ($action === 'remove_avis') {
-        $controller_avis = new ControllerAvis(model_bd: $db);
+        $controller_avis = new ControllerAvis();
         $controller_avis->remove_avis();
         header('Location: views/les_avis.php');
         exit;

@@ -17,7 +17,7 @@
         foreach ($restaurants as $restaurant) {
         
             // Utiliser osm_id comme identifiant unique
-            $idRestaurant = $restaurant['siret'];
+            $idRestaurant = $restaurant['id_res'];
             $isFavorite = isset($_SESSION['favoris']) && in_array($idRestaurant, $_SESSION['favoris']);
             $heartIcon = $isFavorite ? '../static/img/coeur.svg' : '../static/img/coeur_vide.svg';
 
@@ -29,7 +29,7 @@
             echo '</button>';
 
 
-            echo '<button class="btn" onclick="location.href=\'index.php?action=add_avis&siret=' . urlencode($idRestaurant) . '\'">Ajouter un avis</button>';
+            echo '<button class="btn" onclick="location.href=\'index.php?action=add_avis&id_res=' . urlencode($idRestaurant) . '\'">Ajouter un avis</button>';
             echo '<button class="btn" onclick="location.href=\'/index.php?action=les_avis\'">Les avis</button>';
         echo '</div>';
         

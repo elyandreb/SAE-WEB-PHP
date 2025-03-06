@@ -1,12 +1,15 @@
 <?php
 namespace classes\controller;
 use classes\model\Model_bd;
+use classes\model\TypeCuisineModel;
+use classes\model\UserModel;
 
 class ControllerPreferences {
-    private Model_bd $model_bd;
+    private UserModel $userModel;
+    private TypeCuisineModel $typeCuisineModel;
 
-    public function __construct(Model_bd $model_bd) {
-        $this->model_bd = $model_bd;
+    public function __construct() {
+        $this->userModel = new UserModel();
     }
 
     public function preferences(): void {
@@ -24,7 +27,7 @@ class ControllerPreferences {
 
             if (!empty($preferences)) {
                 // Enregistrer les préférences de l'utilisateur
-                if ($this->model_bd->saveUserPreferences($user_id, $preferences)) {
+                if ($this->userModel->saveUserPreferences($user_id, $preferences)) {
                     // Rediriger vers la page d'accueil après l'enregistrement des préférences
                     header('Location: /index.php?action=home');
                     exit();
@@ -35,7 +38,7 @@ class ControllerPreferences {
         }
     
         // Récupérer les types de restaurants disponibles
-        $restaurantTypes = $this->model_bd->getRestaurantTypes();
+        $restaurantTypes = $this->typeCuisineModel->getAllTypesCuisine();
 
         include_once ROOT_PATH . '/views/preferences_form.php';
     }

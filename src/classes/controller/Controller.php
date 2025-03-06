@@ -2,17 +2,17 @@
 
 namespace classes\controller;
 
-use classes\model\Model_bd;
+use classes\model\RestaurantModel;
 
 class Controller{
-    private  Model_bd $model_bd;
+    private  RestaurantModel $restaurantModel;
     
-    public function __construct($model_bd)
+    public function __construct()
     {
-        $this->model_bd = $model_bd;
+        $this->restaurantModel = new RestaurantModel();
     }
     public function getRestaurants(){
-        return $this->model_bd->getRestaurants();
+        return $this->restaurantModel->getRestaurants();
     }
 
     public function toggleFavorite(string $idRestaurant): void {

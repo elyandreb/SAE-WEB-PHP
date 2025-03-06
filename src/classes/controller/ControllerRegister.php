@@ -1,13 +1,13 @@
 <?php
 namespace classes\controller;
 use classes\model\Model_bd;
-
+use classes\model\UserModel;
 
 class ControllerRegister {
-    private Model_bd $model_bd;
+    private UserModel $userModel;
 
-    public function __construct(Model_bd $model_bd) {
-        $this->model_bd = $model_bd;
+    public function __construct() {
+        $this->userModel = new UserModel();
     }
 
     public function register(): void {
@@ -33,15 +33,15 @@ class ControllerRegister {
                 $errorMessage = "L'email n'est pas valide.";
             } else {
                 // Vérifier si l'email existe déjà
-                if ($this->model_bd->checkEmailExists($email)) {
+                if ($this->userModel->checkEmailExists($email)) {
                     $errorMessage = "Cet email est déjà utilisé.";
                 } else {
                     // Ajout du débogage pour vérifier si la méthode est bien appelée
                     error_log("Les données sont validées, inscription de l'utilisateur...");
                     
                     // Si tout est validé, enregistrer l'utilisateur
-                    if ($this->model_bd->registerUser($nom, $prenom, $email, $mdp, $role)) {
-                        $_SESSION['user_id'] = $this->model_bd->getUserIdByEmail($email);
+                    if ($this->userModel->registerUser($nom, $prenom, $email, $mdp, $role)) {
+                        $_SESSION['user_id'] = $this->userModel->getUserIdByEmail($email);
                         $_SESSION['user_role'] = $role;
                         $_SESSION['user_name'] = $nom;
                         header('Location: /index.php?action=preferences');                        

@@ -2,13 +2,13 @@
 
 namespace classes\controller;
 
-use classes\model\Model_bd;
+use classes\model\UserModel;
 
 class ControllerLogin {
-    private Model_bd $model_bd;
+    private UserModel $userModel;
 
-    public function __construct(Model_bd $model_bd) {
-        $this->model_bd = $model_bd;
+    public function __construct() {
+        $this->userModel = new UserModel();
     }
 
     public function login(): void {
@@ -19,7 +19,7 @@ class ControllerLogin {
             $mdp = $_POST['mdp'] ?? '';
 
             if (!empty($email) && !empty($mdp)) {
-                $user = $this->model_bd->loginUser($email, $mdp);
+                $user = $this->userModel->loginUser($email, $mdp);
                 
                 if ($user) {
                     $_SESSION['user_id'] = $user['id_u'];
