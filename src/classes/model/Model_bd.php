@@ -30,7 +30,6 @@ class Model_bd {
             // Table RESTAURANT
             "CREATE TABLE IF NOT EXISTS RESTAURANT (
                 id_res INTEGER PRIMARY KEY AUTOINCREMENT,
-                siret VARCHAR NOT NULL,
                 nom_res VARCHAR NOT NULL,
                 commune VARCHAR NOT NULL,
                 departement VARCHAR NOT NULL,
@@ -116,13 +115,12 @@ class Model_bd {
         }
     }
 
-    public function addRestaurant($siret, $nom, $commune, $departement, $region, $coordonnees, $lien_site, $horaires, $telephone = null) {
-        $query = "INSERT INTO RESTAURANT (siret, nom_res, commune, departement, region, coordonnees, lien_site, horaires_ouvert, telephone) 
-                  VALUES (:siret, :nom, :commune, :departement, :region, :coordonnees, :lien_site, :horaires, :telephone)";
+    public function addRestaurant($nom, $commune, $departement, $region, $coordonnees, $lien_site, $horaires, $telephone = null) {
+        $query = "INSERT INTO RESTAURANT (nom_res, commune, departement, region, coordonnees, lien_site, horaires_ouvert, telephone) 
+                  VALUES (:nom, :commune, :departement, :region, :coordonnees, :lien_site, :horaires, :telephone)";
         
         try {
             $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':siret', $siret, PDO::PARAM_STR);
             $stmt->bindParam(':nom', $nom, PDO::PARAM_STR);
             $stmt->bindParam(':commune', $commune, PDO::PARAM_STR);
             $stmt->bindParam(':departement', $departement, PDO::PARAM_STR);
@@ -162,18 +160,6 @@ class Model_bd {
         }
     }
 
-    public function getRestaurantBySiret($siret) {
-        $query = "SELECT * FROM RESTAURANT WHERE siret = :siret";
-        
-        try {
-            $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':siret', $siret, PDO::PARAM_STR);
-            $stmt->execute();
-            return $stmt->fetch(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            return false;
-        }
-    }
     public function getAvis(){
         $query = "SELECT * FROM CRITIQUE";
         try {
@@ -341,9 +327,8 @@ class Model_bd {
     }
 
     // Méthodes UPDATE
-    public function updateRestaurant($id_res, $siret, $nom, $commune, $departement, $region, $coordonnees, $lien_site, $horaires, $telephone = null) {
-        $query = "UPDATE RESTAURANT SET 
-                siret = :siret,
+    public function updateRestaurant($id_res, $nom, $commune, $departement, $region, $coordonnees, $lien_site, $horaires, $telephone = null) {
+        $query = "UPDATE RESTAURANT SET
                 nom_res = :nom, 
                 commune = :commune, 
                 departement = :departement, 
@@ -357,7 +342,6 @@ class Model_bd {
         try {
             $stmt = $this->db->prepare($query);
             $stmt->bindParam(':id_res', $id_res, PDO::PARAM_INT);
-            $stmt->bindParam(':siret', $siret, PDO::PARAM_STR);
             $stmt->bindParam(':nom', $nom, PDO::PARAM_STR);
             $stmt->bindParam(':commune', $commune, PDO::PARAM_STR);
             $stmt->bindParam(':departement', $departement, PDO::PARAM_STR);
@@ -627,7 +611,6 @@ class Model_bd {
             
             // Ajouter le restaurant
             $id_res = $this->addRestaurant(
-                $item['siret'],
                 $item['name'],
                 $item['com_nom'],
                 $item['departement'],
