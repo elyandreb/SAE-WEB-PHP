@@ -37,7 +37,7 @@ class ControllerAvis {
 
     public function get_avis(): void {
         $avis = $this->model_bd->getAvis();
-        echo json_encode($avis);
+        
     }
     
     
