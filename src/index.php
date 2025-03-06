@@ -11,14 +11,17 @@ use classes\controller\ControllerRegister;
 use classes\controller\ControllerPreferences;
 use classes\controller\ControllerFavoris;
 use classes\model\Model_bd;
+use classes\model\RestaurantModel;
+use classes\model\CritiqueModel;
 
 // Récupérer l'action dès le début
 $action = $_GET['action'] ?? 'home';
 
 try {
-    $db = new Model_bd();
-    $restaurants = Provider::getRestaurants(fichier: 'restaurants_orleans');
-    $restaurants = $db->getRestaurants();
+    $db = Model_bd::getInstance();
+    $resto_model = new RestaurantModel();
+    $critique_model = new CritiqueModel();
+    $restaurants = $resto_model->getRestaurants();
     $_SESSION['restaurants'] = $restaurants;
     $id_u = $_SESSION['user_id'] ?? null; 
     
@@ -38,24 +41,40 @@ try {
     }
 
     if ($action === 'register') {
-        $controllerRegister = new ControllerRegister($db);
+        $controllerRegister = new ControllerRegister();
         $controllerRegister->register();
         exit;
     }
 
     if ($action === 'login') {
-        $controllerLogin = new ControllerLogin($db);
+        $controllerLogin = new ControllerLogin();
         $controllerLogin->login();
         exit;
     }
 
     if ($action === 'preferences') {
-        $controllerPreferences = new ControllerPreferences($db);
+        $controllerPreferences = new ControllerPreferences();
         $controllerPreferences->preferences();
         exit;
     }
     
- 
+    $restaurants = Provider::getRestaurants(fichier: 'restaurants_orleans');
+
+
+    // Traitement immédiat de l'action AJAX pour toggle-favoris
+    if (preg_match('#^toggle-favoris/(.+)$#', $action, $matches)) {
+     $controller = new Controller();
+     $idRestaurant = urldecode($matches[1]);
+     $controller->toggleFavorite($idRestaurant);
+     exit; // Arrêter l'exécution après l'envoi de la réponse JSON
+    }
+
+    $avis = $critique_model->getAvis();
+    $_SESSION['avis'] = $avis; // Stocker les avis dans la session
+
+    $restaurants =$resto_model->getRestaurants();
+    $_SESSION['restaurants'] = $restaurants;
+    
     if ($action === 'home') {
         $controller_favoris = new ControllerFavoris($db);
         $_SESSION['favoris'] = $controller_favoris->getFavorisByUser($id_u);
@@ -63,41 +82,43 @@ try {
         require_once __DIR__ . '/views/les_restaurants.php';
         exit;
     }
-
     elseif ($action === 'add_avis' || $action === 'les_avis' || $action === 'remove_avis') {
-        $controller_avis = new ControllerAvis(model_bd: $db);
-    
-        if ($action === 'add_avis') {
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') { 
-                $controller_avis->add_avis();
-                header('Location: index.php?action=home');
-                exit;
-            } else {
-                require_once __DIR__ . '/views/add_avis.php';
-                exit;
-            }
-        }
-        elseif ($action === 'remove_avis') {
-            if (!isset($_GET['id_c']) || !isset($_GET['id_res'])) {
-                die('Erreur : ID de la critique ou du restaurant manquant.');
-            }
-            
-            $id_c = $_GET['id_c'];
-            $controller_avis->remove_avis($id_c);
-            require_once __DIR__ . '/views/les_avis.php';
+        $controller_avis = new ControllerAvis();
+        $id_res = $_GET['id_res'];
+        $controller_avis->get_avis($id_u, $id_res);
+        exit;
+    }
+
+    if ($action === 'add_avis') {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') { 
+            $controller_avis->add_avis();
+            header('Location: index.php?action=home');
+            exit;
+        } else {
+            require_once __DIR__ . '/views/add_avis.php';
             exit;
         }
-        
-        elseif ($action === 'les_avis') {
-            if (!isset($_GET['id_res'])) {
-                die('Erreur : ID du restaurant manquant.');
-            }
-    
-            $id_res = $_GET['id_res'];
-            $_SESSION['avis'] = $controller_avis->get_avis($id_u, $id_res);
-            require_once __DIR__ . '/views/les_avis.php';
-            exit;
+    }
+    elseif ($action === 'remove_avis') {
+        if (!isset($_GET['id_c']) || !isset($_GET['id_res'])) {
+            die('Erreur : ID de la critique ou du restaurant manquant.');
         }
+        $id_c = $_GET['id_c'];
+        $controller_avis->remove_avis($id_c);
+        require_once __DIR__ . '/views/les_avis.php';
+        exit;
+    }
+    
+    elseif ($action === 'les_avis') {
+        if (!isset($_GET['id_res'])) {
+            die('Erreur : ID du restaurant manquant.');
+        }
+
+        $id_res = $_GET['id_res'];
+        $_SESSION['avis'] = $controller_avis->get_avis($id_u, $id_res);
+
+        require_once __DIR__ . '/views/les_avis.php';
+        exit;
     }
     elseif ($action==='toggle-favoris' || $action ==='les-favoris') {
         $controller_favoris = new ControllerFavoris($db);

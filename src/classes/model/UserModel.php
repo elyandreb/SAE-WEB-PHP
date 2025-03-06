@@ -1,0 +1,189 @@
+<?php
+namespace classes\model;
+
+use \PDO;
+use \PDOException;
+
+class UserModel {
+    private $db;
+
+    public function __construct() {
+        $this->db = Model_bd::getInstance()->getConnection();
+    }
+
+    public function addUser($nom, $prenom, $email, $mdp, $role) {
+        $query = "INSERT INTO UTILISATEUR (nom_u, prenom_u, email_u, mdp_u, le_role) 
+                  VALUES (:nom, :prenom, :email, :mdp, :role)";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':nom', $nom, PDO::PARAM_STR);
+            $stmt->bindParam(':prenom', $prenom, PDO::PARAM_STR);
+            $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+            $stmt->bindParam(':mdp', password_hash($mdp, PASSWORD_DEFAULT), PDO::PARAM_STR);
+            $stmt->bindParam(':role', $role, PDO::PARAM_STR);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Erreur lors de l'ajout de l'utilisateur: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function loginUser($email, $mdp) {
+        $query = "SELECT * FROM UTILISATEUR WHERE email_u = :email";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+            $stmt->execute();
+            
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($user && password_verify($mdp, $user['mdp_u'])) {
+                return $user; // Retourne les infos de l'utilisateur si l'authentification est correcte
+            }
+            
+            return false; // Mauvais identifiants
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la connexion: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function checkEmailExists($email) {
+        $query = "SELECT COUNT(*) FROM UTILISATEUR WHERE email_u = :email";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetchColumn() > 0;
+    }
+    
+    public function registerUser($nom, $prenom, $email, $mdp, $role) {
+        $query = "INSERT INTO UTILISATEUR (nom_u, prenom_u, email_u, mdp_u, le_role) 
+                  VALUES (:nom, :prenom, :email, :mdp, :role)";
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':nom', $nom, PDO::PARAM_STR);
+            $stmt->bindParam(':prenom', $prenom, PDO::PARAM_STR);
+            $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+            $stmt->bindParam(':mdp', password_hash($mdp, PASSWORD_DEFAULT), PDO::PARAM_STR);
+            $stmt->bindParam(':role', $role, PDO::PARAM_STR);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Erreur lors de l'inscription: " . $e->getMessage());
+            return false;
+        }
+    }
+    
+    public function getUserIdByEmail($email) {
+        $query = "SELECT id_u FROM UTILISATEUR WHERE email_u = :email";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
+
+    public function updateUser($id_u, $nom, $prenom, $email, $role) {
+        $query = "UPDATE UTILISATEUR SET 
+                nom_u = :nom, 
+                prenom_u = :prenom, 
+                email_u = :email, 
+                le_role = :role 
+                WHERE id_u = :id_u";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
+            $stmt->bindParam(':nom', $nom, PDO::PARAM_STR);
+            $stmt->bindParam(':prenom', $prenom, PDO::PARAM_STR);
+            $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+            $stmt->bindParam(':role', $role, PDO::PARAM_STR);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la mise à jour de l'utilisateur: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function updateUserPassword($id_u, $mdp) {
+        $query = "UPDATE UTILISATEUR SET mdp_u = :mdp WHERE id_u = :id_u";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
+            $stmt->bindParam(':mdp', password_hash($mdp, PASSWORD_DEFAULT), PDO::PARAM_STR);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la mise à jour du mot de passe: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function deleteUser($id_u) {
+        try {
+            $this->db->beginTransaction();
+            
+            // Suppression des enregistrements associés dans d'autres tables
+            $this->db->exec("DELETE FROM FAVORIS WHERE id_u = $id_u");
+            $this->db->exec("DELETE FROM UTILISATEUR_PREFERENCES WHERE id_u = $id_u");
+            
+            // Récupération des ID des critiques liées à l'utilisateur
+            $stmt = $this->db->prepare("SELECT id_c FROM CRITIQUE WHERE id_u = :id_u");
+            $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
+            $stmt->execute();
+            $critiques = $stmt->fetchAll(PDO::FETCH_COLUMN);
+            
+            // Suppression des likes associés aux critiques
+            foreach ($critiques as $id_c) {
+                $this->db->exec("DELETE FROM AIMER WHERE id_c = $id_c");
+            }
+            
+            // Suppression des critiques de l'utilisateur
+            $this->db->exec("DELETE FROM CRITIQUE WHERE id_u = $id_u");
+            
+            // Suppression des likes faits par l'utilisateur
+            $this->db->exec("DELETE FROM AIMER WHERE id_u = $id_u");
+            
+            // Suppression de l'utilisateur
+            $stmt = $this->db->prepare("DELETE FROM UTILISATEUR WHERE id_u = :id_u");
+            $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
+            $result = $stmt->execute();
+            
+            $this->db->commit();
+            return $result;
+        } catch (PDOException $e) {
+            $this->db->rollBack();
+            error_log("Erreur lors de la suppression de l'utilisateur: " . $e->getMessage());
+            return false;
+        }
+    }
+    
+    public function saveUserPreferences($userId, $preferences) {
+        $query = "INSERT INTO UTILISATEUR_PREFERENCES (id_u, id_type) VALUES (:id_u, :id_type)";
+        $stmt = $this->db->prepare($query);
+    
+        try {
+            $this->db->beginTransaction();
+            
+            // Supprimer les préférences existantes
+            $deleteQuery = "DELETE FROM UTILISATEUR_PREFERENCES WHERE id_u = :id_u";
+            $deleteStmt = $this->db->prepare($deleteQuery);
+            $deleteStmt->bindParam(':id_u', $userId, PDO::PARAM_INT);
+            $deleteStmt->execute();
+            
+            // Ajouter les nouvelles préférences
+            foreach ($preferences as $type) {
+                $stmt->bindParam(':id_u', $userId, PDO::PARAM_INT);
+                $stmt->bindParam(':id_type', $type, PDO::PARAM_INT);
+                $stmt->execute();
+            }
+            
+            $this->db->commit();
+            return true;
+        } catch (PDOException $e) {
+            $this->db->rollBack();
+            error_log("Erreur lors de l'enregistrement des préférences: " . $e->getMessage());
+            return false;
+        }
+    }
+}

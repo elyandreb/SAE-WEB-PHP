@@ -1,19 +1,20 @@
 <?php
 namespace classes\controller;
-use classes\model\Model_bd;
+
+use classes\model\CritiqueModel;
 
 class ControllerAvis {
-    private Model_bd $model_bd;
+    private CritiqueModel $critiqueModel;
 
-    public function __construct(Model_bd $model_bd) {
-        $this->model_bd = $model_bd;
+    public function __construct() {
+        $this->critiqueModel = new CritiqueModel();
     }
 
     public function add_avis() {
         if (!isset($_POST['id_res'], $_POST['id_u'], $_POST['note_reception'], $_POST['note_plats'], $_POST['note_service'], $_POST['commentaire'])) {
             die('Erreur : Données manquantes.');
         }
-
+    
         $id_res = htmlspecialchars($_POST['id_res']);
         $id_u = htmlspecialchars($_POST['id_u']);
         $note_reception = (int) $_POST['note_reception'];
@@ -28,13 +29,15 @@ class ControllerAvis {
         }
     
         // Ajout dans la base de données
-        $this->model_bd->addCritique($note_reception, $commentaire, $id_res, $id_u, $note_plats, $note_service);
+        $this->critiqueModel->addCritique($note_reception, $commentaire, $id_res, $id_u, $note_plats, $note_service);
+    
+        // Redirection correcte après l'ajout
         header('Location: index.php?action=les_avis&id_res=' . urlencode(string: $id_res));
         exit;
     }
 
     public function get_avis($id_u, $id_res): array {
-        return $this->model_bd->getCritiquesByUserResto($id_u, $id_res);
+        return $this->critiqueModel->getCritiquesByUserResto($id_u, $id_res);
 
     }
     
@@ -48,7 +51,7 @@ class ControllerAvis {
                 return;
             }
     
-            $success = $this->model_bd->deleteCritique($id_c);
+            $success = $this->critiqueModel->deleteCritique($id_c);
            
             if ($success) {
                 header("Location: index.php?action=les_avis&id_res=" . urlencode($_GET['id_res']));

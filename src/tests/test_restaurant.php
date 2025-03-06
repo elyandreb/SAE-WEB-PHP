@@ -10,7 +10,7 @@ class Test_Restaurant extends TestCase
     public function testGetters(): void
     {
         $restaurant = new Restaurant(
-            siret: 123456789,
+            id_res: 123456789,
             nom_res: "Le Gourmet",
             coordonnees: "48.8566, 2.3522",
             adresse: "123 Rue de Paris",
@@ -31,7 +31,7 @@ class Test_Restaurant extends TestCase
     public function testSetters(): void
     {
         $restaurant = new Restaurant(
-            siret: 123456789,
+            id_res: 123456789,
             nom_res: "Le Gourmet",
             coordonnees: "48.8566, 2.3522",
             adresse: "123 Rue de Paris",

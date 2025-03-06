@@ -12,8 +12,6 @@
 
    
     <?php
-    
-    
     // Récupérer les restaurants et les favoris
     $restaurants = $_SESSION['restaurants'] ?? [];
     $favoris = $_SESSION['favoris'] ?? [];
