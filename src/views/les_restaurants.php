@@ -28,7 +28,6 @@
         echo '<div class="restaurant" data-id="' . $idRestaurant . '">';
         echo '<span>' . (isset($restaurant['nom_res']) ? $restaurant['nom_res'] : 'Nom inconnu') . '</span>';
         echo '<p>' . (isset($restaurant['horaires_ouvert']) ? $restaurant['horaires_ouvert'] : 'Horaires inconnus') . '</p>';
-    
         echo '<button onclick="toggleFavoris(event, this, \'' . $idRestaurant . '\')">';
         echo '<img class="coeur" src="' . $heartIcon . '" alt="Favori">';
         echo '</button>';
