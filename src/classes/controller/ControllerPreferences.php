@@ -23,15 +23,15 @@ class ControllerPreferences {
             error_log("Préférences de l'utilisateur : " . print_r($preferences, true));
 
             if (!empty($preferences)) {
-                // Enregistrer les préférences de l'utilisateur
-                if ($this->model_bd->saveUserPreferences($user_id, $preferences)) {
-                    // Rediriger vers la page d'accueil après l'enregistrement des préférences
-                    header('Location: /index.php?action=home');
-                    exit();
-                } else {
-                    $errorMessage = "Veuillez sélectionner au moins un type de restaurant.";
-                } 
+                $this->model_bd->saveUserPreferences($user_id, $preferences);
+                header('Location: /index.php?action=home');
+                exit();
+                
+                
             }
+            else {
+                $errorMessage = "Veuillez sélectionner au moins un type de restaurant.";
+            } 
         }
     
         // Récupérer les types de restaurants disponibles
