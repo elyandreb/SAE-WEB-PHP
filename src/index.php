@@ -78,6 +78,7 @@ try {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $controller_avis = new ControllerAvis(model_bd: $db);
             $controller_avis->add_avis();
+            
             header('Location: index.php?action=home');
             exit;
         } else {
@@ -89,21 +90,21 @@ try {
     
     elseif ($action === 'get_avis') {
         $controller_avis = new ControllerAvis(model_bd: $db);
-        $controller_avis->get_avis();
+        
+        //!!!! 
         exit;
     }
 
     //!! Pour les avis
     elseif ($action === 'les_avis') {
-        if (!isset($_GET['siret'])) {
+        if (!isset($_GET['id_res'])) {
             die('Erreur : SIRET manquant.');
         }
-    
-        $siret = $_GET['siret'];
+        $id_res = $_GET['id_res'];
     
         // Récupérer les avis depuis le modèle
         $controller_avis = new ControllerAvis($db);
-        $controller_avis->get_avis();
+        
     
         // Afficher la page correspondante
         require_once __DIR__ . '/views/les_avis.php';

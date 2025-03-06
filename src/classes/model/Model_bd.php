@@ -270,7 +270,7 @@ class Model_bd {
 
     // Méthodes pour gérer les critiques
     public function addCritique($note_r, $commentaire, $id_res, $id_u, $note_p = null, $note_s = null) {
-        $query = "INSERT INTO CRITIQUE (note_r, commentaire, id_res, id_u, note_p, note_s) 
+        $query = "INSERT INTO CRITIQUE (note_r, commentaire, id_res, id_u, note_p, note_s)
                   VALUES (:note_r, :commentaire, :id_res, :id_u, :note_p, :note_s)";
         
         try {
