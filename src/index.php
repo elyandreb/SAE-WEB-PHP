@@ -17,6 +17,7 @@ $action = $_GET['action'] ?? 'home';
 
 try {
     $db = new Model_bd();
+    $db-> init_resto_json();
 
 
     // Gérer le logout en premier
@@ -48,43 +49,7 @@ try {
     
     $restaurants = Provider::getRestaurants(fichier: 'restaurants_orleans');
 
-    //Renvoie à la page d'accueil avec l'affichage des restaurants
-    if ($action === 'home') {
-        require_once __DIR__ . '/views/header.php';
-       
-        $controller = new Controller(restaurants: $restaurants);
-        $controller->showRestaurants();
 
-    } 
-    //!!Gestion du bouton des favoris !!!A débugger
-    elseif (preg_match('#toggle-favoris/(.+)#', $action, $matches)) {
-        $idRestaurant = urldecode($matches[1]);
-        $controller->toggleFavorite($idRestaurant);
-        exit;
-    }
-
-    $avis = $db->getCritiquesByUser($_SESSION['user_id']);
-    $_SESSION['avis'] = $avis; // Stocker les avis dans la session
-
-    //Pour ajouter un avis
-    if ($action === 'add_avis') {
-        $controller_avis = new ControllerAvis(model_bd: $db);
-        $controller_avis-> add_avis();
-
-        header('Location: views/add_avis.php');
-        exit;
-    }
-
-    //!! Pour les avis
-    elseif ($action === 'les_avis') {
-        $avis = $db->getCritiquesByUser($_SESSION['user_id']);
-        $_SESSION['avis'] = $avis; // Stocker les avis dans la session
-        
-        header('Location: views/les_avis.php');
-        exit;
-    }
-
-    //!!Pour les favoris
     // Traitement immédiat de l'action AJAX pour toggle-favoris
     if (preg_match('#^toggle-favoris/(.+)$#', $action, $matches)) {
      $controller = new Controller($restaurants);
@@ -93,9 +58,68 @@ try {
      exit; // Arrêter l'exécution après l'envoi de la réponse JSON
     }
 
-    
-   
+    $avis = $db->getAvis();
+    $_SESSION['avis'] = $avis; // Stocker les avis dans la session
 
+    $restaurants =$db->getRestaurants();
+    $_SESSION['restaurants'] = $restaurants;
+    
+    if ($action === 'home') {
+        require_once __DIR__ . '/views/header.php';
+        require_once __DIR__ . '/views/les_restaurants.php';
+        exit ;
+    }
+    elseif ($action === 'add_avis') {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $controller_avis = new ControllerAvis(model_bd: $db);
+            $controller_avis->add_avis();
+            header('Location: index.php?action=home');
+            exit;
+        } else {
+            require_once __DIR__ . '/views/add_avis.php';
+            exit;
+        }
+    }
+    
+    
+    elseif ($action === 'get_avis') {
+        $controller_avis = new ControllerAvis(model_bd: $db);
+        $controller_avis->get_avis();
+        exit;
+    }
+
+    //!! Pour les avis
+    elseif ($action === 'les_avis') {
+        if (!isset($_GET['siret'])) {
+            die('Erreur : SIRET manquant.');
+        }
+    
+        $siret = $_GET['siret'];
+    
+        // Récupérer les avis depuis le modèle
+        $controller_avis = new ControllerAvis($db);
+        $controller_avis->get_avis();
+    
+        // Afficher la page correspondante
+        require_once __DIR__ . '/views/les_avis.php';
+        exit;
+    }
+    
+    
+    
+    elseif ($action === 'remove_avis') {
+        $controller_avis = new ControllerAvis(model_bd: $db);
+        $controller_avis->remove_avis();
+        header('Location: views/les_avis.php');
+        exit;
+    }
+
+    elseif (preg_match('#toggle-favoris/(.+)#', $action, $matches)) {
+        $idRestaurant = urldecode($matches[1]);
+        $controller->toggleFavorite($idRestaurant);
+        exit;
+    }
+    
 } catch (Exception $e) {
     echo ''. $e->getMessage();
 }

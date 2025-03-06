@@ -1,33 +1,19 @@
 <?php
 
 namespace classes\controller;
+
+use classes\model\Model_bd;
+
 class Controller{
-    private $restaurants;
-
-    public function __construct($restaurants)
-    {
-        $this->restaurants = $restaurants;
-    }
-
-    public function showRestaurants(): void {
-        echo '<div class="restaurants">';
-        foreach ($this->restaurants as $restaurant) {
-            // Utiliser osm_id comme identifiant unique
-            $idRestaurant = $restaurant['siret'];
-            $isFavorite = isset($_SESSION['favoris']) && in_array($idRestaurant, $_SESSION['favoris']);
-            $heartIcon = $isFavorite ? '../static/img/coeur.svg' : '../static/img/coeur_vide.svg';
-            
-            echo '<div class="restaurant" data-id="' . $idRestaurant . '">';
-            echo '<span>' . $restaurant['name'] . '</span>';
-            echo '<p> '.$restaurant['opening_hours'].'</p>';
-            echo '<button onclick="toggleFavoris(event, this, \'' . $idRestaurant . '\')">';
-            echo '<img src="' . $heartIcon . '" alt="Favori">';
-            echo '</button>';
-            echo '</div>';
-        }
-        echo '</div>';
-    }
+    private  Model_bd $model_bd;
     
+    public function __construct($model_bd)
+    {
+        $this->model_bd = $model_bd;
+    }
+    public function getRestaurants(){
+        return $this->model_bd->getRestaurants();
+    }
 
     public function toggleFavorite(string $idRestaurant): void {
         if (!isset($_SESSION['favoris'])) {

@@ -137,6 +137,15 @@ class Model_bd {
             return [];
         }
     }
+    public function getAvis(){
+        $query = "SELECT * FROM CRITIQUE";
+        try {
+            $stmt = $this->db->query($query);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
 
     public function getCritiquesByUser($id_u) {
         $query = "SELECT CRITIQUE.*, RESTAURANT.nom_res 

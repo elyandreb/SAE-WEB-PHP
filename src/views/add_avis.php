@@ -6,8 +6,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../static/css/avis.css">
-    <script src="../static/js/avis.js" defer></script>
 </head>
+
 <body>
 <div class="flex">
     <div>
@@ -16,28 +16,30 @@
     <div >
         <h2 class ="subtitle"> Nom du restaurant </h2>
     </div>
-    <body>
-    <form id="avisForm" style="width: 50%; margin: auto;">
-        
+
+    <form action="index.php?action=add_avis" method="POST" id="avisForm" style="width: 50%; margin: auto;">
+
+        <input type="hidden" name="siret" id="siret" value="<?= htmlspecialchars($_GET['siret'] ?? '') ?>">
+
+        <input type="hidden" name="siret" id="siret" value="<?= htmlspecialchars($_GET['nom'] ?? '') ?>">
+
+
+        <input type="hidden" name="id_u" id="id_u" value="1">
+
         <label>Réception :</label>
-        <input type="number" id="note_reception" min="1" max="5" required style="width: 100%;"><br>
+        <input type="number" id="note_reception" name= "note_reception" min="1" max="5" required style="width: 100%;"><br>
 
         <label>Plats :</label>
-        <input type="number" id="note_plats" min="1" max="5" required style="width: 100%;"><br>
+        <input type="number" id="note_plats"name= "note_plats" min="1" max="5" required style="width: 100%;"><br>
 
         <label>Service :</label>
-        <input type="number" id="note_service" min="1" max="5" required style="width: 100%;"><br>
+        <input type="number" id="note_service" name= "note_service" min="1" max="5" required style="width: 100%;"><br>
 
         <label>Commentaire :</label><br>
-        <textarea id="commentaire" required style="width: 100%; height:150px; resize: none;"></textarea><br>
+        <textarea id="commentaire"  name= "commentaire" required style="width: 100%; height:150px; resize: none;"></textarea><br>
 
         <button type="submit" class="button-red" style="width: 100%; ">Envoyer</button>
     </form>
-    
-    <h2>Avis des clients :</h2>
-    <div id="listeAvis"></div>
-
-
     
 </body>
 
