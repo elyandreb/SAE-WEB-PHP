@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Préférences - IUTables'O</title>
-    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 <body>
     <div class="preferences-container">
@@ -14,7 +14,7 @@
             <div class="error-message"><?php echo $errorMessage; ?></div>
         <?php endif; ?>
 
-        <form action="preferences.php" method="POST">
+        <form action="/index.php?action=preferences" method="POST">
             <div class="checkbox-group">
                 <?php foreach ($restaurantTypes as $type): ?>
                     <label>
