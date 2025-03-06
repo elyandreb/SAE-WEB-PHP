@@ -7,4 +7,5 @@
 .restaurant{
     flex-basis: 45%;
     border: thin solid black ;
+    margin-top: 10px;
 }
