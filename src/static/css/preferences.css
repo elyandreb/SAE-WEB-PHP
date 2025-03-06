@@ -23,12 +23,16 @@
 }
 
 .checkbox-group label {
-    background: #800020;
-    color: white;
+    background: #ccc;
+    color: black;
     padding: 10px;
     border-radius: 5px;
     cursor: pointer;
     font-size: 18px;
+}
+
+.checkbox-group label:hover {
+    background: #ddd;
 }
 
 .checkbox-group input {
@@ -37,6 +41,7 @@
 
 .checkbox-group input:checked + label {
     background: #66091A;
+    color: white;
 }
 
 /* Bouton de validation */
