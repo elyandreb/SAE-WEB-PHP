@@ -77,22 +77,15 @@ try {
     
     if ($action === 'home') {
         $controller_favoris = new ControllerFavoris($db);
-        if ($id_u !== null) {
-            $_SESSION['favoris'] = $controller_favoris->getFavorisByUser($id_u);
-        } else {
-            $_SESSION['favoris'] = [];
-        }
+        $_SESSION['favoris'] = $controller_favoris->getFavorisByUser($id_u);
         require_once __DIR__ . '/views/header.php';
         require_once __DIR__ . '/views/les_restaurants.php';
         exit;
     }
-    elseif ($action === 'add_avis' || $action === 'les_avis' || $action === 'remove_avis') {
-        $controller_avis = new ControllerAvis();
-        $id_res = $_GET['id_res'];
-        $controller_avis->get_avis($id_u, $id_res);
-        exit;
-        
 
+    elseif ($action === 'add_avis' || $action === 'les_avis' || $action === 'remove_avis') {
+        $controller_avis = new ControllerAvis($db);
+    
         if ($action === 'add_avis') {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') { 
                 $controller_avis->add_avis();
@@ -107,24 +100,25 @@ try {
             if (!isset($_GET['id_c']) || !isset($_GET['id_res'])) {
                 die('Erreur : ID de la critique ou du restaurant manquant.');
             }
+            
             $id_c = $_GET['id_c'];
             $controller_avis->remove_avis($id_c);
             require_once __DIR__ . '/views/les_avis.php';
             exit;
         }
-    }
+        
+        elseif ($action === 'les_avis') {
+            if (!isset($_GET['id_res'])) {
+                die('Erreur : ID du restaurant manquant.');
+            }
     
-    elseif ($action === 'les_avis') {
-        if (!isset($_GET['id_res'])) {
-            die('Erreur : ID du restaurant manquant.');
+            $id_res = $_GET['id_res'];
+            $_SESSION['avis'] = $controller_avis->get_avis($id_u, $id_res);
+            require_once __DIR__ . '/views/les_avis.php';
+            exit;
         }
-
-        $id_res = $_GET['id_res'];
-        $_SESSION['avis'] = $controller_avis->get_avis($id_u, $id_res);
-
-        require_once __DIR__ . '/views/les_avis.php';
-        exit;
     }
+
     elseif ($action==='toggle-favoris' || $action ==='les-favoris') {
         $controller_favoris = new ControllerFavoris($db);
        
