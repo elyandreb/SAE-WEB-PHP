@@ -1,6 +1,5 @@
 <?php
 namespace classes\controller;
-use classes\model\Model_bd;
 use classes\model\TypeCuisineModel;
 use classes\model\UserModel;
 
@@ -10,6 +9,7 @@ class ControllerPreferences {
 
     public function __construct() {
         $this->userModel = new UserModel();
+        $this->typeCuisineModel = new TypeCuisineModel();
     }
 
     public function preferences(): void {

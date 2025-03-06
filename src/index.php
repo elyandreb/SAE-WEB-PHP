@@ -83,6 +83,7 @@ try {
     }
     elseif ($action === 'add_avis' || $action === 'les_avis' || $action === 'remove_avis') {
         $controller_avis = new ControllerAvis();
+        $id_res = $_GET['id_res'];
         $controller_avis->get_avis($id_u, $id_res);
         exit;
     }
