@@ -27,9 +27,10 @@ class Model_bd {
                 nom_type VARCHAR NOT NULL
             )",
 
-            // Table RESTAURANT avec le champ téléphone ajouté
+            // Table RESTAURANT
             "CREATE TABLE IF NOT EXISTS RESTAURANT (
-                siret INTEGER PRIMARY KEY,
+                id_res INTEGER PRIMARY KEY AUTOINCREMENT,
+                siret VARCHAR NOT NULL,
                 nom_res VARCHAR NOT NULL,
                 commune VARCHAR NOT NULL,
                 departement VARCHAR NOT NULL,
@@ -52,19 +53,19 @@ class Model_bd {
 
             // Table FAVORIS
             "CREATE TABLE IF NOT EXISTS FAVORIS (
-                siret INTEGER NOT NULL,
+                id_res INTEGER NOT NULL,
                 id_u INTEGER NOT NULL,
-                PRIMARY KEY (siret, id_u),
-                FOREIGN KEY (siret) REFERENCES RESTAURANT(siret),
+                PRIMARY KEY (id_res, id_u),
+                FOREIGN KEY (id_res) REFERENCES RESTAURANT(id_res),
                 FOREIGN KEY (id_u) REFERENCES UTILISATEUR(id_u)
             )",
 
             // Table ETRE
             "CREATE TABLE IF NOT EXISTS ETRE (
-                siret INTEGER NOT NULL,
+                id_res INTEGER NOT NULL,
                 id_type INTEGER NOT NULL,
-                PRIMARY KEY (siret, id_type),
-                FOREIGN KEY (siret) REFERENCES RESTAURANT(siret),
+                PRIMARY KEY (id_res, id_type),
+                FOREIGN KEY (id_res) REFERENCES RESTAURANT(id_res),
                 FOREIGN KEY (id_type) REFERENCES TYPE_CUISINE(id_type)
             )",
 
@@ -83,11 +84,11 @@ class Model_bd {
                 note_r INTEGER NOT NULL,
                 commentaire VARCHAR,
                 date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                siret INTEGER NOT NULL,
+                id_res INTEGER NOT NULL,
                 id_u INTEGER NOT NULL,
                 note_p INTEGER,
                 note_s INTEGER,
-                FOREIGN KEY (siret) REFERENCES RESTAURANT(siret),
+                FOREIGN KEY (id_res) REFERENCES RESTAURANT(id_res),
                 FOREIGN KEY (id_u) REFERENCES UTILISATEUR(id_u)
             )"
         ];
@@ -112,7 +113,7 @@ class Model_bd {
         
         try {
             $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':siret', $siret, PDO::PARAM_INT);
+            $stmt->bindParam(':siret', $siret, PDO::PARAM_STR);
             $stmt->bindParam(':nom', $nom, PDO::PARAM_STR);
             $stmt->bindParam(':commune', $commune, PDO::PARAM_STR);
             $stmt->bindParam(':departement', $departement, PDO::PARAM_STR);
@@ -121,7 +122,8 @@ class Model_bd {
             $stmt->bindParam(':lien_site', $lien_site, PDO::PARAM_STR);
             $stmt->bindParam(':horaires', $horaires, PDO::PARAM_STR);
             $stmt->bindParam(':telephone', $telephone, PDO::PARAM_STR);
-            return $stmt->execute();
+            $stmt->execute();
+            return $this->db->lastInsertId();
         } catch (PDOException $e) {
             return false;
         }
@@ -138,10 +140,36 @@ class Model_bd {
         }
     }
 
+    public function getRestaurantById($id_res) {
+        $query = "SELECT * FROM RESTAURANT WHERE id_res = :id_res";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id_res', $id_res, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    public function getRestaurantBySiret($siret) {
+        $query = "SELECT * FROM RESTAURANT WHERE siret = :siret";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':siret', $siret, PDO::PARAM_STR);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
     public function getCritiquesByUser($id_u) {
         $query = "SELECT CRITIQUE.*, RESTAURANT.nom_res 
                   FROM CRITIQUE 
-                  JOIN RESTAURANT ON CRITIQUE.siret = RESTAURANT.siret 
+                  JOIN RESTAURANT ON CRITIQUE.id_res = RESTAURANT.id_res 
                   WHERE CRITIQUE.id_u = :id_u 
                   ORDER BY CRITIQUE.date_creation DESC";
         
@@ -203,15 +231,15 @@ class Model_bd {
     }
 
     // Méthodes pour gérer les critiques
-    public function addCritique($note_r, $commentaire, $siret, $id_u, $note_p = null, $note_s = null) {
-        $query = "INSERT INTO CRITIQUE (note_r, commentaire, siret, id_u, note_p, note_s) 
-                  VALUES (:note_r, :commentaire, :siret, :id_u, :note_p, :note_s)";
+    public function addCritique($note_r, $commentaire, $id_res, $id_u, $note_p = null, $note_s = null) {
+        $query = "INSERT INTO CRITIQUE (note_r, commentaire, id_res, id_u, note_p, note_s) 
+                  VALUES (:note_r, :commentaire, :id_res, :id_u, :note_p, :note_s)";
         
         try {
             $stmt = $this->db->prepare($query);
             $stmt->bindParam(':note_r', $note_r, PDO::PARAM_INT);
             $stmt->bindParam(':commentaire', $commentaire, PDO::PARAM_STR);
-            $stmt->bindParam(':siret', $siret, PDO::PARAM_INT);
+            $stmt->bindParam(':id_res', $id_res, PDO::PARAM_INT);
             $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
             $stmt->bindParam(':note_p', $note_p, PDO::PARAM_INT);
             $stmt->bindParam(':note_s', $note_s, PDO::PARAM_INT);
@@ -235,12 +263,12 @@ class Model_bd {
     }
 
     // Méthodes pour gérer les associations
-    public function addRestaurantTypeCuisine($siret, $id_type) {
-        $query = "INSERT INTO ETRE (siret, id_type) VALUES (:siret, :id_type)";
+    public function addRestaurantTypeCuisine($id_res, $id_type) {
+        $query = "INSERT INTO ETRE (id_res, id_type) VALUES (:id_res, :id_type)";
         
         try {
             $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':siret', $siret, PDO::PARAM_INT);
+            $stmt->bindParam(':id_res', $id_res, PDO::PARAM_INT);
             $stmt->bindParam(':id_type', $id_type, PDO::PARAM_INT);
             return $stmt->execute();
         } catch (PDOException $e) {
@@ -248,12 +276,12 @@ class Model_bd {
         }
     }
 
-    public function addFavoris($siret, $id_u) {
-        $query = "INSERT INTO FAVORIS (siret, id_u) VALUES (:siret, :id_u)";
+    public function addFavoris($id_res, $id_u) {
+        $query = "INSERT INTO FAVORIS (id_res, id_u) VALUES (:id_res, :id_u)";
         
         try {
             $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':siret', $siret, PDO::PARAM_INT);
+            $stmt->bindParam(':id_res', $id_res, PDO::PARAM_INT);
             $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
             return $stmt->execute();
         } catch (PDOException $e) {
@@ -275,8 +303,9 @@ class Model_bd {
     }
 
     // Méthodes UPDATE
-    public function updateRestaurant($siret, $nom, $commune, $departement, $region, $coordonnees, $lien_site, $horaires, $telephone = null) {
+    public function updateRestaurant($id_res, $siret, $nom, $commune, $departement, $region, $coordonnees, $lien_site, $horaires, $telephone = null) {
         $query = "UPDATE RESTAURANT SET 
+                siret = :siret,
                 nom_res = :nom, 
                 commune = :commune, 
                 departement = :departement, 
@@ -285,11 +314,12 @@ class Model_bd {
                 lien_site = :lien_site, 
                 horaires_ouvert = :horaires, 
                 telephone = :telephone 
-                WHERE siret = :siret";
+                WHERE id_res = :id_res";
         
         try {
             $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':siret', $siret, PDO::PARAM_INT);
+            $stmt->bindParam(':id_res', $id_res, PDO::PARAM_INT);
+            $stmt->bindParam(':siret', $siret, PDO::PARAM_STR);
             $stmt->bindParam(':nom', $nom, PDO::PARAM_STR);
             $stmt->bindParam(':commune', $commune, PDO::PARAM_STR);
             $stmt->bindParam(':departement', $departement, PDO::PARAM_STR);
@@ -304,7 +334,7 @@ class Model_bd {
         }
     }
 
-    public function updateRestaurantPartial($siret, $fields = []) {
+    public function updateRestaurantPartial($id_res, $fields = []) {
         if (empty($fields)) {
             return false;
         }
@@ -314,11 +344,11 @@ class Model_bd {
             $setClause[] = "$field = :$field";
         }
         
-        $query = "UPDATE RESTAURANT SET " . implode(', ', $setClause) . " WHERE siret = :siret";
+        $query = "UPDATE RESTAURANT SET " . implode(', ', $setClause) . " WHERE id_res = :id_res";
         
         try {
             $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':siret', $siret, PDO::PARAM_INT);
+            $stmt->bindParam(':id_res', $id_res, PDO::PARAM_INT);
             
             foreach ($fields as $field => $value) {
                 $stmt->bindParam(":$field", $value);
@@ -399,17 +429,17 @@ class Model_bd {
     }
 
     // Méthodes DELETE
-    public function deleteRestaurant($siret) {
+    public function deleteRestaurant($id_res) {
         try {
             $this->db->beginTransaction();
             
             // Suppression des enregistrements associés dans d'autres tables
-            $this->db->exec("DELETE FROM FAVORIS WHERE siret = $siret");
-            $this->db->exec("DELETE FROM ETRE WHERE siret = $siret");
+            $this->db->exec("DELETE FROM FAVORIS WHERE id_res = $id_res");
+            $this->db->exec("DELETE FROM ETRE WHERE id_res = $id_res");
             
             // Récupération des ID des critiques liées au restaurant
-            $stmt = $this->db->prepare("SELECT id_c FROM CRITIQUE WHERE siret = :siret");
-            $stmt->bindParam(':siret', $siret, PDO::PARAM_INT);
+            $stmt = $this->db->prepare("SELECT id_c FROM CRITIQUE WHERE id_res = :id_res");
+            $stmt->bindParam(':id_res', $id_res, PDO::PARAM_INT);
             $stmt->execute();
             $critiques = $stmt->fetchAll(PDO::FETCH_COLUMN);
             
@@ -419,11 +449,11 @@ class Model_bd {
             }
             
             // Suppression des critiques
-            $this->db->exec("DELETE FROM CRITIQUE WHERE siret = $siret");
+            $this->db->exec("DELETE FROM CRITIQUE WHERE id_res = $id_res");
             
             // Suppression du restaurant
-            $stmt = $this->db->prepare("DELETE FROM RESTAURANT WHERE siret = :siret");
-            $stmt->bindParam(':siret', $siret, PDO::PARAM_INT);
+            $stmt = $this->db->prepare("DELETE FROM RESTAURANT WHERE id_res = :id_res");
+            $stmt->bindParam(':id_res', $id_res, PDO::PARAM_INT);
             $result = $stmt->execute();
             
             $this->db->commit();
@@ -511,12 +541,12 @@ class Model_bd {
         }
     }
 
-    public function deleteFavori($siret, $id_u) {
-        $query = "DELETE FROM FAVORIS WHERE siret = :siret AND id_u = :id_u";
+    public function deleteFavori($id_res, $id_u) {
+        $query = "DELETE FROM FAVORIS WHERE id_res = :id_res AND id_u = :id_u";
         
         try {
             $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':siret', $siret, PDO::PARAM_INT);
+            $stmt->bindParam(':id_res', $id_res, PDO::PARAM_INT);
             $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
             return $stmt->execute();
         } catch (PDOException $e) {
@@ -537,18 +567,19 @@ class Model_bd {
         }
     }
 
-    public function removeRestaurantTypeCuisine($siret, $id_type) {
-        $query = "DELETE FROM ETRE WHERE siret = :siret AND id_type = :id_type";
+    public function removeRestaurantTypeCuisine($id_res, $id_type) {
+        $query = "DELETE FROM ETRE WHERE id_res = :id_res AND id_type = :id_type";
         
         try {
             $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':siret', $siret, PDO::PARAM_INT);
+            $stmt->bindParam(':id_res', $id_res, PDO::PARAM_INT);
             $stmt->bindParam(':id_type', $id_type, PDO::PARAM_INT);
             return $stmt->execute();
         } catch (PDOException $e) {
             return false;
         }
     }
+
     public function init_resto_json() {
         $data = json_decode(file_get_contents(__DIR__ . '/../../data/restaurants_orleans.json'), true);
         foreach ($data as $item) {
@@ -557,8 +588,8 @@ class Model_bd {
                 : null;
             
             // Ajouter le restaurant
-            $this->addRestaurant(
-                $siret = $item['siret'],
+            $id_res = $this->addRestaurant(
+                $item['siret'],
                 $item['name'],
                 $item['com_nom'],
                 $item['departement'],
@@ -566,16 +597,16 @@ class Model_bd {
                 $coords,
                 $item['website'] ?? null,
                 $item['opening_hours'] ?? null,
-                $item['phone'] ?? null,
+                $item['phone'] ?? null
             );
 
             // Gérer les types de cuisine
-            if (!empty($item['cuisine'])) {
+            if (!empty($item['cuisine']) && $id_res) {
                 $cuisines = is_array($item['cuisine']) ? $item['cuisine'] : [$item['cuisine']];
                 foreach ($cuisines as $cuisine) {
                     if ($cuisine) {
                         $id_type = $this->getOrCreateTypeCuisine($cuisine);
-                        $this->addRestaurantTypeCuisine($siret, $id_type);
+                        $this->addRestaurantTypeCuisine($id_res, $id_type);
                     }
                 }
             }
@@ -627,7 +658,6 @@ class Model_bd {
         }
     }
     
-    
     public function getUserIdByEmail($email) {
         $query = "SELECT id_u FROM UTILISATEUR WHERE email_u = :email";
         $stmt = $this->db->prepare($query);
@@ -636,6 +666,33 @@ class Model_bd {
         return $stmt->fetchColumn();
     }
     
+    public function getFavorisByUser($id_u) {
+        $query = "SELECT r.* FROM RESTAURANT r
+                  JOIN FAVORIS f ON r.id_res = f.id_res
+                  WHERE f.id_u = :id_u";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
     
+    public function isFavori($id_res, $id_u) {
+        $query = "SELECT COUNT(*) FROM FAVORIS WHERE id_res = :id_res AND id_u = :id_u";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id_res', $id_res, PDO::PARAM_INT);
+            $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchColumn() > 0;
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
 }
 ?>
