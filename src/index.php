@@ -11,14 +11,18 @@ use classes\controller\ControllerLogin;
 use classes\controller\ControllerRegister;
 use classes\controller\ControllerPreferences;
 use classes\model\Model_bd;
+use classes\model\RestaurantModel;
+use classes\model\CritiqueModel;
 
 
 // Récupérer l'action dès le début
 $action = $_GET['action'] ?? 'home';
 
 try {
-    $db = new Model_bd();
+    $db = Model_bd::getInstance();
     $db-> init_resto_json();
+    $resto_model = new RestaurantModel();
+    $critique_model = new CritiqueModel();
 
 
     // Gérer le logout en premier
@@ -65,10 +69,10 @@ try {
      exit; // Arrêter l'exécution après l'envoi de la réponse JSON
     }
 
-    $avis = $db->getAvis();
+    $avis = $critique_model->getAvis();
     $_SESSION['avis'] = $avis; // Stocker les avis dans la session
 
-    $restaurants =$db->getRestaurants();
+    $restaurants =$resto_model->getRestaurants();
     $_SESSION['restaurants'] = $restaurants;
     
     if ($action === 'home') {
@@ -97,11 +101,11 @@ try {
 
     //!! Pour les avis
     elseif ($action === 'les_avis') {
-        if (!isset($_GET['siret'])) {
-            die('Erreur : SIRET manquant.');
+        if (!isset($_GET['id_res'])) {
+            die('Erreur : id_res manquant.');
         }
     
-        $siret = $_GET['siret'];
+        $id_res = $_GET['id_res'];
     
         // Récupérer les avis depuis le modèle
         $controller_avis = new ControllerAvis($db);

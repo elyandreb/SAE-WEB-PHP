@@ -11,12 +11,12 @@ class FavoriModel {
         $this->db = Model_bd::getInstance()->getConnection();
     }
 
-    public function addFavori($siret, $id_u) {
-        $query = "INSERT INTO FAVORIS (siret, id_u) VALUES (:siret, :id_u)";
+    public function addFavori($id_res, $id_u) {
+        $query = "INSERT INTO FAVORIS (id_res, id_u) VALUES (:id_res, :id_u)";
         
         try {
             $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':siret', $siret, PDO::PARAM_INT);
+            $stmt->bindParam(':id_res', $id_res, PDO::PARAM_INT);
             $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
             return $stmt->execute();
         } catch (PDOException $e) {
@@ -25,12 +25,12 @@ class FavoriModel {
         }
     }
 
-    public function deleteFavori($siret, $id_u) {
-        $query = "DELETE FROM FAVORIS WHERE siret = :siret AND id_u = :id_u";
+    public function deleteFavori($id_res, $id_u) {
+        $query = "DELETE FROM FAVORIS WHERE id_res = :id_res AND id_u = :id_u";
         
         try {
             $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':siret', $siret, PDO::PARAM_INT);
+            $stmt->bindParam(':id_res', $id_res, PDO::PARAM_INT);
             $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
             return $stmt->execute();
         } catch (PDOException $e) {
@@ -41,7 +41,7 @@ class FavoriModel {
 
     public function getFavorisByUser($id_u) {
         $query = "SELECT r.* FROM RESTAURANT r
-                  JOIN FAVORIS f ON r.siret = f.siret
+                  JOIN FAVORIS f ON r.id_res = f.id_res
                   WHERE f.id_u = :id_u
                   ORDER BY r.nom_res";
         
@@ -56,12 +56,12 @@ class FavoriModel {
         }
     }
 
-    public function isRestaurantFavori($siret, $id_u) {
-        $query = "SELECT COUNT(*) FROM FAVORIS WHERE siret = :siret AND id_u = :id_u";
+    public function isRestaurantFavori($id_res, $id_u) {
+        $query = "SELECT COUNT(*) FROM FAVORIS WHERE id_res = :id_res AND id_u = :id_u";
         
         try {
             $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':siret', $siret, PDO::PARAM_INT);
+            $stmt->bindParam(':id_res', $id_res, PDO::PARAM_INT);
             $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
             $stmt->execute();
             return $stmt->fetchColumn() > 0;
@@ -85,12 +85,12 @@ class FavoriModel {
         }
     }
 
-    public function countRestaurantFavoris($siret) {
-        $query = "SELECT COUNT(*) FROM FAVORIS WHERE siret = :siret";
+    public function countRestaurantFavoris($id_res) {
+        $query = "SELECT COUNT(*) FROM FAVORIS WHERE id_res = :id_res";
         
         try {
             $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':siret', $siret, PDO::PARAM_INT);
+            $stmt->bindParam(':id_res', $id_res, PDO::PARAM_INT);
             $stmt->execute();
             return $stmt->fetchColumn();
         } catch (PDOException $e) {
@@ -99,11 +99,11 @@ class FavoriModel {
         }
     }
 
-    public function toggleFavori($siret, $id_u) {
-        if ($this->isRestaurantFavori($siret, $id_u)) {
-            return $this->deleteFavori($siret, $id_u);
+    public function toggleFavori($id_res, $id_u) {
+        if ($this->isRestaurantFavori($id_res, $id_u)) {
+            return $this->deleteFavori($id_res, $id_u);
         } else {
-            return $this->addFavori($siret, $id_u);
+            return $this->addFavori($id_res, $id_u);
         }
     }
 }
