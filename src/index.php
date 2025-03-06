@@ -20,10 +20,12 @@ $action = $_GET['action'] ?? 'home';
 
 try {
     $db = Model_bd::getInstance();
-    $db-> init_resto_json();
     $resto_model = new RestaurantModel();
     $critique_model = new CritiqueModel();
-
+    $restaurants = $resto_model->getRestaurants();
+    $_SESSION['restaurants'] = $restaurants;
+    $id_u = $_SESSION['user_id'] ?? null; 
+    
 
     // Gérer le logout en premier
     if ($action === 'logout') {
@@ -33,7 +35,6 @@ try {
         exit;
     }
 
-
     if (!empty($_POST['username'])) {
         $_SESSION['utilisateur'] = htmlspecialchars($_POST['username']);
         header('Location: index.php?action=home');
@@ -41,19 +42,19 @@ try {
     }
 
     if ($action === 'register') {
-        $controllerRegister = new ControllerRegister($db);
+        $controllerRegister = new ControllerRegister();
         $controllerRegister->register();
         exit;
     }
 
     if ($action === 'login') {
-        $controllerLogin = new ControllerLogin($db);
+        $controllerLogin = new ControllerLogin();
         $controllerLogin->login();
         exit;
     }
 
     if ($action === 'preferences') {
-        $controllerPreferences = new ControllerPreferences($db);
+        $controllerPreferences = new ControllerPreferences();
         $controllerPreferences->preferences();
         exit;
     }
@@ -63,7 +64,7 @@ try {
 
     // Traitement immédiat de l'action AJAX pour toggle-favoris
     if (preg_match('#^toggle-favoris/(.+)$#', $action, $matches)) {
-     $controller = new Controller($restaurants);
+     $controller = new Controller();
      $idRestaurant = urldecode($matches[1]);
      $controller->toggleFavorite($idRestaurant);
      exit; // Arrêter l'exécution après l'envoi de la réponse JSON
@@ -78,11 +79,16 @@ try {
     if ($action === 'home') {
         require_once __DIR__ . '/views/header.php';
         require_once __DIR__ . '/views/les_restaurants.php';
-        exit ;
+        exit;
     }
-    elseif ($action === 'add_avis') {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $controller_avis = new ControllerAvis();
+    elseif ($action === 'add_avis' || $action === 'les_avis' || $action === 'remove_avis') {
+        $controller_avis = new ControllerAvis();
+        $controller_avis->get_avis($id_u, $id_res);
+        exit;
+    }
+
+    if ($action === 'add_avis') {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') { 
             $controller_avis->add_avis();
             header('Location: index.php?action=home');
             exit;
@@ -91,40 +97,29 @@ try {
             exit;
         }
     }
-    
-    
-    elseif ($action === 'get_avis') {
-        $controller_avis = new ControllerAvis();
-        $controller_avis->get_avis();
-        exit;
-    }
-
-    //!! Pour les avis
-    elseif ($action === 'les_avis') {
-        if (!isset($_GET['id_res'])) {
-            die('Erreur : id_res manquant.');
+    elseif ($action === 'remove_avis') {
+        if (!isset($_GET['id_c']) || !isset($_GET['id_res'])) {
+            die('Erreur : ID de la critique ou du restaurant manquant.');
         }
-    
-        $id_res = $_GET['id_res'];
-    
-        // Récupérer les avis depuis le modèle
-        $controller_avis = new ControllerAvis($db);
-        $controller_avis->get_avis();
-    
-        // Afficher la page correspondante
+        
+        $id_c = $_GET['id_c'];
+        $controller_avis->remove_avis($id_c);
         require_once __DIR__ . '/views/les_avis.php';
         exit;
     }
     
-    
-    
-    elseif ($action === 'remove_avis') {
-        $controller_avis = new ControllerAvis();
-        $controller_avis->remove_avis();
-        header('Location: views/les_avis.php');
+    elseif ($action === 'les_avis') {
+        if (!isset($_GET['id_res'])) {
+            die('Erreur : ID du restaurant manquant.');
+        }
+
+        $id_res = $_GET['id_res'];
+        $_SESSION['avis'] = $controller_avis->get_avis($id_u, $id_res);
+
+        require_once __DIR__ . '/views/les_avis.php';
         exit;
     }
-
+    
     elseif (preg_match('#toggle-favoris/(.+)#', $action, $matches)) {
         $idRestaurant = urldecode($matches[1]);
         $controller->toggleFavorite($idRestaurant);

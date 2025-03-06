@@ -12,6 +12,12 @@ header {
 .logo img {
     height: 70px; 
 }
+.logo button {
+    border: none;
+    cursor: pointer;
+    appearance: none;
+    background-color: inherit;    
+}
 
 /* Navigation */
 nav {

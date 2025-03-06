@@ -36,24 +36,26 @@ class ControllerAvis {
         exit;
     }
 
-    public function get_avis(): void {
-        $avis = $this->critiqueModel->getAvis();
-        
+    public function get_avis($id_u, $id_res): array {
+        return $this->critiqueModel->getCritiquesByUserResto($id_u, $id_res);
+
     }
     
     
-    public function remove_avis(): void {
-        if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            $id_critique = filter_input(INPUT_POST, 'id_critique', FILTER_VALIDATE_INT);
-
-            if ($id_critique === false || $id_critique === null) {
+    public function remove_avis($id_c): void {
+        if ($_SERVER["REQUEST_METHOD"] === "GET") {
+            $id_c = filter_var($id_c, FILTER_VALIDATE_INT);
+            
+            if ($id_c === false || $id_c === null) {
                 echo json_encode(["status" => "error", "message" => "ID de critique invalide."]);
                 return;
             }
-
-            $success = $this->critiqueModel->deleteCritique($id_critique);
+    
+            $success = $this->critiqueModel->deleteCritique($id_c);
+           
             if ($success) {
-                echo json_encode(["status" => "success", "message" => "Avis supprimé avec succès !"]);
+                header("Location: index.php?action=les_avis&id_res=" . urlencode($_GET['id_res']));
+                exit;
             } else {
                 echo json_encode(["status" => "error", "message" => "Erreur lors de la suppression de l'avis."]);
             }
@@ -61,4 +63,5 @@ class ControllerAvis {
             echo json_encode(["status" => "error", "message" => "Méthode non autorisée."]);
         }
     }
+    
 }
