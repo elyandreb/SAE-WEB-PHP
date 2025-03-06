@@ -22,6 +22,11 @@ $isLoggedIn = isset($_SESSION['user_id']);
                 <img src="../static/img/user.svg" alt="Profil" class="profile-icon" id="profileIcon">
                 <div class="dropdown-menu" id="dropdownMenu">
                     <a href="profil.php">Profil</a>
+                    <?php
+                    if ($_SESSION['user_role'] == 'admin') {
+                        echo '<a href="/views/admin_dashboard.php">Admin</a>';
+                    }
+                    ?>
                     <form action="/index.php?action=logout" method="POST">
                         <button class="logout" type="submit">Se déconnecter</button>
                     </form>
