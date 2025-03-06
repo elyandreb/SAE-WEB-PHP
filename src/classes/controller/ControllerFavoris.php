@@ -20,9 +20,7 @@ class ControllerFavoris {
             $this->model_bd->deleteFavoris($id_res, $id_u);
             echo json_encode(['status' => 'success', 'favoris' => false]);
         } else {
-            // Ajouter aux favoris
-            $nom_res = $this->model_bd->getNomResto($id_res);
-    
+            
             $_SESSION['favoris'][] = $id_res;
             $this->model_bd->addFavoris($id_res, $id_u);
             echo json_encode(['status' => 'success', 'favoris' => true]);
@@ -32,8 +30,21 @@ class ControllerFavoris {
     }
 
     public function getFavorisByUser(string $id_u): array {
-        return $this->model_bd->getFavorisByUser($id_u);
+        try {
+    
+            $favoris = $this->model_bd->getFavorisByUser($id_u);
+            
+            if ($favoris === null || empty($favoris)) {
+                return [];  
+            }
+    
+            return $favoris;
+        } catch (Exception $e) {
+            // En cas d'exception,
+        }
     }
+    
+    
     
     
 }

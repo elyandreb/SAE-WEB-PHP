@@ -1,7 +1,8 @@
 <?php
+
 session_start();
-require_once __DIR__ . '/classes/autoloader/autoload.php';
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/classes/autoloader/autoload.php';
 use classes\provider\Provider;
 use classes\controller\ControllerAvis;
 use classes\controller\Controller;
@@ -56,6 +57,8 @@ try {
     
  
     if ($action === 'home') {
+        $controller_favoris = new ControllerFavoris($db);
+        $_SESSION['favoris'] = $controller_favoris->getFavorisByUser($id_u);
         require_once __DIR__ . '/views/header.php';
         require_once __DIR__ . '/views/les_restaurants.php';
         exit;
@@ -105,8 +108,7 @@ try {
             exit;
         }
         elseif( $action === 'les-favoris') {
-            $favoris = $controller_favoris->getFavorisByUser($id_u);
-            $_SESSION['favoris'] = $favoris; 
+            $_SESSION['favoris'] = $controller_favoris->getFavorisByUser($id_u);
             require_once __DIR__ . '/views/les_favoris.php';
             exit;
         }

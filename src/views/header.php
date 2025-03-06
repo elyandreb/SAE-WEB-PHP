@@ -17,8 +17,7 @@ $name = $_SESSION['user_name'] ?? '';
     
     <nav class="navbar">
         <?php if ($isLoggedIn): ?>
-            <a href="/views/les_favoris.php" class="link"><img style="width:16px; height:16px;" src="../static/img/coeur.svg">Mes favoris</a>
-            <a href="restos_preferes.php" class="link">Mes restos préférés</a>
+            <a href="?action=les-favoris" class="link"><img style="width:16px; height:16px;" src="../static/img/coeur.svg"> Mes restos préférés</a>
             <a href="mes_reviews.php" class="link">Mes reviews</a>
             <p> <?= $name ?> </p>
             <div class="profile-menu">

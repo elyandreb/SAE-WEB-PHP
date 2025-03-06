@@ -1,5 +1,4 @@
 <?php
-session_start();
 include 'header.php';
 ?>
 
@@ -17,21 +16,17 @@ include 'header.php';
     <?php
   
     $favoris = isset($_SESSION['favoris']) && is_array($_SESSION['favoris']) ? $_SESSION['favoris'] : [];
-
     if (empty($favoris)) {
         echo "<h2>Aucun favoris pour le moment.</h2>";
     } else {
-        // Afficher les restaurants favoris
-        echo '<div class="favoris">';
-
         foreach ($favoris as $restaurant) {
             echo '<div class="restaurant">';
-
-            echo '<p>ID Restaurant: ' . htmlspecialchars($restaurant['id_res']) . '</p>'; // Affiche l'ID si nécessaire
+            echo '<p>ID Restaurant: ' . htmlspecialchars($restaurant['id_res']) . '</p>';
+            echo '<p>Nom du Restaurant: ' . htmlspecialchars($restaurant['nom_res']) . '</p>';
             echo '</div>';
         }
 
-        echo '</div>';
+        
     }
     ?>
 </body>

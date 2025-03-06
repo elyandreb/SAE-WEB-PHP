@@ -771,11 +771,20 @@ class Model_bd {
             $stmt = $this->db->prepare($query);
             $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
             $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC); // Récupère toutes les lignes sous forme de tableau associatif
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            // Si aucune donnée n'est trouvée, retourner un tableau vide
+            if ($result === false) {
+                return [];
+            }
+    
+            return $result;
         } catch (PDOException $e) {
+            // En cas d'erreur, retourner un tableau vide
             return [];
         }
     }
+    
     
     
     public function isFavori($id_res, $id_u) {
