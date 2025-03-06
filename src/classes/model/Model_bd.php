@@ -321,11 +321,62 @@ class Model_bd {
             $stmt = $this->db->prepare($query);
             $stmt->bindParam(':id_res', $id_res, PDO::PARAM_INT);
             $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
-            return $stmt->execute();
+            
+            if ($stmt->execute()) {
+                return true;
+            } else {
+                // Si l'exécution échoue, retourner une erreur
+                throw new Exception("Failed to insert into the FAVORIS table.");
+            }
+        } catch (PDOException $e) {
+            // Afficher l'erreur PDO
+            error_log("PDO Error: " . $e->getMessage());
+            return false;
+        } catch (Exception $e) {
+            // Afficher l'erreur générale
+            error_log("General Error: " . $e->getMessage());
+            return false;
+        }
+    }
+    
+    public function deleteFavoris($id_res, $id_u) {
+        $query = "DELETE FROM FAVORIS WHERE id_res = :id_res AND id_u = :id_u";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id_res', $id_res, PDO::PARAM_INT);
+            $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
+            
+            if ($stmt->execute()) {
+                return true;
+            } else {
+                // Si l'exécution échoue, retourner une erreur
+                throw new Exception("Failed to delete from the FAVORIS table.");
+            }
+        } catch (PDOException $e) {
+            // Afficher l'erreur PDO
+            error_log("PDO Error: " . $e->getMessage());
+            return false;
+        } catch (Exception $e) {
+            // Afficher l'erreur générale
+            error_log("General Error: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function getNomResto($id_res) {
+        $query = "SELECT nom_res FROM RESTAURANT WHERE id_res = :id_res";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id_res', $id_res, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchColumn();
         } catch (PDOException $e) {
             return false;
         }
     }
+    
 
     public function likeReview($id_c, $id_u) {
         $query = "INSERT INTO AIMER (id_c, id_u) VALUES (:id_c, :id_u)";
@@ -582,19 +633,6 @@ class Model_bd {
         }
     }
 
-    public function deleteFavori($id_res, $id_u) {
-        $query = "DELETE FROM FAVORIS WHERE id_res = :id_res AND id_u = :id_u";
-        
-        try {
-            $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':id_res', $id_res, PDO::PARAM_INT);
-            $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
-            return $stmt->execute();
-        } catch (PDOException $e) {
-            return false;
-        }
-    }
-
     public function unlikeReview($id_c, $id_u) {
         $query = "DELETE FROM AIMER WHERE id_c = :id_c AND id_u = :id_u";
         
@@ -725,7 +763,7 @@ class Model_bd {
     }
     
     public function getFavorisByUser($id_u) {
-        $query = "SELECT r.* FROM RESTAURANT r
+        $query = "SELECT r.id_res, r.nom_res FROM RESTAURANT r
                   JOIN FAVORIS f ON r.id_res = f.id_res
                   WHERE f.id_u = :id_u";
         
@@ -733,11 +771,12 @@ class Model_bd {
             $stmt = $this->db->prepare($query);
             $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
             $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC); // Récupère toutes les lignes sous forme de tableau associatif
         } catch (PDOException $e) {
             return [];
         }
     }
+    
     
     public function isFavori($id_res, $id_u) {
         $query = "SELECT COUNT(*) FROM FAVORIS WHERE id_res = :id_res AND id_u = :id_u";

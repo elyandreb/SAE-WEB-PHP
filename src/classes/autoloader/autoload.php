@@ -1,24 +1,33 @@
 <?php
 spl_autoload_register(static function(string $fqcn) {
-
     $segments = explode('\\', $fqcn);
     $className = end($segments);
 
-    if($segments[1] === 'provider') {
-        $path = __DIR__ . '../../provider/' . $className . '.php';
-    
-         
-    } elseif ($segments[1] === 'controller'){
-        $path = __DIR__ . '../../controller/' . $className . '.php';
-    
-    } elseif ($segments[0] === 'tests'){
-        $path = __DIR__ . '../../tests/' . $className . '.php';
-    }
-    elseif ($segments[1] === 'model') {
-        // Si c'est dans le namespace BD :
-        $path = __DIR__ . '../../model/' . $className . '.php';
+    if (!isset($segments[1])) {
+        throw new Exception("Namespace incorrect pour : " . $fqcn);
     }
 
-    
-    require_once $path;
+    // Définition des chemins vers les dossiers
+    $baseDir = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR; // Aller à la racine de "classes"
+
+    $folders = [
+        'provider'   => 'provider',
+        'controller' => 'controller',
+        'model'      => 'model',
+        'tests'      => '../tests' // Les tests sont en dehors de "classes"
+    ];
+
+    $folder = $folders[$segments[1]] ?? null;
+
+    if (!$folder) {
+        throw new Exception("Impossible de charger la classe : " . $fqcn);
+    }
+
+    $path = realpath($baseDir . $folder . DIRECTORY_SEPARATOR . $className . '.php');
+
+    if ($path && file_exists($path)) {
+        require_once $path;
+    } else {
+        throw new Exception("Fichier introuvable : " . $path);
+    }
 });

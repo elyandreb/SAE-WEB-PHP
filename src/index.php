@@ -1,17 +1,15 @@
 <?php
-
 session_start();
-
 require_once __DIR__ . '/classes/autoloader/autoload.php';
-define('ROOT_PATH', __DIR__);
+require_once __DIR__ . '/config.php';
 use classes\provider\Provider;
 use classes\controller\ControllerAvis;
 use classes\controller\Controller;
 use classes\controller\ControllerLogin;
 use classes\controller\ControllerRegister;
 use classes\controller\ControllerPreferences;
+use classes\controller\ControllerFavoris;
 use classes\model\Model_bd;
-
 
 // Récupérer l'action dès le début
 $action = $_GET['action'] ?? 'home';
@@ -94,17 +92,28 @@ try {
     
             $id_res = $_GET['id_res'];
             $_SESSION['avis'] = $controller_avis->get_avis($id_u, $id_res);
-    
             require_once __DIR__ . '/views/les_avis.php';
             exit;
         }
     }
-    
-    elseif (preg_match('#toggle-favoris/(.+)#', $action, $matches)) {
-        $idRestaurant = urldecode($matches[1]);
-        $controller->toggleFavorite($idRestaurant);
-        exit;
+    elseif ($action==='toggle-favoris' || $action ==='les-favoris') {
+        $controller_favoris = new ControllerFavoris($db);
+       
+        if ($action === 'toggle-favoris') {
+            $controller_favoris->toggleFavorite($_GET['id'],$id_u);
+            header('Location: index.php?action=home');
+            exit;
+        }
+        elseif( $action === 'les-favoris') {
+            $favoris = $controller_favoris->getFavorisByUser($id_u);
+            $_SESSION['favoris'] = $favoris; 
+            require_once __DIR__ . '/views/les_favoris.php';
+            exit;
+        }
+        
     }
+    
+    
     
 } catch (Exception $e) {
     echo ''. $e->getMessage();
