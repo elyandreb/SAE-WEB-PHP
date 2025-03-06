@@ -65,6 +65,7 @@ try {
 
     $avis = $db->getAvis();
     $_SESSION['avis'] = $avis; // Stocker les avis dans la session
+    var_dump($avis);
 
     $restaurants =$db->getRestaurants();
     $_SESSION['restaurants'] = $restaurants;
@@ -85,14 +86,6 @@ try {
             require_once __DIR__ . '/views/add_avis.php';
             exit;
         }
-    }
-    
-    
-    elseif ($action === 'get_avis') {
-        $controller_avis = new ControllerAvis(model_bd: $db);
-        
-        //!!!! 
-        exit;
     }
 
     //!! Pour les avis

@@ -749,5 +749,13 @@ class Model_bd {
             return false;
         }
     }
+    public function getUserById($userId) {
+        $query = "SELECT * FROM UTILISATEUR WHERE id_u = :id";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':id', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    
 }
 ?>

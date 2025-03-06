@@ -11,6 +11,21 @@
     <?php
     session_start();
     $avis = $_SESSION['avis'];
+    print_r($avis);
+
+    
+    if (isset($_SESSION['user_id'])) {
+        $model = new Model_bd(); // Assure-toi d'avoir une instance de ton modèle
+        $user = $model->getUserById($_SESSION['user_id']);
+
+        if ($user) {
+            echo "Nom : " . htmlspecialchars($user['nom_u']);
+            echo "Email : " . htmlspecialchars($user['email_u']);
+        }
+    } else {
+        echo "Aucun utilisateur connecté.";
+    }
+
 
     $index = 0;
     foreach ($avis as $a) {
