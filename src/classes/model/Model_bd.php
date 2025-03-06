@@ -90,6 +90,15 @@ class Model_bd {
                 note_s INTEGER,
                 FOREIGN KEY (id_res) REFERENCES RESTAURANT(id_res),
                 FOREIGN KEY (id_u) REFERENCES UTILISATEUR(id_u)
+            )",
+
+            // Table UTILISATEUR_PREFERENCES
+            "CREATE TABLE IF NOT EXISTS UTILISATEUR_PREFERENCES (
+                id_u INTEGER NOT NULL,
+                id_type INTEGER NOT NULL,
+                PRIMARY KEY (id_u, id_type),
+                FOREIGN KEY (id_u) REFERENCES UTILISATEUR(id_u),
+                FOREIGN KEY (id_type) REFERENCES TYPE_CUISINE(id_type)
             )"
         ];
 
@@ -163,6 +172,15 @@ class Model_bd {
             return $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             return false;
+        }
+    }
+    public function getAvis(){
+        $query = "SELECT * FROM CRITIQUE";
+        try {
+            $stmt = $this->db->query($query);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return [];
         }
     }
 
@@ -684,6 +702,23 @@ class Model_bd {
         $stmt->bindParam(':email', $email, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetchColumn();
+    }
+    
+    public function getRestaurantTypes() {
+        $query = "SELECT * FROM TYPE_CUISINE";
+        $stmt = $this->db->query($query);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    public function saveUserPreferences($userId, $preferences) {
+        $query = "INSERT INTO UTILISATEUR_PREFERENCES (id_u, id_type) VALUES (:id_u, :id_type)";
+        $stmt = $this->db->prepare($query);
+    
+        foreach ($preferences as $type) {
+            $stmt->bindParam(':id_u', $userId, PDO::PARAM_INT);
+            $stmt->bindParam(':id_type', $type, PDO::PARAM_INT);
+            $stmt->execute();
+        }
     }
     
     public function getFavorisByUser($id_u) {

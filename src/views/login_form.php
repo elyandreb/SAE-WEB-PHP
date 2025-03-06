@@ -24,6 +24,9 @@
 
                 <button type="submit">Se connecter</button>
             </form>
+            <?php if (!empty($errorMessage)): ?>
+                <div class="error-message"><?php echo $errorMessage; ?></div>
+            <?php endif; ?>
         </div>
     </div>
 </body>
