@@ -9,6 +9,7 @@ use classes\controller\ControllerAvis;
 use classes\controller\Controller;
 use classes\controller\ControllerLogin;
 use classes\controller\ControllerRegister;
+use classes\controller\ControllerPreferences;
 use classes\model\Model_bd;
 
 
@@ -44,6 +45,12 @@ try {
     if ($action === 'login') {
         $controllerLogin = new ControllerLogin($db);
         $controllerLogin->login();
+        exit;
+    }
+
+    if ($action === 'preferences') {
+        $controllerPreferences = new ControllerPreferences($db);
+        $controllerPreferences->preferences();
         exit;
     }
     

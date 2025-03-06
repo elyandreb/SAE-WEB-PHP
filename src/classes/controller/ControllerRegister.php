@@ -41,8 +41,10 @@ class ControllerRegister {
                     
                     // Si tout est validé, enregistrer l'utilisateur
                     if ($this->model_bd->registerUser($nom, $prenom, $email, $mdp, $role)) {
-                        // Rediriger vers la page de connexion après l'inscription réussie
-                        header('Location: /views/login_form.php');
+                        $_SESSION['user_id'] = $this->model_bd->getUserIdByEmail($email);
+                        $_SESSION['user_role'] = $role;
+                        $_SESSION['user_name'] = $nom;
+                        header('Location: /index.php?action=preferences');                        
                         exit();
                     } else {
                         $errorMessage = "Erreur lors de l'inscription. Veuillez réessayer.";
