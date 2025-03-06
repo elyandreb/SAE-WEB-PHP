@@ -18,8 +18,6 @@ $action = $_GET['action'] ?? 'home';
 
 try {
     $db = new Model_bd();
-    $db-> init_resto_json();
-
 
     // Gérer le logout en premier
     if ($action === 'logout') {
