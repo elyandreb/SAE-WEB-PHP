@@ -1,5 +1,7 @@
 <?php
+
 $isLoggedIn = isset($_SESSION['user_id']);
+$name = $_SESSION['user_name'] ?? '';
 ?>
 <head>
     <link rel="stylesheet" href="/static/css/header.css">
@@ -13,12 +15,13 @@ $isLoggedIn = isset($_SESSION['user_id']);
     
     </div>
     
-    <nav>
+    <nav class="navbar">
         <?php if ($isLoggedIn): ?>
-            <a href="restos_preferes.php" class="link">Mes restos préférés</a>
+            <a href="?action=les-favoris" class="link"><img style="width:16px; height:16px;" src="../static/img/coeur.svg"> Mes restos préférés</a>
             <a href="mes_reviews.php" class="link">Mes reviews</a>
-
+            <p> <?= $name ?> </p>
             <div class="profile-menu">
+               
                 <img src="../static/img/user.svg" alt="Profil" class="profile-icon" id="profileIcon">
                 <div class="dropdown-menu" id="dropdownMenu">
                     <a href="profil.php">Profil</a>
@@ -27,6 +30,7 @@ $isLoggedIn = isset($_SESSION['user_id']);
                     </form>
                 </div>
             </div>
+
         <?php else: ?>
             <a href="/views/register_form.php" class="btn">S'inscrire</a>
             <a href="/views/login_form.php" class="btn">Se connecter</a>
