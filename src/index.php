@@ -49,6 +49,7 @@ try {
     
     $restaurants = Provider::getRestaurants(fichier: 'restaurants_orleans');
 
+
     // Traitement immédiat de l'action AJAX pour toggle-favoris
     if (preg_match('#^toggle-favoris/(.+)$#', $action, $matches)) {
      $controller = new Controller($restaurants);
@@ -86,6 +87,8 @@ try {
         $controller_avis->get_avis();
         exit;
     }
+
+    //!! Pour les avis
     elseif ($action === 'les_avis') {
         if (!isset($_GET['siret'])) {
             die('Erreur : SIRET manquant.');
@@ -116,8 +119,6 @@ try {
         $controller->toggleFavorite($idRestaurant);
         exit;
     }
-    
-    
     
 } catch (Exception $e) {
     echo ''. $e->getMessage();
