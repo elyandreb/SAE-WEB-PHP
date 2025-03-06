@@ -9,10 +9,9 @@
 </head>
 <body>
     <?php
-    session_start();
-    $avis = $_SESSION['avis'];
-    $nom_resto = $_SESSION['nom_res'];
-    $nom_user = $_SESSION['user_name'];
+    $avis = isset($_SESSION['avis']) ? $_SESSION['avis'] : [];
+    $nom_resto = isset($_GET['nomRes']) ? $_GET['nomRes'] : 'Inconnu';
+    $nom_user = isset($_SESSION['user_name']) ? $_SESSION['user_name'] : 'Anonyme';
     if (empty($avis)){
         echo "<h1>Aucun avis pour ce restaurant</h1>";
     }

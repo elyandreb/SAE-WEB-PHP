@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Préférences - IUTables'O</title>
-    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/preferences.css">
 </head>
 <body>
     <div class="preferences-container">
@@ -17,12 +17,13 @@
         <form action="/index.php?action=preferences" method="POST">
             <div class="checkbox-group">
                 <?php foreach ($restaurantTypes as $type): ?>
-                    <label>
-                        <input type="checkbox" name="preferences[]" value="<?php echo $type['id_type']; ?>">
+                    <input type="checkbox" id="type_<?php echo $type['id_type']; ?>" name="preferences[]" value="<?php echo $type['id_type']; ?>">
+                    <label for="type_<?php echo $type['id_type']; ?>">
                         <?php echo htmlspecialchars($type['nom_type']); ?>
                     </label>
                 <?php endforeach; ?>
             </div>
+
 
             <button type="submit">Valider mes préférences</button>
         </form>
