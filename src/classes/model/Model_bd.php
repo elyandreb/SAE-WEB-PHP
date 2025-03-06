@@ -544,9 +544,11 @@ class Model_bd {
             $this->db->beginTransaction();
             
             // Suppression des likes associés à cette critique
-            $this->db->exec("DELETE FROM AIMER WHERE id_c = $id_c");
+            $stmt = $this->db->prepare("DELETE FROM AIMER WHERE id_c = :id_c");
+            $stmt->bindParam(':id_c', $id_c, PDO::PARAM_INT);
+            $stmt->execute();
             
-            // Suppression da critique
+            // Suppression de la critique
             $stmt = $this->db->prepare("DELETE FROM CRITIQUE WHERE id_c = :id_c");
             $stmt->bindParam(':id_c', $id_c, PDO::PARAM_INT);
             $result = $stmt->execute();
@@ -558,6 +560,7 @@ class Model_bd {
             return false;
         }
     }
+    
 
     public function deleteTypeCuisine($id_type) {
         try {
