@@ -7,7 +7,7 @@ use \PDOException;
 class Model_bd {
     private $db;
 
-    public function __construct($dbPath = '../restaurant.db') {
+    public function __construct($dbPath = 'restaurant.db') {
         try {
             $this->db = new PDO('sqlite:' . $dbPath);
             $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
