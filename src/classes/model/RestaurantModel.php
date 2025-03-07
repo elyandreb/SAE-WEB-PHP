@@ -35,10 +35,21 @@ class RestaurantModel {
 
     public function getRestaurants() {
         $query = "SELECT * FROM RESTAURANT";
-        
         try {
-            $stmt = $this->db->query($query);
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stmt = $this->db->prepare($query);
+            $stmt->execute();
+            $restaurants = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($restaurants as &$restaurant) {
+                $id_res = $restaurant['id_res'];
+                $typesQuery = "SELECT id_type FROM ETRE WHERE id_res = :id_res";
+                $typesStmt = $this->db->prepare($typesQuery);
+                $typesStmt->bindParam(':id_res', $id_res, PDO::PARAM_INT);
+                $typesStmt->execute();
+                $restaurant['types'] = $typesStmt->fetchAll(PDO::FETCH_COLUMN);
+            }
+            
+            return $restaurants;
         } catch (PDOException $e) {
             error_log("Erreur lors de la récupération des restaurants: " . $e->getMessage());
             return [];
