@@ -55,6 +55,15 @@
     // Par défaut, on affiche tous les restaurants
     $restaurants_to_display = $_SESSION['restaurants'] ?? [];
 
+    // Vérifier s'il y a une recherche
+    $searchQuery = $_GET['search'] ?? '';
+
+    if (!empty($searchQuery)) {
+        $restaurants_to_display = array_filter($restaurants_to_display, function ($restaurant) use ($searchQuery) {
+            return stripos($restaurant['nom_res'], $searchQuery) !== false;
+        });
+    }
+
     // Si l'utilisateur veut trier par note, on affiche les restaurants triés
     if ($filter_bon_restos) {
         $restaurants_to_display = $_SESSION['bon_restos'] ?? [];
