@@ -14,7 +14,6 @@
     margin-bottom: 20px;
 }
 
-/* Groupe de checkboxes */
 .checkbox-group {
     display: flex;
     flex-wrap: wrap;
@@ -22,16 +21,7 @@
     gap: 15px;
 }
 
-.checkbox-group label {
-    background: #ccc;
-    color: black;
-    padding: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 18px;
-}
-
-.checkbox-group label:hover {
+.checkbox-group input[type="checkbox"] + label:hover {
     background: #ddd;
 }
 
@@ -39,12 +29,6 @@
     display: none;
 }
 
-.checkbox-group input:checked + label {
-    background: #66091A;
-    color: white;
-}
-
-/* Bouton de validation */
 button {
     background-color: #4A0E16;
     color: white;
@@ -58,4 +42,18 @@ button {
 
 button:hover {
     background-color: #66091A;
+}
+
+.checkbox-group input[type="checkbox"]:checked + label {
+    background: #66091A;
+    color: white;
+}
+
+.checkbox-group input[type="checkbox"] + label {
+    background: #ccc;
+    color: black;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
 }

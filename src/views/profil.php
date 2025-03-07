@@ -22,7 +22,7 @@
 
         <div class="profile-actions">
             <a href="index.php?action=editProfil" class="btn">Modifier le profil</a>
-            <a href="index.php?action=changePassword" class="btn">Changer le mot de passe</a>
+            <a href="index.php?action=preferences" class="btn">Modifier préférences</a>
         </div>
     </div>
 </body>
