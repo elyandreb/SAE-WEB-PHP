@@ -53,7 +53,7 @@ class ControllerPreferences {
             exit;
         }
         $user_id = $_SESSION['user_id'];
-        return $this->userModel->getUserPreferences($user_id);
+        return $this->userModel->getUserPreferencesID($user_id);
     }
 }
 
