@@ -66,6 +66,12 @@ try {
         exit;
     }
 
+    if ($action === 'editProfil') {
+        $controllerProfil = new ControllerProfil();
+        $controllerProfil->modifierProfil();
+        exit;
+    }
+
     
     
     $restaurants = Provider::getRestaurants(fichier: 'restaurants_orleans');
