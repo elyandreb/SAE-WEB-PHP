@@ -19,7 +19,7 @@
         <h2 class ="subtitle"> Le restaurant <?= htmlspecialchars($_GET['nomRes'] ?? '', ENT_QUOTES, 'UTF-8') ?></h2>
     </div>
 
-    <form action="index.php?action=add_avis&id_res=<?= htmlspecialchars($_GET['id_res'] ?? '') ?>" method="POST" id="avisForm" style="width: 50%; margin: auto;"> 
+    <form action="index.php?action=add_avis" method="POST" id="avisForm" style="width: 50%; margin: auto;"> 
 
         <input type="hidden" name="id_res" id="id_res" value="<?= htmlspecialchars($_GET['id_res'] ?? '') ?>">
 

@@ -41,25 +41,27 @@ class CritiqueModel {
         }
     }
 
-    public function getCritiquesByUserResto($id_u, $id_res) {
-        $query = "SELECT CRITIQUE.*, RESTAURANT.nom_res 
-                  FROM CRITIQUE 
-                  JOIN RESTAURANT ON CRITIQUE.id_res = RESTAURANT.id_res 
-                  WHERE CRITIQUE.id_u = :id_u AND CRITIQUE.id_res = :id_res
-                  ORDER BY CRITIQUE.date_creation DESC";
-        
-        try {
-            $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
-            $stmt->bindParam(':id_res', $id_res, PDO::PARAM_INT);
-            $stmt->execute();
-            
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            error_log("Erreur lors de la récupération des critiques : " . $e->getMessage());
-            return [];
-        }
+    public function getCritiquesByRestaurant($id_res): array {
+        $query = "SELECT c.*, u.nom_u AS user_name 
+                  FROM CRITIQUE c 
+                  JOIN UTILISATEUR u ON c.id_u = u.id_u 
+                  WHERE c.id_res = :id_res 
+                  ORDER BY c.date_creation DESC";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':id_res', $id_res, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
     }
+    
+
+    public function getNameUserCritique($id_u) {
+        $query = "SELECT nom_u FROM UTILISATEUR WHERE id_u = :id_u";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
+    
 
     public function addCritique($note_r, $commentaire, $id_res, $id_u, $note_p = null, $note_s = null) {
         $query = "INSERT INTO CRITIQUE (note_r, commentaire, id_res, id_u, note_p, note_s) 

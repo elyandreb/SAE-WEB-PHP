@@ -1,5 +1,4 @@
 <?php
-
 $isLoggedIn = isset($_SESSION['user_id']);
 $name = $_SESSION['user_name'] ?? '';
 ?>
@@ -8,17 +7,25 @@ $name = $_SESSION['user_name'] ?? '';
     <script defer src="/static/js/header.js"></script>
 </head>
 <header>
-    <div class="logo">
-        <button onclick="location.href='/index.php?action=home'">
-            <img src="../static/img/logo.svg" alt="IUTables'O">
-        </button>
-    
-    </div>
+    <?php if ($isLoggedIn): ?>
+        <div class="logo">
+            <button onclick="location.href='/index.php?action=home'">
+                <img src="../static/img/logo.svg" alt="IUTables'O">
+            </button>
+        
+        </div>
+    <?php else: ?>
+        <div class="logo">
+            <button>
+                <img src="../static/img/logo.svg" alt="IUTables'O">
+            </button>
+        </div>
+    <?php endif; ?>
     
     <nav class="navbar">
         <?php if ($isLoggedIn): ?>
             <a href="?action=les-favoris" class="link"><img style="width:16px; height:16px;" src="../static/img/coeur.svg"> Mes restos préférés</a>
-            <a href="mes_reviews.php" class="link">Mes reviews</a>
+            <a href="?action=mes_reviews" class="link">Mes reviews</a>
             <p> <?= $name ?> </p>
             <div class="profile-menu">
                
