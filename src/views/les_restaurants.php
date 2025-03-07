@@ -10,6 +10,16 @@
 </head>
 <body>
 
+    <!-- Titre et barre de recherche -->
+    <div class="search-container">
+        <h2>Rechercher un restaurant</h2>
+        <form action="index.php" method="GET">
+            <input type="hidden" name="action" value="home"> <!-- Pour garder l'action home -->
+            <input type="text" name="search" placeholder="Recherchez un restaurant..." value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
+            <button type="submit">Rechercher</button>
+        </form>
+    </div>
+
     <!-- Ajout des boutons de filtrage -->
     <div class="filter-options">
         <a href="index.php?action=home" class="filter-btn <?php echo !isset($_GET['filter']) ? 'active' : ''; ?>">Tous les restaurants</a>
