@@ -22,6 +22,11 @@ class ControllerLogin {
                 $user = $this->userModel->loginUser($email, $mdp);
                 
                 if ($user) {
+
+                    session_regenerate_id(true);
+                    
+                    $_SESSION = array();
+
                     $_SESSION['user_id'] = $user['id_u'];
                     $_SESSION['user_role'] = $user['le_role'];
                     $_SESSION['user_name'] = $user['nom_u'];

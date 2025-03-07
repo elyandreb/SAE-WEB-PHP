@@ -15,6 +15,7 @@ use classes\model\RestaurantModel;
 use classes\model\CritiqueModel;
 
 // Récupérer l'action dès le début
+
 $action = $_GET['action'] ?? 'login';
 
 try {
@@ -23,7 +24,7 @@ try {
     $critique_model = new CritiqueModel();
     $restaurants = $resto_model->getRestaurants();
     $_SESSION['restaurants'] = $restaurants;
-    $id_u = $_SESSION['user_id'] ?? null; 
+    $id_u = $_SESSION['user_id'] ?? null;
     
 
     // Gérer le logout en premier
@@ -83,7 +84,7 @@ try {
         exit;
     }
 
-    elseif ($action === 'add_avis' || $action === 'les_avis' || $action === 'remove_avis') {
+    elseif ($action === 'add_avis' || $action === 'remove_avis'|| $action === 'mes_reviews' || $action === 'les_avis') {
         $controller_avis = new ControllerAvis();
     
         if ($action === 'add_avis') {
@@ -107,17 +108,18 @@ try {
             exit;
         }
         
+        elseif ($action === 'mes_reviews') {
+            $_SESSION['avis_persos'] = $controller_avis->get_reviews($id_u);
+            require_once __DIR__ . '/views/les_avis.php';
+            exit;
+        }
         elseif ($action === 'les_avis') {
-            if (!isset($_GET['id_res'])) {
-                die('Erreur : ID du restaurant manquant.');
-            }
-    
-            $id_res = $_GET['id_res'];
-            $_SESSION['avis'] = $controller_avis->get_avis($id_u, $id_res);
             require_once __DIR__ . '/views/les_avis.php';
             exit;
         }
     }
+     
+    
 
     elseif ($action==='toggle-favoris' || $action ==='les-favoris') {
         $controller_favoris = new ControllerFavoris();

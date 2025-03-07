@@ -32,15 +32,20 @@ class ControllerAvis {
         $this->critiqueModel->addCritique($note_reception, $commentaire, $id_res, $id_u, $note_plats, $note_service);
     
         // Redirection correcte après l'ajout
-        header('Location: index.php?action=les_avis&id_res=' . urlencode(string: $id_res));
+        header('Location: index.php?action=les_avis&id_res=' . urlencode(string: $id_res).'&nomRes='.urlencode(string: $_POST['nomRes']));
         exit;
     }
+    public function get_avis($id_res): array {
+        return $this->critiqueModel->getCritiquesByRestaurant($id_res);
+    }
 
-    public function get_avis($id_u, $id_res): array {
-        return $this->critiqueModel->getCritiquesByUserResto($id_u, $id_res);
+    public function get_reviews($id_u): array {
+        return $this->critiqueModel->getCritiquesByUser($id_u);
 
     }
-    
+    public function getNameUser($id_u) {
+        return $this->critiqueModel->getNameUserCritique($id_u);
+    }
     
     public function remove_avis($id_c): void {
         if ($_SERVER["REQUEST_METHOD"] === "GET") {
