@@ -35,8 +35,19 @@ class ControllerAvis {
         header('Location: index.php?action=les_avis&id_res=' . urlencode(string: $id_res).'&nomRes='.urlencode(string: $_POST['nomRes']));
         exit;
     }
-    public function get_avis($id_res): array {
+    public function getCritiquesByRestaurant($id_res): array {
         return $this->critiqueModel->getCritiquesByRestaurant($id_res);
+    }
+    public function getMoyenneCritiquesByRestaurant($id_res) {
+        if (isset($id_res)) {
+            $moyenne = $this->critiqueModel->getMoyenneCritiquesByRestaurant($id_res);
+        }
+        $moyenne = $moyenne ?? 0;
+        return round($moyenne, 1);
+    }
+
+    public function getAvis() {
+        return $this->critiqueModel->getAvis();
     }
 
     public function get_reviews($id_u): array {
