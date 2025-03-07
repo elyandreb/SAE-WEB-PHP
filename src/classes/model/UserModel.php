@@ -102,6 +102,17 @@ class UserModel {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getUserPreferencesId($id) {
+        $query = "SELECT id_type FROM UTILISATEUR_PREFERENCES WHERE id_u = :id";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+    
+        // Retourne un tableau contenant uniquement les ID des types préférés
+        return array_column($stmt->fetchAll(PDO::FETCH_ASSOC), 'id_type');
+    }
+    
+
     public function updateUser($id, $nom, $prenom, $email) {
         $query = "UPDATE UTILISATEUR SET nom_u = :nom, prenom_u = :prenom, email_u = :email WHERE id_u = :id";
         $stmt = $this->db->prepare($query);
