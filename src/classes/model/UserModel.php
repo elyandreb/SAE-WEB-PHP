@@ -92,19 +92,14 @@ class UserModel {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
     
-    public function getUserPreferences($userId): array {
-        $query = "SELECT id_type FROM UTILISATEUR_PREFERENCES WHERE id_u = :id_u";
-        
-        try {
-            $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':id_u', $userId, PDO::PARAM_INT);
-            $stmt->execute();
-            
-            return $stmt->fetchAll(PDO::FETCH_COLUMN);
-        } catch (PDOException $e) {
-            error_log("Erreur lors de la récupération des préférences: " . $e->getMessage());
-            return [];
-        }
+    public function getUserPreferences($id) {
+        $query = "SELECT tc.nom_type FROM UTILISATEUR_PREFERENCES up 
+                  JOIN TYPE_CUISINE tc ON up.id_type = tc.id_type 
+                  WHERE up.id_u = :id";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getUserPreferencesId($id) {
