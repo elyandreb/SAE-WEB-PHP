@@ -1,0 +1,33 @@
+.profile-container {
+    width: 50%;
+    margin: auto;
+    text-align: center;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.profile-container h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.profile-info {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.profile-actions .btn {
+    display: inline-block;
+    margin: 10px;
+    padding: 10px 15px;
+    background: #800020;
+    color: white;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.profile-actions .btn:hover {
+    background: #66091A;
+}
