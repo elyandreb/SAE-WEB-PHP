@@ -84,12 +84,29 @@ class UserModel {
         return $stmt->fetchColumn();
     }
 
-    public function updateUser($id_u, $nom, $prenom, $email, $role) {
+    public function getUserById($id) {
+        $query = "SELECT * FROM UTILISATEUR WHERE id_u = :id";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    
+    public function getUserPreferences($id) {
+        $query = "SELECT tc.nom_type FROM UTILISATEUR_PREFERENCES up 
+                  JOIN TYPE_CUISINE tc ON up.id_type = tc.id_type 
+                  WHERE up.id_u = :id";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function updateUser($id_u, $nom, $prenom, $email) {
         $query = "UPDATE UTILISATEUR SET 
                 nom_u = :nom, 
                 prenom_u = :prenom, 
                 email_u = :email, 
-                le_role = :role 
                 WHERE id_u = :id_u";
         
         try {
@@ -98,7 +115,6 @@ class UserModel {
             $stmt->bindParam(':nom', $nom, PDO::PARAM_STR);
             $stmt->bindParam(':prenom', $prenom, PDO::PARAM_STR);
             $stmt->bindParam(':email', $email, PDO::PARAM_STR);
-            $stmt->bindParam(':role', $role, PDO::PARAM_STR);
             return $stmt->execute();
         } catch (PDOException $e) {
             error_log("Erreur lors de la mise à jour de l'utilisateur: " . $e->getMessage());
@@ -106,18 +122,16 @@ class UserModel {
         }
     }
 
-    public function updateUserPassword($id_u, $mdp) {
-        $query = "UPDATE UTILISATEUR SET mdp_u = :mdp WHERE id_u = :id_u";
-        
-        try {
+    public function updateUserPassword($id, $oldPassword, $newPassword) {
+        $user = $this->getUserById($id);
+        if (password_verify($oldPassword, $user['mdp_u'])) {
+            $query = "UPDATE UTILISATEUR SET mdp_u = :mdp WHERE id_u = :id";
             $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
-            $stmt->bindParam(':mdp', password_hash($mdp, PASSWORD_DEFAULT), PDO::PARAM_STR);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->bindParam(':mdp', password_hash($newPassword, PASSWORD_DEFAULT), PDO::PARAM_STR);
             return $stmt->execute();
-        } catch (PDOException $e) {
-            error_log("Erreur lors de la mise à jour du mot de passe: " . $e->getMessage());
-            return false;
         }
+        return false;
     }
 
     public function deleteUser($id_u) {
