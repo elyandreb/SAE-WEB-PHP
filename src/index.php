@@ -85,16 +85,6 @@ try {
     
     $restaurants = Provider::getRestaurants(fichier: 'restaurants_orleans');
 
-
-    // Traitement immédiat de l'action AJAX pour toggle-favoris
-    if (preg_match('#^toggle-favoris/(.+)$#', $action, $matches)) {
-     $controller = new Controller();
-     $idRestaurant = urldecode($matches[1]);
-     $controller->toggleFavorite($idRestaurant);
-     exit; // Arrêter l'exécution après l'envoi de la réponse JSON
-    }
-
-
     if ($action === 'home') {
         $controller_favoris = new ControllerFavoris();
         $_SESSION['favoris'] = $controller_favoris->getFavorisByUser($id_u);
