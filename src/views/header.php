@@ -37,7 +37,7 @@ $nom_role = $_SESSION['user_role'] ?? '';
             <div class="profile-menu">
                 <img src="../static/img/user.svg" alt="Profil" class="profile-icon" id="profileIcon">
                 <div class="dropdown-menu" id="dropdownMenu">
-                    <a href="profil.php">Profil</a>
+                    <a href="/index.php?action=profil">Profil</a>
                     <form action="/index.php?action=logout" method="POST">
                         <button class="logout" type="submit">Se déconnecter</button>
                     </form>
