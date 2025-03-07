@@ -48,7 +48,7 @@ class ControllerProfil {
             if (!empty($oldPassword) && !empty($newPassword) && !empty($confirmPassword)) {
                 if ($newPassword === $confirmPassword) {
                     if ($this->userModel->updateUserPassword($userId, $oldPassword, $newPassword)) {
-                        $successMessage .= "<br>Mot de passe mis à jour avec succès.";
+                        $successMessage .= " Mot de passe mis à jour avec succès.";
                     } else {
                         $errorMessage = "Ancien mot de passe incorrect.";
                     }

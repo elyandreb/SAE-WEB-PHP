@@ -102,24 +102,14 @@ class UserModel {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function updateUser($id_u, $nom, $prenom, $email) {
-        $query = "UPDATE UTILISATEUR SET 
-                nom_u = :nom, 
-                prenom_u = :prenom, 
-                email_u = :email, 
-                WHERE id_u = :id_u";
-        
-        try {
-            $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':id_u', $id_u, PDO::PARAM_INT);
-            $stmt->bindParam(':nom', $nom, PDO::PARAM_STR);
-            $stmt->bindParam(':prenom', $prenom, PDO::PARAM_STR);
-            $stmt->bindParam(':email', $email, PDO::PARAM_STR);
-            return $stmt->execute();
-        } catch (PDOException $e) {
-            error_log("Erreur lors de la mise à jour de l'utilisateur: " . $e->getMessage());
-            return false;
-        }
+    public function updateUser($id, $nom, $prenom, $email) {
+        $query = "UPDATE UTILISATEUR SET nom_u = :nom, prenom_u = :prenom, email_u = :email WHERE id_u = :id";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->bindParam(':nom', $nom, PDO::PARAM_STR);
+        $stmt->bindParam(':prenom', $prenom, PDO::PARAM_STR);
+        $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+        return $stmt->execute();
     }
 
     public function updateUserPassword($id, $oldPassword, $newPassword) {
@@ -127,8 +117,9 @@ class UserModel {
         if (password_verify($oldPassword, $user['mdp_u'])) {
             $query = "UPDATE UTILISATEUR SET mdp_u = :mdp WHERE id_u = :id";
             $stmt = $this->db->prepare($query);
+            $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            $stmt->bindParam(':mdp', password_hash($newPassword, PASSWORD_DEFAULT), PDO::PARAM_STR);
+            $stmt->bindParam(':mdp', $hashedPassword, PDO::PARAM_STR);
             return $stmt->execute();
         }
         return false;
