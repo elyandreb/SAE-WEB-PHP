@@ -5,7 +5,7 @@ require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/classes/autoloader/autoload.php';
 use classes\provider\Provider;
 use classes\controller\ControllerAvis;
-use classes\controller\Controller;
+use classes\controller\ControllerRestaurant;
 use classes\controller\ControllerLogin;
 use classes\controller\ControllerRegister;
 use classes\controller\ControllerPreferences;
@@ -20,10 +20,19 @@ $action = $_GET['action'] ?? 'login';
 
 try {
     $db = Model_bd::getInstance();
-    $resto_model = new RestaurantModel();
     $critique_model = new CritiqueModel();
-    $restaurants = $resto_model->getRestaurants();
+
+    $controller_restaurants = new ControllerRestaurant();
+    $restaurants = $controller_restaurants->getRestaurants();
+
+    $controller_avis = new ControllerAvis();
+    $avis = $controller_avis->getAvis(); 
+
+    $bon_restos = $controller_restaurants-> getRestaurantsTriee();
+    $_SESSION['bon_restos'] = $bon_restos;
     $_SESSION['restaurants'] = $restaurants;
+    $_SESSION['avis'] = $avis; 
+
     $id_u = $_SESSION['user_id'] ?? null;
     
 
@@ -70,12 +79,7 @@ try {
      exit; // Arrêter l'exécution après l'envoi de la réponse JSON
     }
 
-    $avis = $critique_model->getAvis();
-    $_SESSION['avis'] = $avis; // Stocker les avis dans la session
 
-    $restaurants =$resto_model->getRestaurants();
-    $_SESSION['restaurants'] = $restaurants;
-    
     if ($action === 'home') {
         $controller_favoris = new ControllerFavoris();
         $_SESSION['favoris'] = $controller_favoris->getFavorisByUser($id_u);

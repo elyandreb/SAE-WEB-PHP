@@ -28,7 +28,7 @@
 
     $perso = false;
     if (isset($id_res)) {
-        $avis = $controller_avis->get_avis($id_res);
+        $avis = $controller_avis->getCritiquesByRestaurant($id_res);
     }
 
     else {

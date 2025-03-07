@@ -41,6 +41,16 @@ class CritiqueModel {
         }
     }
 
+    public function getMoyenneCritiquesByRestaurant($id_res) {
+        $query = "SELECT (AVG(note_r) + AVG(note_p) + AVG(note_s)) / 3 AS moyenne_generale 
+                  FROM CRITIQUE 
+                  WHERE id_res = :id_res";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':id_res', $id_res, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
+
     public function getCritiquesByRestaurant($id_res): array {
         $query = "SELECT c.*, u.nom_u AS user_name 
                   FROM CRITIQUE c 
