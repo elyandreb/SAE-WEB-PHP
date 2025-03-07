@@ -172,6 +172,8 @@ class Model_bd {
         // Objet restaurant pour l'ajout
         $restaurantModel = new RestaurantModel();
         $typeCuisineModel = new TypeCuisineModel();
+        $admin = new UserModel();
+        $admin->addUser('a', 'a', 'a@agmail.com', 'aze', 'admin');
         
         foreach ($data as $item) {
             $coords = isset($item['geo_point_2d']['lon'], $item['geo_point_2d']['lat']) 

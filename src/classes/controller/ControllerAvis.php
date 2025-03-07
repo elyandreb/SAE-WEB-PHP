@@ -43,10 +43,9 @@ class ControllerAvis {
         return $this->critiqueModel->getCritiquesByUser($id_u);
 
     }
-    public function getNameUserByCritique($id_c): string {
-        return $this->critiqueModel->getNameUserByCritique($id_c);
+    public function getNameUser($id_u) {
+        return $this->critiqueModel->getNameUserCritique($id_u);
     }
-
     
     public function remove_avis($id_c): void {
         if ($_SERVER["REQUEST_METHOD"] === "GET") {

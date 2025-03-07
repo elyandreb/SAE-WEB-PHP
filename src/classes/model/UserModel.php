@@ -20,7 +20,8 @@ class UserModel {
             $stmt->bindParam(':nom', $nom, PDO::PARAM_STR);
             $stmt->bindParam(':prenom', $prenom, PDO::PARAM_STR);
             $stmt->bindParam(':email', $email, PDO::PARAM_STR);
-            $stmt->bindParam(':mdp', password_hash($mdp, PASSWORD_DEFAULT), PDO::PARAM_STR);
+            $hashed_password = password_hash($mdp, PASSWORD_DEFAULT);
+            $stmt->bindParam(':mdp', $hashed_password, PDO::PARAM_STR);
             $stmt->bindParam(':role', $role, PDO::PARAM_STR);
             return $stmt->execute();
         } catch (PDOException $e) {
@@ -186,4 +187,20 @@ class UserModel {
             return false;
         }
     }
+    public function isAdmin($userId) {
+        $query = "SELECT le_role FROM UTILISATEUR WHERE id_u = :id_u";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id_u', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            $role = $stmt->fetchColumn();
+            return $role === 'admin'; // Retourne true si l'utilisateur est admin, sinon false
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la vérification du rôle admin: " . $e->getMessage());
+            return false;
+        }
+    }
+    
 }

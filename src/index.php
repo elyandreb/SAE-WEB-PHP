@@ -24,7 +24,7 @@ try {
     $critique_model = new CritiqueModel();
     $restaurants = $resto_model->getRestaurants();
     $_SESSION['restaurants'] = $restaurants;
-    $id_u = $_SESSION['user_id'] ?? null; 
+    $id_u = $_SESSION['user_id'] ?? null;
     
 
     // Gérer le logout en premier
