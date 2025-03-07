@@ -15,7 +15,7 @@ use classes\model\RestaurantModel;
 use classes\model\CritiqueModel;
 
 // Récupérer l'action dès le début
-$action = $_GET['action'] ?? 'home';
+$action = $_GET['action'] ?? 'login';
 
 try {
     $db = Model_bd::getInstance();
@@ -76,7 +76,7 @@ try {
     $_SESSION['restaurants'] = $restaurants;
     
     if ($action === 'home') {
-        $controller_favoris = new ControllerFavoris($db);
+        $controller_favoris = new ControllerFavoris();
         $_SESSION['favoris'] = $controller_favoris->getFavorisByUser($id_u);
         require_once __DIR__ . '/views/header.php';
         require_once __DIR__ . '/views/les_restaurants.php';
@@ -84,7 +84,7 @@ try {
     }
 
     elseif ($action === 'add_avis' || $action === 'les_avis' || $action === 'remove_avis') {
-        $controller_avis = new ControllerAvis($db);
+        $controller_avis = new ControllerAvis();
     
         if ($action === 'add_avis') {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') { 
@@ -120,7 +120,7 @@ try {
     }
 
     elseif ($action==='toggle-favoris' || $action ==='les-favoris') {
-        $controller_favoris = new ControllerFavoris($db);
+        $controller_favoris = new ControllerFavoris();
        
         if ($action === 'toggle-favoris') {
             $controller_favoris->toggleFavorite($_GET['id'],$id_u);
