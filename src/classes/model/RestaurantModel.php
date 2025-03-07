@@ -35,10 +35,21 @@ class RestaurantModel {
 
     public function getRestaurants() {
         $query = "SELECT * FROM RESTAURANT";
-        
         try {
-            $stmt = $this->db->query($query);
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stmt = $this->db->prepare($query);
+            $stmt->execute();
+            $restaurants = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($restaurants as &$restaurant) {
+                $id_res = $restaurant['id_res'];
+                $typesQuery = "SELECT id_type FROM ETRE WHERE id_res = :id_res";
+                $typesStmt = $this->db->prepare($typesQuery);
+                $typesStmt->bindParam(':id_res', $id_res, PDO::PARAM_INT);
+                $typesStmt->execute();
+                $restaurant['types'] = $typesStmt->fetchAll(PDO::FETCH_COLUMN);
+            }
+            
+            return $restaurants;
         } catch (PDOException $e) {
             error_log("Erreur lors de la récupération des restaurants: " . $e->getMessage());
             return [];
@@ -58,7 +69,24 @@ class RestaurantModel {
             return false;
         }
     }
-
+    public function getRestaurantsTriee() {
+        $query = "SELECT r.*, 
+                         COALESCE(AVG(c.note_p + c.note_r + c.note_s) / 3, 0) AS moyenne 
+                  FROM RESTAURANT r
+                  LEFT JOIN CRITIQUE c ON r.id_res = c.id_res
+                  GROUP BY r.id_res
+                  ORDER BY moyenne DESC";
+    
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération des restaurants triés : " . $e->getMessage());
+            return [];
+        }
+    }
+    
     public function updateRestaurant($id_res, $nom, $commune, $departement, $region, $coordonnees, $lien_site, $horaires, $telephone = null) {
         $query = "UPDATE RESTAURANT SET
                 nom_res = :nom, 
