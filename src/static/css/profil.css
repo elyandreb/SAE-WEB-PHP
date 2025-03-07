@@ -31,3 +31,13 @@
 .profile-actions .btn:hover {
     background: #66091A;
 }
+
+.preference-badge {
+    display: inline-block;
+    background: #800020;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: bold;
+}

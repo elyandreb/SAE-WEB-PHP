@@ -16,7 +16,7 @@
         <h3>Mes préférences</h3>
         <ul>
             <?php foreach ($preferences as $pref): ?>
-                <li><?= htmlspecialchars($pref['nom_type']) ?></li>
+                <span class="preference-badge"><?= htmlspecialchars($pref['nom_type']) ?></span>
             <?php endforeach; ?>
         </ul>
 
