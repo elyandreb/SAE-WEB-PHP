@@ -46,4 +46,14 @@ class ControllerPreferences {
 
         include_once ROOT_PATH . '/views/preferences_form.php';
     }
+
+    public function getPreferences() {
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: /views/login_form.php');
+            exit;
+        }
+        $user_id = $_SESSION['user_id'];
+        return $this->userModel->getUserPreferences($user_id);
+    }
 }
+
