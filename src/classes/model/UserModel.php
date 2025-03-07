@@ -187,6 +187,21 @@ class UserModel {
             return false;
         }
     }
+
+    public function getUserPreferences($userId): array {
+        $query = "SELECT id_type FROM UTILISATEUR_PREFERENCES WHERE id_u = :id_u";
+        
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id_u', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            return $stmt->fetchAll(PDO::FETCH_COLUMN);
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération des préférences: " . $e->getMessage());
+            return [];
+        }
+    }
     public function isAdmin($userId) {
         $query = "SELECT le_role FROM UTILISATEUR WHERE id_u = :id_u";
         
