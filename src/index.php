@@ -79,6 +79,8 @@ try {
     if ($action === 'home') {
         $controller_favoris = new ControllerFavoris();
         $_SESSION['favoris'] = $controller_favoris->getFavorisByUser($id_u);
+        $controllerPreferences = new ControllerPreferences();
+        $_SESSION['preferences'] = $controllerPreferences->getPreferences();
         require_once __DIR__ . '/views/header.php';
         require_once __DIR__ . '/views/les_restaurants.php';
         exit;
