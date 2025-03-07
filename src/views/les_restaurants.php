@@ -66,28 +66,67 @@
         });
     }
 
-    // Affichage des restaurants
-    echo '<div class="restaurants">';
-    foreach ($restaurants_to_display as $restaurant) {
-        $idRestaurant = $restaurant['id_res'];
-        $isFavorite = in_array($idRestaurant, array_column($_SESSION['favoris'] ?? [], 'id_res'));
-        $heartIcon = $isFavorite ? '../static/img/coeur.svg' : '../static/img/coeur_vide.svg';
+    // Nombre de restaurants par page
+    $restaurantsPerPage = 24; // Ajuste selon ton design
 
-        echo '<div class="restaurant" data-id="' . $idRestaurant . '">';
-        echo '<p>' . $controller_avis->getMoyenneCritiquesByRestaurant($idRestaurant) . ' /5 <img src="../static/img/star.svg" alt="star" style="width:20px;height:20px;"></p>';
-        echo '<span>' . (isset($restaurant['nom_res']) ? $restaurant['nom_res'] : 'Nom inconnu') . '</span>';
-        echo '<p>' . (isset($restaurant['horaires_ouvert']) ? $restaurant['horaires_ouvert'] : 'Horaires inconnus') . '</p>';
+    // Page actuelle
+    $current_page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
 
-        echo '<button onclick="toggleFavoris(event, this, \'' . $idRestaurant . '\')">';
-        echo '<img class="coeur" src="' . $heartIcon . '" alt="Favori">';
-        echo '</button>';
+    // Nombre total de restaurants
+    $total_restaurants = count($restaurants_to_display);
 
-        echo '<button class="btn" onclick="location.href=\'index.php?action=add_avis&id_res=' . urlencode($idRestaurant) . '&nomRes=' . urlencode($restaurant['nom_res']) . '\'">Ajouter un avis</button>';
-        echo '<button class="btn" onclick="location.href=\'index.php?action=les_avis&id_res=' . urlencode($idRestaurant) . '&nomRes=' . urlencode($restaurant['nom_res']) . '\'">Les avis</button>';
-        echo '</div>';
-    }
-    echo '</div>';
+    // Découper la liste pour afficher seulement les restaurants de la page actuelle
+    $offset = ($current_page - 1) * $restaurantsPerPage;
+    $restaurants_to_display = array_slice($restaurants_to_display, $offset, $restaurantsPerPage);
 
+    // Calcul du nombre total de pages
+    $total_pages = ceil($total_restaurants / $restaurantsPerPage);
     ?>
+
+    <div class="restaurants">
+        <?php if (!empty($restaurants_to_display)): ?>
+            <?php foreach ($restaurants_to_display as $restaurant): ?>
+                <?php
+                $idRestaurant = $restaurant['id_res'];
+                $isFavorite = in_array($idRestaurant, array_column($_SESSION['favoris'] ?? [], 'id_res'));
+                $heartIcon = $isFavorite ? '../static/img/coeur.svg' : '../static/img/coeur_vide.svg';
+                ?>
+                <div class="restaurant" data-id="<?= $idRestaurant ?>">
+                    <p><?= $controller_avis->getMoyenneCritiquesByRestaurant($idRestaurant) ?> /5 
+                        <img src="../static/img/star.svg" alt="star" style="width:20px;height:20px;">
+                    </p>
+                    <span><?= isset($restaurant['nom_res']) ? htmlspecialchars($restaurant['nom_res']) : 'Nom inconnu' ?></span>
+                    <p><?= isset($restaurant['horaires_ouvert']) ? htmlspecialchars($restaurant['horaires_ouvert']) : 'Horaires inconnus' ?></p>
+
+                    <button onclick="toggleFavoris(event, this, '<?= $idRestaurant ?>')">
+                        <img class="coeur" src="<?= $heartIcon ?>" alt="Favori">
+                    </button>
+
+                    <button class="btn" onclick="location.href='index.php?action=add_avis&id_res=<?= urlencode($idRestaurant) ?>&nomRes=<?= urlencode($restaurant['nom_res']) ?>'">Ajouter un avis</button>
+                    <button class="btn" onclick="location.href='index.php?action=les_avis&id_res=<?= urlencode($idRestaurant) ?>&nomRes=<?= urlencode($restaurant['nom_res']) ?>'">Les avis</button>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <p class="no-results">Aucun restaurant ne correspond à votre recherche.</p>
+        <?php endif; ?>
+    </div>
+
+    <!-- Affichage de la pagination -->
+    <?php if ($total_pages > 1): ?>
+        <div class="pagination">
+            <?php if ($current_page > 1): ?>
+                <a href="index.php?action=home&page=<?= $current_page - 1 ?>" class="page-btn">Précédent</a>
+            <?php endif; ?>
+
+            <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                <a href="index.php?action=home&page=<?= $i ?>" class="page-btn <?= ($i === $current_page) ? 'active' : '' ?>"><?= $i ?></a>
+            <?php endfor; ?>
+
+            <?php if ($current_page < $total_pages): ?>
+                <a href="index.php?action=home&page=<?= $current_page + 1 ?>" class="page-btn">Suivant</a>
+            <?php endif; ?>
+        </div>
+    <?php endif; ?>
+
 </body>
 </html>

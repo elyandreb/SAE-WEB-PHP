@@ -8,3 +8,36 @@
     flex-basis: 45%;
     border: thin solid black ;
 }
+
+.no-results {
+    text-align: center;
+    font-size: 18px;
+    color: #888;
+    margin-top: 20px;
+}
+
+.pagination {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.page-btn {
+    display: inline-block;
+    padding: 10px 15px;
+    margin: 0 5px;
+    background-color: #f8f8f8;
+    color: #333;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.page-btn.active {
+    background-color: #66091A;
+    color: white;
+}
+
+.page-btn:hover:not(.active) {
+    background-color: #e0e0e0;
+}
