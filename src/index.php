@@ -10,6 +10,7 @@ use classes\controller\ControllerLogin;
 use classes\controller\ControllerRegister;
 use classes\controller\ControllerPreferences;
 use classes\controller\ControllerFavoris;
+use classes\controller\ControllerProfil;
 use classes\model\Model_bd;
 use classes\model\RestaurantModel;
 use classes\model\CritiqueModel;
@@ -67,6 +68,20 @@ try {
         $controllerPreferences->preferences();
         exit;
     }
+
+    if ($action === 'profil') {
+        $controllerProfil = new ControllerProfil();
+        $controllerProfil->afficherProfil();
+        exit;
+    }
+
+    if ($action === 'editProfil') {
+        $controllerProfil = new ControllerProfil();
+        $controllerProfil->modifierProfil();
+        exit;
+    }
+
+    
     
     $restaurants = Provider::getRestaurants(fichier: 'restaurants_orleans');
 
