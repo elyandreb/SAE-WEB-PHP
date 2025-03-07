@@ -74,7 +74,7 @@
         $heartIcon = $isFavorite ? '../static/img/coeur.svg' : '../static/img/coeur_vide.svg';
 
         echo '<div class="restaurant" data-id="' . $idRestaurant . '">';
-        echo '<p>' . $controller_avis->getMoyenneCritiquesByRestaurant($idRestaurant) . ' /5</p>';
+        echo '<p>' . $controller_avis->getMoyenneCritiquesByRestaurant($idRestaurant) . ' /5 <img src="../static/img/star.svg" alt="star" style="width:20px;height:20px;"></p>';
         echo '<span>' . (isset($restaurant['nom_res']) ? $restaurant['nom_res'] : 'Nom inconnu') . '</span>';
         echo '<p>' . (isset($restaurant['horaires_ouvert']) ? $restaurant['horaires_ouvert'] : 'Horaires inconnus') . '</p>';
 
@@ -84,7 +84,7 @@
 
         echo '<button class="btn" onclick="location.href=\'index.php?action=add_avis&id_res=' . urlencode($idRestaurant) . '&nomRes=' . urlencode($restaurant['nom_res']) . '\'">Ajouter un avis</button>';
         echo '<button class="btn" onclick="location.href=\'index.php?action=les_avis&id_res=' . urlencode($idRestaurant) . '&nomRes=' . urlencode($restaurant['nom_res']) . '\'">Les avis</button>';
-        echo '</div$;>';
+        echo '</div>';
     }
     echo '</div>';
 

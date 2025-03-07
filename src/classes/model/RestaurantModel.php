@@ -75,7 +75,7 @@ class RestaurantModel {
                   FROM RESTAURANT r
                   LEFT JOIN CRITIQUE c ON r.id_res = c.id_res
                   GROUP BY r.id_res
-                  ORDER BY moyenne ASC";
+                  ORDER BY moyenne DESC";
     
         try {
             $stmt = $this->db->prepare($query);
