@@ -8,6 +8,21 @@
     <link rel="stylesheet" href="../static/css/avis.css">
 </head>
 <body>
+
+    <h1>
+        <?php
+        if (isset($_GET['nomRes'])) {
+            echo "Restaurant : " . $_GET['nomRes'];
+        }
+        ?>
+    </h1>
+
+    <div id="info">
+        <h2>Informations</h2>
+    </div>
+
+
+
     <?php
   
     require_once __DIR__ . '/../classes/autoloader/autoload.php';
@@ -38,11 +53,12 @@
    
     $nom_resto = isset($_GET['nomRes']) ? $_GET['nomRes'] : 'Inconnu';
     
-    if (empty($avis)){
-        echo "<h1>Aucun avis pour ce restaurant</h1>";
+    if (empty($avis) && isset($_GET["nomRes"])){
+        echo "<h1>Aucun avis pour le restaurant " . $nom_resto . "</h1>";
     }
     
     else {
+        echo "<div>";
         if ($perso) {
             echo "<h1>Mes avis</h1>";
         }
@@ -55,7 +71,12 @@
             $userName = $controller_avis->getNameUser($id_user_commu);
           
             echo "<div id='avis'>";
-            echo "<strong>" . htmlspecialchars($userName) . " #" . htmlspecialchars($a['id_u']) . "</strong> - " . date("d/m/Y", strtotime($a['date_creation'])) . "<br>";
+            if (!$perso) {
+                echo "<strong>" . htmlspecialchars($userName) . "</strong> - " . date("d/m/Y - H:i", strtotime($a['date_creation'])) . "<br>";
+            }
+            else {
+                echo "<strong>" . htmlspecialchars($userName) . "</strong> - ". $a['nom_res']. " - " . date("d/m/Y - H:i", strtotime($a['date_creation'])) . "<br>";
+            }            
             echo "Réception : " . str_repeat("<img src='../static/img/star.svg' alt='star' style='width:20px;height:20px;'>", $a['note_r']) . "<br>";
             echo "Plats : " . str_repeat("<img src='../static/img/star.svg' alt='star' style='width:20px;height:20px;'>", $a['note_p']) . "<br>";
             echo "Service : " . str_repeat("<img src='../static/img/star.svg' alt='star' style='width:20px;height:20px;'>", $a['note_s']) . "<br>";
@@ -66,7 +87,7 @@
 
             echo "<hr></div>";
         }
-        
+        echo "</div>";
         
     }
     ?>
