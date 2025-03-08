@@ -70,25 +70,42 @@
             }
             echo "<p>Département : " . $restaurant['departement'] . "</p>";
             echo "<p>Commune : " . $restaurant['commune'] . "</p>";
-            echo "<p>Téléphone : " . $restaurant['telephone'] . "</p>";
-            echo "<p>Site web : <a href='" . $restaurant['lien_site'] . "'>" . $restaurant['lien_site'] . "</a></p>";
-            $horaires = explode(';', $restaurant['horaires_ouvert']);
-            echo "<p>Horaires :</p><ul>";
-            $jours = [
-                'Mo' => 'Lundi',
-                'Tu' => 'Mardi',
-                'We' => 'Mercredi',
-                'Th' => 'Jeudi',
-                'Fr' => 'Vendredi',
-                'Sa' => 'Samedi',
-                'Su' => 'Dimanche'
-            ];
-            foreach ($horaires as $horaire) {
-                $horaire = trim($horaire);
-                foreach ($jours as $en => $fr) {
-                    $horaire = str_replace($en, $fr, $horaire);
+            if (!empty($restaurant['telephone'])) {
+                echo "<p>Téléphone : " . $restaurant['telephone'] . "</p>";
+            } else {
+                echo "<p>Téléphone : Inconnu</p>";
+            }
+            if (!empty($restaurant['lien_site'])) {
+                echo "<p>Site web : <a href='" . htmlspecialchars($restaurant['lien_site']) . "'>" . htmlspecialchars($restaurant['lien_site']) . "</a></p>";
+            } else {
+                echo "<p>Site web : Inconnu</p>";
+            }
+            if (!empty($restaurant['horaires_ouvert'])) {
+                $horaires = explode(';', $restaurant['horaires_ouvert']);
+            } else {
+                $horaires = [];
+            }
+            
+            if (!empty($horaires)) {
+                echo "<p>Horaires :</p><ul>";
+                $jours = [
+                    'Mo' => 'Lundi',
+                    'Tu' => 'Mardi',
+                    'We' => 'Mercredi',
+                    'Th' => 'Jeudi',
+                    'Fr' => 'Vendredi',
+                    'Sa' => 'Samedi',
+                    'Su' => 'Dimanche'
+                ];
+                foreach ($horaires as $horaire) {
+                    $horaire = trim($horaire);
+                    foreach ($jours as $en => $fr) {
+                        $horaire = str_replace($en, $fr, $horaire);
+                    }
+                    echo "<li>" . $horaire . "</li>";
                 }
-                echo "<li>" . $horaire . "</li>";
+            } else {
+                echo "<p>Horaires : Inconnu</p>";
             }
             echo "</ul>";
             $coordinates = $restaurant['coordonnees'];
