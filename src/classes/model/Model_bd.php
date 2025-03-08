@@ -59,6 +59,7 @@ class Model_bd {
             "CREATE TABLE IF NOT EXISTS RESTAURANT (
                 id_res INTEGER PRIMARY KEY AUTOINCREMENT,
                 nom_res VARCHAR NOT NULL,
+                type_res VARCHAR,
                 commune VARCHAR NOT NULL,
                 departement VARCHAR NOT NULL,
                 region VARCHAR NOT NULL,
@@ -176,13 +177,14 @@ class Model_bd {
         $admin->addUser('a', 'a', 'a@agmail.com', 'aze', 'admin');
         
         foreach ($data as $item) {
-            $coords = isset($item['geo_point_2d']['lon'], $item['geo_point_2d']['lat']) 
-                ? "{$item['geo_point_2d']['lon']},{$item['geo_point_2d']['lat']}" 
+            $coords = isset($item['geo_point_2d']['lat'], $item['geo_point_2d']['lon']) 
+                ? "{$item['geo_point_2d']['lat']}, {$item['geo_point_2d']['lon']}" 
                 : null;
             
             // Ajouter le restaurant
             $id_res = $restaurantModel->addRestaurant(
                 $item['name'],
+                $item['type'] ?? null,
                 $item['com_nom'],
                 $item['departement'],
                 $item['region'],

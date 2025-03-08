@@ -15,6 +15,10 @@ class ControllerRestaurant {
         return $this->restaurantModel->getRestaurants();
     }
 
+    public function getRestaurantById($id_res){
+        return $this->restaurantModel->getRestaurantById($id_res);
+    }
+
     public function getRestaurantsTriee(){
         return $this->restaurantModel->getRestaurantsTriee();
     }

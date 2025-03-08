@@ -11,13 +11,14 @@ class RestaurantModel {
         $this->db = Model_bd::getInstance()->getConnection();
     }
 
-    public function addRestaurant($nom, $commune, $departement, $region, $coordonnees, $lien_site, $horaires, $telephone = null) {
-        $query = "INSERT INTO RESTAURANT (nom_res, commune, departement, region, coordonnees, lien_site, horaires_ouvert, telephone) 
-                  VALUES (:nom, :commune, :departement, :region, :coordonnees, :lien_site, :horaires, :telephone)";
+    public function addRestaurant($nom, $type_res, $commune, $departement, $region, $coordonnees, $lien_site, $horaires, $telephone = null) {
+        $query = "INSERT INTO RESTAURANT (nom_res, type_res, commune, departement, region, coordonnees, lien_site, horaires_ouvert, telephone) 
+                  VALUES (:nom, :type_res, :commune, :departement, :region, :coordonnees, :lien_site, :horaires, :telephone)";
         
         try {
             $stmt = $this->db->prepare($query);
             $stmt->bindParam(':nom', $nom, PDO::PARAM_STR);
+            $stmt->bindParam(':type_res', $type_res, PDO::PARAM_STR);
             $stmt->bindParam(':commune', $commune, PDO::PARAM_STR);
             $stmt->bindParam(':departement', $departement, PDO::PARAM_STR);
             $stmt->bindParam(':region', $region, PDO::PARAM_STR);
@@ -87,9 +88,10 @@ class RestaurantModel {
         }
     }
     
-    public function updateRestaurant($id_res, $nom, $commune, $departement, $region, $coordonnees, $lien_site, $horaires, $telephone = null) {
+    public function updateRestaurant($id_res, $nom, $type_res, $commune, $departement, $region, $coordonnees, $lien_site, $horaires, $telephone = null) {
         $query = "UPDATE RESTAURANT SET
                 nom_res = :nom, 
+                type_res = :type_res,
                 commune = :commune, 
                 departement = :departement, 
                 region = :region, 
@@ -103,6 +105,7 @@ class RestaurantModel {
             $stmt = $this->db->prepare($query);
             $stmt->bindParam(':id_res', $id_res, PDO::PARAM_INT);
             $stmt->bindParam(':nom', $nom, PDO::PARAM_STR);
+            $stmt->bindParam(':type_res', $type_res, PDO::PARAM_STR);
             $stmt->bindParam(':commune', $commune, PDO::PARAM_STR);
             $stmt->bindParam(':departement', $departement, PDO::PARAM_STR);
             $stmt->bindParam(':region', $region, PDO::PARAM_STR);
