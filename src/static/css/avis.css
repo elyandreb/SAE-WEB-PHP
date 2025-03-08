@@ -47,6 +47,8 @@ h1 {
 
 #info {
     display: flex;
+    flex-direction: column;
+    align-items: start;
     max-width: 1000px;
     margin: 20px auto;
     padding: 20px;
@@ -55,5 +57,25 @@ h1 {
 h2 {
     font-size: 2.5em;
     text-align: center;
-    margin: 0;
+    margin: 0px 0px 20px 0px;
+}
+
+#info p {
+    margin: 5px 0;
+    font-size: 1.2em;
+}
+
+#info li {
+    margin: 5px 0;
+    font-size: 1.2em;
+}
+
+#info ul {
+    margin: 0 30px;
+}
+
+h3 {
+    font-size: 2em;
+    text-align: center;
+    margin: 20px 0px 20px 0px;
 }

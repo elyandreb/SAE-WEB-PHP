@@ -17,18 +17,15 @@
         ?>
     </h1>
 
-    <div id="info">
-        <h2>Informations</h2>
-    </div>
-
-
-
     <?php
   
     require_once __DIR__ . '/../classes/autoloader/autoload.php';
     use classes\controller\ControllerAvis;
+    use classes\controller\ControllerRestaurant;
+    use classes\controller\ControllerCuisine;
 
     $controller_avis = new ControllerAvis();
+    $controller_restaurant = new ControllerRestaurant();
    
     $id_current_user = $_SESSION['user_id'];
     $nom_role = $_SESSION['user_role'] ?? null;
@@ -44,13 +41,73 @@
     $perso = false;
     if (isset($id_res)) {
         $avis = $controller_avis->getCritiquesByRestaurant($id_res);
+        $restaurant = $controller_restaurant->getRestaurantById($id_res);
     }
 
     else {
         $avis = $_SESSION['avis_persos'] ? $_SESSION['avis_persos'] : [];
         $perso = true;
     }
-   
+
+
+
+        if (isset($restaurant)) {
+            echo "<div id=info>";
+            echo "<h2>Informations</h2>";
+            $controller_cuisine = new ControllerCuisine();
+            $cuisines = $controller_cuisine->getCuisinesByRestaurant($id_res);
+            echo "<p>Type d'établissement : " . $restaurant['type_res'] . "</p>";
+            if (!empty($cuisines)) {
+                echo "<p>Types de cuisines : ";
+                $cuisine_names = array_map(function($cuisine) {
+                    return $cuisine['nom_type'];
+                }, $cuisines);
+                echo implode(', ', $cuisine_names);
+                echo "</p>";
+            }
+            else {
+                echo "<p>Types de cuisines : Inconnu</p>";
+            }
+            echo "<p>Département : " . $restaurant['departement'] . "</p>";
+            echo "<p>Commune : " . $restaurant['commune'] . "</p>";
+            echo "<p>Téléphone : " . $restaurant['telephone'] . "</p>";
+            echo "<p>Site web : <a href='" . $restaurant['lien_site'] . "'>" . $restaurant['lien_site'] . "</a></p>";
+            $horaires = explode(';', $restaurant['horaires_ouvert']);
+            echo "<p>Horaires :</p><ul>";
+            $jours = [
+                'Mo' => 'Lundi',
+                'Tu' => 'Mardi',
+                'We' => 'Mercredi',
+                'Th' => 'Jeudi',
+                'Fr' => 'Vendredi',
+                'Sa' => 'Samedi',
+                'Su' => 'Dimanche'
+            ];
+            foreach ($horaires as $horaire) {
+                $horaire = trim($horaire);
+                foreach ($jours as $en => $fr) {
+                    $horaire = str_replace($en, $fr, $horaire);
+                }
+                echo "<li>" . $horaire . "</li>";
+            }
+            echo "</ul>";
+            $coordinates = $restaurant['coordonnees'];
+            echo "<h3> Emplacement : </h3>";
+            echo "<div id='map' style='height: 400px; width: 100%;'></div>";
+            echo "<script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    var map = L.map('map').setView([$coordinates], 18);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors'
+                    }).addTo(map);
+                    L.marker([$coordinates]).addTo(map);
+                });
+            </script>";
+        }
+        ?>
+    </div>
+
+    <?php
     $nom_resto = isset($_GET['nomRes']) ? $_GET['nomRes'] : 'Inconnu';
     
     if (empty($avis) && isset($_GET["nomRes"])){

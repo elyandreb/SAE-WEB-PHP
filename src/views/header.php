@@ -6,6 +6,8 @@ $nom_role = $_SESSION['user_role'] ?? '';
 <head>
     <link rel="stylesheet" href="/static/css/header.css">
     <script defer src="/static/js/header.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </head>
 <header>
     <?php if ($isLoggedIn): ?>
