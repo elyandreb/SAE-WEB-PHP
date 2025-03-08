@@ -145,27 +145,42 @@ class Model_bd {
     }
 
     /**
-     * Initialise la base de données avec les données du fichier JSON
-     * Supprime d'abord les données existantes
+     * Supprime les tables existantes
      */
-    public function init_resto_json() {
+    private function dropTables() {
+        $queries = [
+            "DROP TABLE IF EXISTS AIMER",
+            "DROP TABLE IF EXISTS CRITIQUE",
+            "DROP TABLE IF EXISTS FAVORIS",
+            "DROP TABLE IF EXISTS ETRE",
+            "DROP TABLE IF EXISTS RESTAURANT",
+            "DROP TABLE IF EXISTS TYPE_CUISINE",
+            "DROP TABLE IF EXISTS UTILISATEUR",
+            "DROP TABLE IF EXISTS UTILISATEUR_PREFERENCES"
+        ];
+
         try {
             $this->db->beginTransaction();
             
-            // Suppression des données existantes
-            $this->db->exec("DELETE FROM AIMER");
-            $this->db->exec("DELETE FROM CRITIQUE");
-            $this->db->exec("DELETE FROM FAVORIS");
-            $this->db->exec("DELETE FROM ETRE");
-            $this->db->exec("DELETE FROM RESTAURANT");
-            $this->db->exec("DELETE FROM TYPE_CUISINE");
+            foreach ($queries as $query) {
+                $this->db->exec($query);
+            }
             
             $this->db->commit();
         } catch (PDOException $e) {
             $this->db->rollBack();
-            error_log("Erreur lors de la suppression des données: " . $e->getMessage());
-            throw new \Exception("Erreur lors de la suppression des données: " . $e->getMessage());
+            error_log("Erreur lors de la suppression des tables: " . $e->getMessage());
+            throw new \Exception("Erreur lors de la suppression des tables: " . $e->getMessage());
         }
+    }
+
+    /**
+     * Initialise la base de données avec les données du fichier JSON
+     * Supprime d'abord les données existantes
+     */
+    public function init_resto_json() {
+        $this->dropTables();
+        $this->createTables();
         
         // Chargement du fichier JSON
         $data = json_decode(file_get_contents(__DIR__ . '/../../data/restaurants_orleans.json'), true);
