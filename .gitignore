@@ -10,9 +10,6 @@
 # Build data
 /build/
 
-composer.phar
 vendor/
-composer.json
-composer.lock
 
 *.db
