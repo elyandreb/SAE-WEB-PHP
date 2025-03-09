@@ -14,7 +14,8 @@
     <div class="search-container">
         <h2>Rechercher un restaurant</h2>
         <form action="index.php" method="GET">
-            <input type="hidden" name="action" value="home"> <!-- Pour garder l'action home -->
+            <input type="hidden" name="action" value="home">
+            <input type="hidden" name="filter" value="<?= htmlspecialchars($_GET['filter'] ?? '') ?>">
             <input type="text" name="search" placeholder="Recherchez un restaurant..." value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
             <button type="submit">Rechercher</button>
         </form>
@@ -44,8 +45,9 @@
 
     $controller_avis = new ControllerAvis();
     $controller_cuisine = new ControllerCuisine();
-   
 
+    $filter = $_GET['filter'] ?? '';
+   
     // Récupérer les restaurants et les favoris
     $restaurants = $_SESSION['restaurants'] ?? [];
     $favoris = $_SESSION['favoris'] ?? [];
@@ -56,15 +58,6 @@
 
     // Par défaut, on affiche tous les restaurants
     $restaurants_to_display = $_SESSION['restaurants'] ?? [];
-
-    // Vérifier s'il y a une recherche
-    $searchQuery = $_GET['search'] ?? '';
-
-    if (!empty($searchQuery)) {
-        $restaurants_to_display = array_filter($restaurants_to_display, function ($restaurant) use ($searchQuery) {
-            return stripos($restaurant['nom_res'], $searchQuery) !== false;
-        });
-    }
 
     // Si l'utilisateur veut trier par note, on affiche les restaurants triés
     if ($filter_bon_restos) {
@@ -87,8 +80,17 @@
         });
     }
 
+    // Vérifier s'il y a une recherche
+    $searchQuery = $_GET['search'] ?? '';
+
+    if (!empty($searchQuery)) {
+        $restaurants_to_display = array_filter($restaurants_to_display, function ($restaurant) use ($searchQuery) {
+            return stripos($restaurant['nom_res'], $searchQuery) !== false;
+        });
+    }
+    
     // Nombre de restaurants par page
-    $restaurantsPerPage = 24; // Ajuste selon ton design
+    $restaurantsPerPage = 24;
 
     // Page actuelle
     $current_page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
@@ -159,15 +161,15 @@
     <?php if ($total_pages > 1): ?>
         <div class="pagination">
             <?php if ($current_page > 1): ?>
-                <a href="index.php?action=home&page=<?= $current_page - 1 ?>" class="page-btn">Précédent</a>
+                <a href="index.php?action=home&page=<?= $current_page - 1 ?>&search=<?= urlencode($searchQuery) ?>&filter=<?= urlencode($filter) ?>" class="page-btn">Précédent</a>
             <?php endif; ?>
 
             <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-                <a href="index.php?action=home&page=<?= $i ?>" class="page-btn <?= ($i === $current_page) ? 'active' : '' ?>"><?= $i ?></a>
+                <a href="index.php?action=home&page=<?= $i ?>&search=<?= urlencode($searchQuery) ?>&filter=<?= urlencode($filter) ?>" class="page-btn <?= ($i === $current_page) ? 'active' : '' ?>"><?= $i ?></a>
             <?php endfor; ?>
 
             <?php if ($current_page < $total_pages): ?>
-                <a href="index.php?action=home&page=<?= $current_page + 1 ?>" class="page-btn">Suivant</a>
+                <a href="index.php?action=home&page=<?= $current_page + 1 ?>&search=<?= urlencode($searchQuery) ?>&filter=<?= urlencode($filter) ?>" class="page-btn">Suivant</a>
             <?php endif; ?>
         </div>
     <?php endif; ?>

@@ -9,7 +9,7 @@
 </head>
 <body>
 
-    <h1>
+    <h1  class="avistitle">
         <?php
         if (isset($_GET['nomRes'])) {
             echo "Restaurant : " . $_GET['nomRes'];
@@ -130,7 +130,7 @@
     if (empty($avis) && isset($_GET["nomRes"])){
 
         echo "<div style='margin: 0 0 200px 0;'>";
-        echo "<h1>Aucun avis pour le restaurant " . $nom_resto . "</h1>";
+        echo "<h1 class='avistitle'>Aucun avis pour le restaurant " . $nom_resto . "</h1>";
         echo '<a class="btn_ajouter" style="position: relative; left: 445px;" href="index.php?action=add_avis&id_res=' . urlencode($restaurant['id_res']) . '&nomRes=' . urlencode($restaurant['nom_res']) . '">Ajouter un avis</a>';
         echo "</div>";
     }
@@ -138,10 +138,13 @@
     else {
         echo "<div id='section_avis'>";
         if ($perso) {
-            echo "<h1>Mes avis</h1>";
+            echo "<h1  class='avistitle'>Mes avis</h1>";
+            if (empty($avis)) {
+                echo "<h2 class='emptyavis'>Aucun avis pour le moment.</h2>";
+            }
         }
         else{
-            echo "<h1>Les avis du restaurant $nom_resto</h1>";
+            echo "<h1  class='avistitle'>Les avis du restaurant $nom_resto</h1>";
             echo "<div id='ajout_avis'>";
             echo '<a class="btn_ajouter" href="index.php?action=add_avis&id_res=' . urlencode($restaurant['id_res']) . '&nomRes=' . urlencode($restaurant['nom_res']) . '">Ajouter un avis</a>';
             echo "</div>";

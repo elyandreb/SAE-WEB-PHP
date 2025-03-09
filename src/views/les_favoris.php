@@ -11,7 +11,7 @@ include 'header.php';
     <link rel="stylesheet" href="../static/css/favoris.css">
 </head>
 <body>
-    <h1>Mes favoris</h1>
+    <h1 class="favtitle">Mes favoris</h1>
 
     <?php
   
