@@ -7,7 +7,7 @@ use classes\model\RestaurantModel;
 use classes\model\CritiqueModel;
 use classes\model\UserModel;
 
-class Test_Restaurant extends TestCase
+class RestaurantTest extends TestCase
 {
     private CritiqueModel $critiqueModel;
     private RestaurantModel $restaurantModel;

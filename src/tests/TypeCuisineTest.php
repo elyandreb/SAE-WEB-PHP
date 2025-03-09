@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 use classes\model\TypeCuisineModel;
 use classes\model\RestaurantModel;
 
-class Test_Type_Cuisine extends TestCase
+class TypeCuisineTest extends TestCase
 {
     private TypeCuisineModel $typeCuisineModel;
     private RestaurantModel $restaurantModel;

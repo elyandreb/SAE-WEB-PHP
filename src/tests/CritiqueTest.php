@@ -7,7 +7,7 @@ use classes\model\UserModel;
 
 require_once __DIR__ . '/../classes/autoloader/autoload.php'; // Charge l'autoload
 
-final class Test_critique extends TestCase
+final class CritiqueTest extends TestCase
 {   
     private CritiqueModel $critiqueModel;
     private RestaurantModel $restaurantModel;

@@ -7,7 +7,7 @@ use classes\model\FavoriModel;
 use classes\model\RestaurantModel;
 use classes\model\UserModel;
 
-class Test_Favori extends TestCase
+class FavoriTest extends TestCase
 {
     private FavoriModel $favoriModel;
     private RestaurantModel $restaurantModel;
