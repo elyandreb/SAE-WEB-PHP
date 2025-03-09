@@ -13,4 +13,8 @@ class ControllerCuisine {
     public function getCuisinesByRestaurant($id_res): array {
         return $this->typeCuisineModel->getTypesCuisineByRestaurant($id_res);
     }
+
+    public function getAllCuisines(): array {
+        return $this->typeCuisineModel->getAllTypesCuisine();
+    }
 }

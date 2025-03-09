@@ -11,6 +11,7 @@ use classes\controller\ControllerRegister;
 use classes\controller\ControllerPreferences;
 use classes\controller\ControllerFavoris;
 use classes\controller\ControllerProfil;
+use classes\controller\ControllerCuisine;
 use classes\model\Model_bd;
 use classes\model\RestaurantModel;
 use classes\model\CritiqueModel;
@@ -90,6 +91,11 @@ try {
         $_SESSION['favoris'] = $controller_favoris->getFavorisByUser($id_u);
         $controllerPreferences = new ControllerPreferences();
         $_SESSION['preferences'] = $controllerPreferences->getPreferences();
+        $controllerCuisine = new ControllerCuisine();
+        $_SESSION['types_cuisines'] = $controllerCuisine->getAllCuisines();
+
+
+        print_r($_SESSION['preferences']);
         require_once __DIR__ . '/views/header.php';
         require_once __DIR__ . '/views/les_restaurants.php';
         exit;
