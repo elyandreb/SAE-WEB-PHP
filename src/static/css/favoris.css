@@ -1,15 +1,9 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-}
 
-h1 {
+.favtitle {
     text-align: center;
     margin-bottom: 20px;
     font-size: 3em;
-    color: #333;
+    
 }
 
 h2 {
