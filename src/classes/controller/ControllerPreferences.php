@@ -13,10 +13,6 @@ class ControllerPreferences {
     }
 
     public function preferences(): void {
-        if (!isset($_SESSION['user_id'])) {
-            header('Location: /views/login_form.php');
-            exit;
-        }
         $errorMessage = '';
 
         $user_id = $_SESSION['user_id'];
@@ -48,11 +44,7 @@ class ControllerPreferences {
     }
 
     public function getPreferences() {
-        if (!isset($_SESSION['user_id'])) {
-            header('Location: /views/login_form.php');
-            exit;
-        }
-        $user_id = $_SESSION['user_id'];
+        $user_id = $_SESSION['user_id'] ?? [];
         return $this->userModel->getUserPreferencesID($user_id);
     }
 }

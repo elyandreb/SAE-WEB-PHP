@@ -18,7 +18,7 @@ use classes\model\CritiqueModel;
 
 // Récupérer l'action dès le début
 
-$action = $_GET['action'] ?? 'login';
+$action = $_GET['action'] ?? 'home';
 
 try {
     $db = Model_bd::getInstance();
@@ -88,7 +88,11 @@ try {
 
     if ($action === 'home') {
         $controller_favoris = new ControllerFavoris();
-        $_SESSION['favoris'] = $controller_favoris->getFavorisByUser($id_u);
+        if (!empty($id_u)) {
+            $_SESSION['favoris'] = $controller_favoris->getFavorisByUser($id_u);
+        } else {
+            $_SESSION['favoris'] = [];
+        }
         $controllerPreferences = new ControllerPreferences();
         $_SESSION['preferences'] = $controllerPreferences->getPreferences();
         $controllerCuisine = new ControllerCuisine();
