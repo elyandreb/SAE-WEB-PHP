@@ -10,21 +10,22 @@ $nom_role = $_SESSION['user_role'] ?? '';
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </head>
 <header>
-    <?php if ($isLoggedIn): ?>
-        <div class="logo">
-            <button onclick="location.href='/index.php?action=home'">
-                <img src="../static/img/logo.svg" alt="IUTables'O">
-            </button>
-        
-        </div>
-    <?php else: ?>
-        <div class="logo">
-            <button>
-                <img src="../static/img/logo.svg" alt="IUTables'O">
-            </button>
-        </div>
-    <?php endif; ?>
-    
+    <div class="logo-container">
+        <?php if ($isLoggedIn): ?>
+            <div class="logo">
+                <button onclick="location.href='/index.php?action=home'">
+                    <img src="../static/img/logo.svg" alt="IUTables'O">
+                </button>
+            </div>
+        <?php else: ?>
+            <div class="logo">
+                <button>
+                    <img src="../static/img/logo.svg" alt="IUTables'O">
+                </button>
+            </div>
+        <?php endif; ?>
+        <h1>IUTables’O</h1>
+    </div>
     <nav class="navbar">
         <?php if ($isLoggedIn): ?>
             <?php if ($nom_role === 'utilisateur'): ?>
@@ -39,7 +40,7 @@ $nom_role = $_SESSION['user_role'] ?? '';
             <div class="profile-menu">
                 <img src="../static/img/user.svg" alt="Profil" class="profile-icon" id="profileIcon">
                 <div class="dropdown-menu" id="dropdownMenu">
-                    <a href="profil.php">Profil</a>
+                    <a href="/index.php?action=profil">Profil</a>
                     <form action="/index.php?action=logout" method="POST">
                         <button class="logout" type="submit">Se déconnecter</button>
                     </form>

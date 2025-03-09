@@ -10,6 +10,7 @@ use classes\controller\ControllerLogin;
 use classes\controller\ControllerRegister;
 use classes\controller\ControllerPreferences;
 use classes\controller\ControllerFavoris;
+use classes\controller\ControllerProfil;
 use classes\model\Model_bd;
 use classes\model\RestaurantModel;
 use classes\model\CritiqueModel;
@@ -67,18 +68,22 @@ try {
         $controllerPreferences->preferences();
         exit;
     }
-    
-    $restaurants = Provider::getRestaurants(fichier: 'restaurants_orleans');
 
-
-    // Traitement immédiat de l'action AJAX pour toggle-favoris
-    if (preg_match('#^toggle-favoris/(.+)$#', $action, $matches)) {
-     $controller = new Controller();
-     $idRestaurant = urldecode($matches[1]);
-     $controller->toggleFavorite($idRestaurant);
-     exit; // Arrêter l'exécution après l'envoi de la réponse JSON
+    if ($action === 'profil') {
+        $controllerProfil = new ControllerProfil();
+        $controllerProfil->afficherProfil();
+        exit;
     }
 
+    if ($action === 'editProfil') {
+        $controllerProfil = new ControllerProfil();
+        $controllerProfil->modifierProfil();
+        exit;
+    }
+
+    
+    
+    $restaurants = Provider::getRestaurants(fichier: 'restaurants_orleans');
 
     if ($action === 'home') {
         $controller_favoris = new ControllerFavoris();
