@@ -113,6 +113,13 @@ class CritiqueModel {
             return false;
         }
     }
+    public function getCritiqueById($id_c) {
+        $query = "SELECT * FROM CRITIQUE WHERE id_c = :id_c";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':id_c', $id_c, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
     public function deleteCritique($id_c) {
         try {

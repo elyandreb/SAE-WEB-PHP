@@ -70,8 +70,12 @@ class ControllerAvis {
             $success = $this->critiqueModel->deleteCritique($id_c);
            
             if ($success) {
-                header("Location: index.php?action=les_avis&id_res=" . urlencode($_GET['id_res']));
-                exit;
+                $controller_restaurant = new ControllerRestaurant();
+                $restaurant = $controller_restaurant->getRestaurantById($_GET['id_res']);
+                $nomRes = $restaurant['nom_res'] ?? 'Inconnu';
+
+                header("Location: index.php?action=les_avis&id_res=" . urlencode($_GET['id_res']) . "&nomRes=" . urlencode($nomRes));
+
             } else {
                 echo json_encode(["status" => "error", "message" => "Erreur lors de la suppression de l'avis."]);
             }
@@ -79,5 +83,53 @@ class ControllerAvis {
             echo json_encode(["status" => "error", "message" => "Méthode non autorisée."]);
         }
     }
+    
+    public function modify_avis() {
+        $errorMessage = '';
+        $successMessage = '';
+        $critique = null;
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!isset($_POST['id_c'], $_POST['note_reception'], $_POST['note_plats'], $_POST['note_service'], $_POST['commentaire'])) {
+                $errorMessage = 'Erreur : Données manquantes.';
+            } else {
+                $id_c = filter_var($_POST['id_c'], FILTER_VALIDATE_INT);
+                $note_reception = filter_var($_POST['note_reception'], FILTER_VALIDATE_INT);
+                $note_plats = filter_var($_POST['note_plats'], FILTER_VALIDATE_INT);
+                $note_service = filter_var($_POST['note_service'], FILTER_VALIDATE_INT);
+                $commentaire = htmlspecialchars($_POST['commentaire']);
+    
+                if ($id_c === false || $note_reception === false || $note_plats === false || $note_service === false) {
+                    $errorMessage = 'Erreur : Données invalides.';
+                } elseif ($note_reception < 1 || $note_reception > 5 || 
+                          $note_plats < 1 || $note_plats > 5 || 
+                          $note_service < 1 || $note_service > 5) {
+                    $errorMessage = 'Erreur : Notes invalides.';
+                } else {
+                    
+                    $success = $this->critiqueModel->updateCritique($id_c, $note_reception,  $commentaire, $note_plats, $note_service);
+                    if ($success) {
+                        header("Location: index.php?action=les_avis&id_res=" . urlencode($_POST['id_res']) . '&nomRes=' . urlencode($_POST['nomRes']));
+                        exit;
+                    } else {
+                        $errorMessage = 'Erreur : Échec de la mise à jour de l\'avis.';
+                    }
+                }
+            }
+        } else {
+            // Récupération de l'avis existant si on vient en mode édition
+            if (isset($_GET['id_c'])) {
+                $id_c = filter_var($_GET['id_c'], FILTER_VALIDATE_INT);
+                if ($id_c) {
+                    $critique = $this->critiqueModel->getCritiqueById($id_c);
+                  
+                }
+            }
+        }
+    
+        include_once ROOT_PATH . '/views/edit_avis.php';
+    }
+    
+    
+    
     
 }

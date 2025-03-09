@@ -128,10 +128,13 @@
     $nom_resto = isset($_GET['nomRes']) ? $_GET['nomRes'] : 'Inconnu';
     
     if (empty($avis) && isset($_GET["nomRes"])){
-
-        echo "<div style='margin: 0 0 200px 0;'>";
-        echo "<h1 class='avistitle'>Aucun avis pour le restaurant " . $nom_resto . "</h1>";
-        echo '<a class="btn_ajouter" style="position: relative; left: 445px;" href="index.php?action=add_avis&id_res=' . urlencode($restaurant['id_res']) . '&nomRes=' . urlencode($restaurant['nom_res']) . '">Ajouter un avis</a>';
+        echo "<div id='section_avis'>";
+        echo '<div class ="ajout_avis_rien">';
+        echo "<h1  class='avistitle'>Aucun avis pour le moment</h1>";
+        echo "<div >";
+        echo '<a class="btn_ajouter_avis" href="index.php?action=add_avis&id_res=' . urlencode($restaurant['id_res']) . '&nomRes=' . urlencode($restaurant['nom_res']) . '">Ajouter un avis</a>';
+        echo "</div>";
+        echo "</div>";
         echo "</div>";
     }
     
@@ -144,9 +147,11 @@
             }
         }
         else{
+            echo '<div class ="ajout_avis_rien">';
             echo "<h1  class='avistitle'>Les avis du restaurant $nom_resto</h1>";
-            echo "<div id='ajout_avis'>";
-            echo '<a class="btn_ajouter" href="index.php?action=add_avis&id_res=' . urlencode($restaurant['id_res']) . '&nomRes=' . urlencode($restaurant['nom_res']) . '">Ajouter un avis</a>';
+            echo "<div >";
+            echo '<a class="btn_ajouter_avis" href="index.php?action=add_avis&id_res=' . urlencode($restaurant['id_res']) . '&nomRes=' . urlencode($restaurant['nom_res']) . '">Ajouter un avis</a>';
+            echo "</div>";
             echo "</div>";
         }
         
@@ -165,9 +170,13 @@
             echo "Plats : " . str_repeat("<img src='../static/img/star.svg' alt='star' style='width:20px;height:20px;'>", $a['note_p']) . "<br>";
             echo "Service : " . str_repeat("<img src='../static/img/star.svg' alt='star' style='width:20px;height:20px;'>", $a['note_s']) . "<br>";
             echo "<p>" . htmlspecialchars($a['commentaire']) . "</p>";
-            if (($id_user_commu ===  $id_current_user) || $nom_role ===  'admin') {
-               echo "<button class='btn_suppr' onclick=\"location.href='/index.php?action=remove_avis&id_c={$a['id_c']}&id_res={$a['id_res']}'\">Supprimer mon avis</button>";
-            }
+            
+            echo '<div id="btns">';
+                if (($id_user_commu ===  $id_current_user) || $nom_role ===  'admin') {
+                   echo "<button class='btn_suppr' onclick=\"location.href='/index.php?action=remove_avis&id_c={$a['id_c']}&id_res={$a['id_res']}'\">Supprimer mon avis</button>";
+                   echo "<button class='btn_suppr' onclick=\"location.href='/index.php?action=modify_avis&id_c={$a['id_c']}&id_res={$a['id_res']}&nomRes=" . urlencode($restaurant['nom_res']) . "'\">Modifier  mon avis</button>";
+                }
+            echo "</div>";
 
             echo "<hr></div>";
         }
