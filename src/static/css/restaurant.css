@@ -6,7 +6,7 @@
 
 .restaurant{
     width: 500px;
-    height: 250px;
+    height: 260px;
     border: thin solid black ;
     margin: 20px;
     transition: 0.3s;
