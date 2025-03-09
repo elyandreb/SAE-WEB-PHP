@@ -1,41 +1,149 @@
 # SAE-WEB-PHP
 
+### Lien du projet
+https://github.com/elyandreb/SAE-WEB-PHP
+
 Groupe 23A :
 
-Loris GRANDCHAMP, Elyandre BURET, Valentin HUN, Lenny VERGEROLLE
-
-Chef de groupe : Lenny VERGEROLLE 
-
-# Projet PHP Restaurants
-
+## Composition de l'équipe
+- **Lenny VERGEROLLE** (Chef de projet)
+- Loris GRANDCHAMP
+- Elyandre BURET
+- Valentin HUN
 
 ## Fonctionnalités
+### Visiteur 
+- Connexion/inscription
+- Recherche des restaurants
+- Filtre des restaurants par type de cuisine, type de restaurant, note
+- Visualisation des restaurants
+### Visiteur connecté
+NB : Le visiteur connecté a les fonctionnalités d'un visiteur
+- Filtre par préférence, favoris
+- Modification du profil (Données de l'utilisateur dont les préférences)
+- Accès aux restaurants favoris 
+- Accès aux avis
+- Ajout d'avis, de favoris
+- Suppression d'avis, de favoris
+- Modification d'avis, de favoris
+### Admin 
+NB : L'admin a les fonctionnalités d'un visiteur
+- Suppression d'avis
+- Modification d'avis
 
+## Installation de l'application
 
-## Utilisation
+### Prérequis
+- PHP 7.4 ou supérieur
+- Composer 2.0 ou supérieur
 
-Le script utilise les classes et espaces de noms suivants :
+### Étapes d'installation
+
+1. **Cloner le dépôt** :
+```bash
+git clone https://github.com/elyandreb/SAE-WEB-PHP
+```
+
+2. **Si ce n'est pas fait installez Composer** :
+
+#### Pour Windows
+
+1. Téléchargez et exécutez l'installateur Windows depuis [getcomposer.org/download](https://getcomposer.org/download/)
+2. Suivez les instructions de l'assistant d'installation
+3. L'installateur ajoutera automatiquement Composer à votre PATH
+
+Ou via PowerShell :
+```powershell
+# Téléchargez l'installateur
+Invoke-WebRequest -Uri https://getcomposer.org/installer -OutFile composer-setup.php
+
+# Installez Composer globalement
+php composer-setup.php --install-dir=C:\ProgramData\ComposerSetup\bin --filename=composer
+
+# Nettoyez
+Remove-Item composer-setup.php
+```
+
+#### Pour Linux/macOS
+
+```bash
+# Téléchargez l'installateur
+curl -sS https://getcomposer.org/installer -o composer-setup.php
+
+# Vérifiez l'installateur (optionnel mais recommandé)
+HASH=$(curl -sS https://composer.github.io/installer.sig)
+php -r "if (hash_file('sha384', 'composer-setup.php') === '$HASH') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+
+# Installez Composer globalement
+sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+
+# Nettoyez
+rm composer-setup.php
+```
+
+3. **Installation des dépendances du projet**
+
+Une fois Composer installé, mettez-vous à la racine du projet et taper la commande ci-dessous pour installer les dépendances du projet (notamment PHPUnit)
+
+```bash
+composer install
+```
+
+## Lancement des tests
+### Pour lancer tous les tests
+
+#### Sur Windows
+```bash
+vendor\bin\phpunit --testdox src/tests
+```
+#### Sur Linux/macOS
+```bash
+./vendor/bin/phpunit --testdox src/tests
+```
+
+### Pour lancer un test spécifique
+
+#### Sur Windows
+```bash
+vendor\bin\phpunit --testdox src/tests/<nom_du_test>
+```
+#### Sur Linux/macOS
+```bash
+./vendor/bin/phpunit --testdox src/tests/<nom_du_test>
+```
 
 
 ## Lancer l'application
 
-```sh
-sh start.sh
+### Avec start.sh
+
+#### Sur Windows
+Depuis la racine du projet
+```bash
+.\start.sh
 ```
 
-## Pour installer Composer 
+#### Sur Linux
+Depuis la racine du projet
+```bash
+sed -i -e 's/\r$//' start.sh
+```
+```bash
+bash start.sh
+```
 
-php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-php -r "if (hash_file('sha384', 'composer-setup.php') ==='dac665fdc30fdd8ec78b38b9800061b4150413ff2e3b6f88543c636f7cd84f6db9189d43a81e5503cda447da73c7e5b6') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-php composer-setup.php
-php -r "unlink('composer-setup.php');"
-composer require --dev phpunit/phpunit
+### Sans utiliser start.sh
+1. Déplacez-vous dans le dossier src
+```bash
+cd src
+```
 
-# Pour lancer les tests
-## a la racine 
+2. Initialisez la base de données (avant le premier lancement)
+```bash
+php loadDB.php
+```
 
-src/tests/
-
-vendor/bin/phpunit src/tests/*test* 
-
-vendor/bin/phpunit src/tests/*test* --testdox --debug
+3. Lancer l'application
+```sh
+php -S localhost:8000
+```
