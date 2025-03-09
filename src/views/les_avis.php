@@ -9,7 +9,7 @@
 </head>
 <body>
 
-    <h1>
+    <h1  class="avistitle">
         <?php
         if (isset($_GET['nomRes'])) {
             echo "Restaurant : " . $_GET['nomRes'];
@@ -128,16 +128,19 @@
     $nom_resto = isset($_GET['nomRes']) ? $_GET['nomRes'] : 'Inconnu';
     
     if (empty($avis) && isset($_GET["nomRes"])){
-        echo "<h1>Aucun avis pour le restaurant " . $nom_resto . "</h1>";
+        echo "<h1  class='avistitle'>Aucun avis pour le restaurant " . $nom_resto . "</h1>";
     }
     
     else {
         echo "<div>";
         if ($perso) {
-            echo "<h1>Mes avis</h1>";
+            echo "<h1  class='avistitle'>Mes avis</h1>";
+            if (empty($avis)) {
+                echo "<h2 class='emptyavis'>Aucun avis pour le moment.</h2>";
+            }
         }
         else{
-            echo "<h1>Les avis du restaurant $nom_resto</h1>";
+            echo "<h1  class='avistitle'>Les avis du restaurant $nom_resto</h1>";
         }
         
         foreach ($avis as $a) {
