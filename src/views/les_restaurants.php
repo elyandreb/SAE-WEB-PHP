@@ -26,6 +26,7 @@
         <form action="index.php" method="GET">
             <input type="hidden" name="action" value="home">
             <input type="hidden" name="search" value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
+            <input type="hidden" name="filter" value="<?= htmlspecialchars($_GET['filter'] ?? '') ?>">
 
             <label for="type_restaurant">Type de restaurant :</label>
             <select name="type_restaurant">
