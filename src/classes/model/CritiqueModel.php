@@ -92,7 +92,7 @@ class CritiqueModel {
         }
     }
 
-    public function updateCritique($id_c, $note_r, $commentaire, $note_p = null, $note_s = null) {
+    public function updateCritique($id_c, $commentaire, $note_r = null, $note_p = null, $note_s = null) {
         $query = "UPDATE CRITIQUE SET 
                 note_r = :note_r, 
                 commentaire = :commentaire, 
@@ -119,7 +119,9 @@ class CritiqueModel {
             $this->db->beginTransaction();
             
             // Suppression des likes associés à cette critique
-            $this->db->exec("DELETE FROM AIMER WHERE id_c = $id_c");
+            $stmt_aimer = $this->db->prepare("DELETE FROM AIMER WHERE id_c = :id_c");
+            $stmt_aimer->bindParam(':id_c', $id_c, PDO::PARAM_INT);
+            $stmt_aimer->execute();
             
             // Suppression de la critique
             $stmt = $this->db->prepare("DELETE FROM CRITIQUE WHERE id_c = :id_c");

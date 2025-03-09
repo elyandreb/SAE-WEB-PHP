@@ -1,0 +1,27 @@
+{
+    "name": "vello_resto/sae-web-php",
+    "description": "Projet PHP de l'équipe Vello resto",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Loris-Gr",
+            "email": "grandchamploris@gmail.com"
+        },
+        {
+            "name": "elyandreb",
+            "email": "elyandreburet72@gmail.com"
+        },
+        {
+            "name": "lenny-vergerolle",
+            "email": "vergerolle.lenny@gmail.com"
+        },
+        {
+            "name": "valentin-hun",
+            "email": "valentinhun@hotmail.fr"
+        }
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "^12.0"
+    }
+}
