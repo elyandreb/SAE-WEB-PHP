@@ -27,6 +27,16 @@
             <input type="hidden" name="action" value="home">
             <input type="hidden" name="search" value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
 
+            <label for="type_restaurant">Type de restaurant :</label>
+            <select name="type_restaurant">
+                <option value="">Tous</option>
+                <?php foreach ($_SESSION['types_restaurants'] ?? [] as $type): ?>
+                    <option value="<?= htmlspecialchars($type) ?>" <?= (isset($_GET['type_restaurant']) && $_GET['type_restaurant'] == $type) ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($type) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+
             <label for="type_cuisine">Type de cuisine :</label>
             <select name="type_cuisine">
                 <option value="">Tous</option>
@@ -74,6 +84,7 @@
     $bons_restaurants = $_SESSION['bons_restaurants'] ?? [];
     $filter_preferences = isset($_GET['filter']) && $_GET['filter'] === 'preferences';
     $filter_bon_restos = isset($_GET['filter']) && $_GET['filter'] === 'bon_restos';
+    $type_restaurant = $_GET['type_restaurant'] ?? '';
     $type_cuisine = $_GET['type_cuisine'] ?? '';
 
     // Par défaut, on affiche tous les restaurants
@@ -100,7 +111,12 @@
         });
     }
 
-
+    // Filtrer les restaurants par type de restaurant
+    if (!empty($type_restaurant)) {
+        $restaurants_to_display = array_filter($restaurants_to_display, function ($restaurant) use ($type_restaurant) {
+            return isset($restaurant['type_res']) && $restaurant['type_res'] == $type_restaurant;
+        });
+    }
 
     // Filtrer les restaurants par type de cuisine
     if (!empty($type_cuisine)) {

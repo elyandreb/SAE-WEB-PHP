@@ -93,9 +93,9 @@ try {
         $_SESSION['preferences'] = $controllerPreferences->getPreferences();
         $controllerCuisine = new ControllerCuisine();
         $_SESSION['types_cuisines'] = $controllerCuisine->getAllCuisines();
+        $_SESSION['types_restaurants'] = array_unique(array_column($_SESSION['restaurants'] ?? [], 'type_res'));
 
 
-        print_r($_SESSION['preferences']);
         require_once __DIR__ . '/views/header.php';
         require_once __DIR__ . '/views/les_restaurants.php';
         exit;
