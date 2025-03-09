@@ -47,6 +47,7 @@ class ControllerAvis {
     }
 
     public function getAvis() {
+        
         return $this->critiqueModel->getAvis();
     }
 
@@ -73,7 +74,10 @@ class ControllerAvis {
                 $controller_restaurant = new ControllerRestaurant();
                 $restaurant = $controller_restaurant->getRestaurantById($_GET['id_res']);
                 $nomRes = $restaurant['nom_res'] ?? 'Inconnu';
-
+                if ($_SESSION['user_role'] === 'admin') {
+                    header("Location: index.php?action=gerer-avis");
+                    exit;
+                }
                 header("Location: index.php?action=les_avis&id_res=" . urlencode($_GET['id_res']) . "&nomRes=" . urlencode($nomRes));
 
             } else {
