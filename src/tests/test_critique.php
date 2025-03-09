@@ -11,14 +11,13 @@ final class Test_critique extends TestCase
 {   
     private CritiqueModel $critiqueModel;
     private RestaurantModel $restaurantModel;
-    private int $id_critique;
+    private UserModel $userModel;
     private int $id_u;
     private int $id_res;
-    private UserModel $userModel;
     
     protected function setUp(): void
     {
-        // Création un restaurant de test
+        // Création d'un restaurant de test
         $this->restaurantModel = new RestaurantModel();
         $this->id_res = $this->restaurantModel->addRestaurant(
                                         nom: "Le Gourmet",
@@ -32,7 +31,7 @@ final class Test_critique extends TestCase
                                         telephone: "0245454545",
                                         );
 
-        // Création un utilisateur de test
+        // Création d'un utilisateur de test
         $this->userModel = new UserModel();
         $testEmail = "testeurgourmet@waw.com";
         if (!$this->userModel->checkEmailExists($testEmail)) {
@@ -46,7 +45,7 @@ final class Test_critique extends TestCase
         }
         $this->id_u = $this->userModel->getUserIdByEmail($testEmail);
 
-        // Création une critique de test
+        // Création d'une critique de test
         $this->critiqueModel = new CritiqueModel();
         $this->critiqueModel->addCritique(
                         note_r: 2,
@@ -56,12 +55,6 @@ final class Test_critique extends TestCase
                         note_p: 5,
                         note_s: 2
                     );
-        
-        // Récupération de l'ID de la critique créée
-        $critiques = $this->critiqueModel->getCritiquesByRestaurant($this->id_res);
-        if (!empty($critiques)) {
-            $this->id_critique = $critiques[0]['id_c'];
-        }
     }
 
     public function testGetCritiqueByUser(): void
@@ -72,29 +65,27 @@ final class Test_critique extends TestCase
         $this->assertSame($this->id_u, $critiques[0]['id_u']);
     }
 
-    public function testGetMoyenneCritiquesByRestaurant(): void
-    {
+    public function testGetMoyenneCritiquesByRestaurant(): void {
+
         $moyenne = $this->critiqueModel->getMoyenneCritiquesByRestaurant($this->id_res);
         $this->assertSame(3.0, $moyenne);
     }
 
-    public function testGetCritiquesByRestaurant(): void
-    {
+    public function testGetCritiquesByRestaurant(): void {
         $critiques = $this->critiqueModel->getCritiquesByRestaurant($this->id_res);
         $this->assertIsArray($critiques);
         $this->assertNotEmpty($critiques);
         $this->assertSame($this->id_res, $critiques[0]['id_res']);
     }
 
-    public function testGetNameUserCritique(): void
-    {
+    public function testGetNameUserCritique(): void {
         $nom = $this->critiqueModel->getNameUserCritique($this->id_u);
         $this->assertSame('Testeur', $nom);
     }
 
     public function testUpdateCritique(): void
     {
-        // On s'assure que id_critique a été correctement récupéré
+        // On s'assure que la critique a été correctement récupéré
         $critiques = $this->critiqueModel->getCritiquesByRestaurant($this->id_res);
         if (empty($critiques)) {
             $this->fail("Aucune critique trouvée pour tester la mise à jour");
@@ -121,7 +112,7 @@ final class Test_critique extends TestCase
 
     public function testDeleteCritique(): void
     {
-        // On s'assure que id_critique a été correctement récupéré
+        // On s'assure que la critique a été correctement récupéré
         $critiques = $this->critiqueModel->getCritiquesByRestaurant($this->id_res);
         if (empty($critiques)) {
             $this->fail("Aucune critique trouvée pour tester la suppression");
