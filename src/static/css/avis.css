@@ -39,10 +39,15 @@ form input, form textarea {
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
-h1 {
+.avistitle {
     text-align: center;
     margin-bottom: 20px;
     font-size: 3em;
+}
+
+.emptyavis {
+    text-align: center;
+    color: #666;
 }
 
 #info {
@@ -54,7 +59,7 @@ h1 {
     padding: 20px;
 }
 
-h2 {
+#info h2 {
     font-size: 2.5em;
     text-align: center;
     margin: 0px 0px 20px 0px;
