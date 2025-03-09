@@ -46,15 +46,51 @@ nav a {
 .btn {
     background-color: #800020;
     color: white;
-    padding: 12px 20px; 
     font-size: 18px; 
     text-decoration: none;
-    border-radius: 8px; 
     font-weight: bold;
     transition: 0.3s;
+    padding: 15px 22px;
+    border: 1px solid black;
 }
 
 .btn:hover {
+    background-color: #66091A;
+    transform: scale(1.05); 
+}
+
+.btn_ajouter {
+    background-color: #800020;
+    width: 200px;
+    color: white;
+    padding: 15px 20px; 
+    font-size: 18px; 
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+    text-align: center;
+    border: 1px solid black;
+    font-family: Helvetica, sans-serif;
+}
+
+.btn_ajouter:hover {
+    background-color: #66091A;
+    transform: scale(1.05); 
+}
+
+.btn_suppr {
+    background-color: #800020;
+    color: white;
+    font-size: 0.9em; 
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+    padding: 10px 15px;
+    border: 1px solid black;
+    font-family: Helvetica, sans-serif;
+}
+
+.btn_suppr:hover {
     background-color: #66091A;
     transform: scale(1.05); 
 }

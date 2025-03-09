@@ -129,15 +129,19 @@
     
     if (empty($avis) && isset($_GET["nomRes"])){
         echo "<h1>Aucun avis pour le restaurant " . $nom_resto . "</h1>";
+        echo '<a class="btn_ajouter" href="index.php?action=add_avis&id_res=' . urlencode($restaurant['id_res']) . '&nomRes=' . urlencode($restaurant['nom_res']) . '">Ajouter un avis</a>';
     }
     
     else {
-        echo "<div>";
+        echo "<div id='section_avis'>";
         if ($perso) {
             echo "<h1>Mes avis</h1>";
         }
         else{
             echo "<h1>Les avis du restaurant $nom_resto</h1>";
+            echo "<div id='ajout_avis'>";
+            echo '<a class="btn_ajouter" href="index.php?action=add_avis&id_res=' . urlencode($restaurant['id_res']) . '&nomRes=' . urlencode($restaurant['nom_res']) . '">Ajouter un avis</a>';
+            echo "</div>";
         }
         
         foreach ($avis as $a) {
@@ -156,13 +160,13 @@
             echo "Service : " . str_repeat("<img src='../static/img/star.svg' alt='star' style='width:20px;height:20px;'>", $a['note_s']) . "<br>";
             echo "<p>" . htmlspecialchars($a['commentaire']) . "</p>";
             if (($id_user_commu ===  $id_current_user) || $nom_role ===  'admin') {
-               echo "<button class='btn' onclick=\"location.href='/index.php?action=remove_avis&id_c={$a['id_c']}&id_res={$a['id_res']}'\">Supprimer</button>";
+               echo "<button class='btn_suppr' onclick=\"location.href='/index.php?action=remove_avis&id_c={$a['id_c']}&id_res={$a['id_res']}'\">Supprimer mon avis</button>";
             }
 
             echo "<hr></div>";
         }
         echo "</div>";
-        
+                
     }
     ?>
 

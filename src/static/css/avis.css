@@ -32,9 +32,8 @@ form input, form textarea {
     border-radius: 5px;
 }
 #avis {
-    margin: 20px auto;
+    margin: 20px 0;
     max-width: 1000px;
-    padding: 20px;
     border-radius: 10px;
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -78,4 +77,19 @@ h3 {
     font-size: 2em;
     text-align: center;
     margin: 20px 0px 20px 0px;
+}
+
+#section_avis {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    max-width: 1000px;
+    margin: 20px auto;
+}
+
+#ajout_avis{
+    display: flex;
+    justify-content: start;
+    max-width: 1000px;
+    margin: 20px 0;
 }
