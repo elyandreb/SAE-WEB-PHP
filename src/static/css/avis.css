@@ -87,14 +87,40 @@ h3 {
 #section_avis {
     display: flex;
     flex-direction: column;
-    justify-content: start;
     max-width: 1000px;
     margin: 20px auto;
 }
 
-#ajout_avis{
+#btns{
     display: flex;
-    justify-content: start;
+    justify-content: space-evenly;
+    margin: 20px 0;
+}
+
+.btn_ajouter_avis {
+    padding: 10px 20px;
+    background-color: #6D071A;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    text-decoration: none;
+    margin: 0 auto;
+}
+
+#ajout_avis {
+    display: flex;
+    justify-content: center;
     max-width: 1000px;
     margin: 20px 0;
+}
+
+#ajout_avis_rien{
+    display: flex;
+    justify-content: center;
+    max-width: 1000px;
+    margin: 20px 0;
+    position: absolute;
+    top: 150%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }

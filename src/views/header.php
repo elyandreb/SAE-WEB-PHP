@@ -32,8 +32,7 @@ $nom_role = $_SESSION['user_role'] ?? '';
                 <a href="?action=les-favoris" class="link"><img style="width:16px; height:16px;" src="../static/img/coeur.svg"> Mes restos préférés</a>
                 <a href="?action=mes_reviews" class="link">Mes reviews</a>
             <?php elseif ($nom_role === 'admin'): ?>
-                <a href="?action=admin-tableau-bord" class="link">Tableau de bord</a>
-                <a href="?action=gerer-utilisateurs" class="link">Gérer les utilisateurs</a>
+                <a href="?action=gerer-avis" class="link">Gérer les avis</a>
             <?php endif; ?>
 
             <p><?= htmlspecialchars($name) ?></p>

@@ -101,7 +101,7 @@ try {
         exit;
     }
 
-    elseif ($action === 'add_avis' || $action === 'remove_avis'|| $action === 'mes_reviews' || $action === 'les_avis') {
+    elseif ($action === 'add_avis' || $action === 'remove_avis'|| $action === 'modify_avis' || $action === 'mes_reviews'  || $action === 'gerer-avis'  || $action === 'les_avis') {
         $controller_avis = new ControllerAvis();
     
         if ($action === 'add_avis') {
@@ -134,10 +134,19 @@ try {
             require_once __DIR__ . '/views/les_avis.php';
             exit;
         }
+
+        elseif ($action === 'modify_avis') {
+            $controller_avis->modify_avis();
+            exit;
+        }
+        elseif ($action === 'gerer-avis') {
+            require_once __DIR__ . '/views/gerer_avis.php';
+            exit;
+        }
+    
+        
     }
      
-    
-
     elseif ($action==='toggle-favoris' || $action ==='les-favoris') {
         $controller_favoris = new ControllerFavoris();
        
@@ -153,7 +162,7 @@ try {
         }
         
     }
-    
+   
     
     
 } catch (Exception $e) {

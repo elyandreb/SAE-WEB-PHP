@@ -182,7 +182,7 @@
                         <p style="margin: 0"><strong>Ville :</strong> <?php echo $restaurant["commune"] ?> </p>
                         <p style="margin-top: 0"><strong>Département : </strong> <?php echo $restaurant["departement"] ?> </p>
 
-                        <p><strong>Types de cuisine : </strong>
+                        <p><strong>Type de cuisine : </strong>
                             <?php
                             $type_cuisines = $controller_cuisine->getCuisinesByRestaurant($idRestaurant);
                             if(!empty($type_cuisines)) {
