@@ -21,7 +21,7 @@
         </form>
     </div>
 
-    <!-- Filtres supplémentaires -->
+    <!-- Filtres type restaurant et type cuisine -->
     <div class="filter-container">
         <form action="index.php" method="GET">
             <input type="hidden" name="action" value="home">
