@@ -5,8 +5,41 @@
 }
 
 .restaurant{
-    flex-basis: 45%;
+    width: 500px;
+    height: 250px;
     border: thin solid black ;
+    margin: 20px;
+    transition: 0.3s;
+    color: black;
+    text-decoration: none;
+}
+
+.restaurant:hover{
+    transform: scale(1.05); 
+}
+
+#titre_resto{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: thin solid black;
+    height: 100px;
+}
+
+#coeur{
+    position: relative; 
+    left: 10px;
+    background: none; 
+    border: none;
+    cursor: pointer;
+}
+
+#coeur:hover{
+    transform: scale(1.1);
+}
+
+#info_resto{
+    margin: 15px;
 }
 
 /* CSS pour la pagination */

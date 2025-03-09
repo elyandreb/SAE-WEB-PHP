@@ -128,8 +128,11 @@
     $nom_resto = isset($_GET['nomRes']) ? $_GET['nomRes'] : 'Inconnu';
     
     if (empty($avis) && isset($_GET["nomRes"])){
+
+        echo "<div style='margin: 0 0 200px 0;'>";
         echo "<h1>Aucun avis pour le restaurant " . $nom_resto . "</h1>";
-        echo '<a class="btn_ajouter" href="index.php?action=add_avis&id_res=' . urlencode($restaurant['id_res']) . '&nomRes=' . urlencode($restaurant['nom_res']) . '">Ajouter un avis</a>';
+        echo '<a class="btn_ajouter" style="position: relative; left: 445px;" href="index.php?action=add_avis&id_res=' . urlencode($restaurant['id_res']) . '&nomRes=' . urlencode($restaurant['nom_res']) . '">Ajouter un avis</a>';
+        echo "</div>";
     }
     
     else {

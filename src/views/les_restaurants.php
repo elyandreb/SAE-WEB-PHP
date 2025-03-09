@@ -40,8 +40,10 @@
     
     require_once __DIR__ . '/../classes/autoloader/autoload.php';
     use classes\controller\ControllerAvis;
+    use classes\controller\ControllerCuisine;
 
     $controller_avis = new ControllerAvis();
+    $controller_cuisine = new ControllerCuisine();
    
 
     // Récupérer les restaurants et les favoris
@@ -110,20 +112,43 @@
                 $isFavorite = in_array($idRestaurant, array_column($_SESSION['favoris'] ?? [], 'id_res'));
                 $heartIcon = $isFavorite ? '../static/img/coeur.svg' : '../static/img/coeur_vide.svg';
                 ?>
-                <div class="restaurant" data-id="<?= $idRestaurant ?>">
-                    <p><?= $controller_avis->getMoyenneCritiquesByRestaurant($idRestaurant) ?> /5 
-                        <img src="../static/img/star.svg" alt="star" style="width:20px;height:20px;">
-                    </p>
-                    <span><?= isset($restaurant['nom_res']) ? htmlspecialchars($restaurant['nom_res']) : 'Nom inconnu' ?></span>
-                    <p><?= isset($restaurant['horaires_ouvert']) ? htmlspecialchars($restaurant['horaires_ouvert']) : 'Horaires inconnus' ?></p>
+                <a class="restaurant" href="index.php?action=les_avis&id_res=<?= urlencode($idRestaurant) ?>&nomRes=<?= urlencode($restaurant['nom_res']) ?>">
 
-                    <button onclick="toggleFavoris(event, this, '<?= $idRestaurant ?>')">
-                        <img class="coeur" src="<?= $heartIcon ?>" alt="Favori">
-                    </button>
+                    <div id='titre_resto'>
+                        <h2><?= isset($restaurant['nom_res']) ? htmlspecialchars($restaurant['nom_res']) : 'Nom inconnu' ?></h2>
+                        <button onclick="toggleFavoris(event, this, '<?= $idRestaurant ?>')" id="coeur">
+                            <img class="coeur" src="<?= $heartIcon ?>" alt="Favori">
+                        </button>
+                    </div>
 
-                    <button class="btn" onclick="location.href='index.php?action=add_avis&id_res=<?= urlencode($idRestaurant) ?>&nomRes=<?= urlencode($restaurant['nom_res']) ?>'">Ajouter un avis</button>
-                    <button class="btn" onclick="location.href='index.php?action=les_avis&id_res=<?= urlencode($idRestaurant) ?>&nomRes=<?= urlencode($restaurant['nom_res']) ?>'">Les avis</button>
-                </div>
+                    <div id="info_resto">
+                        <div style="display: flex; justify-content: space-between;">
+                            <p><strong>Type d'établissement : </strong> <?php echo $restaurant['type_res'] ?></p>
+                            <p style="text-align: center;"><?= $controller_avis->getMoyenneCritiquesByRestaurant($idRestaurant) ?> /5 
+                                <img src="../static/img/star.svg" alt="star" style="width:20px;height:20px;">
+                            </p>
+                        </div>
+                        <p style="margin: 0"><strong>Ville :</strong> <?php echo $restaurant["commune"] ?> </p>
+                        <p style="margin-top: 0"><strong>Département : </strong> <?php echo $restaurant["departement"] ?> </p>
+
+                        <p><strong>Types de cuisine : </strong>
+                            <?php
+                            $type_cuisines = $controller_cuisine->getCuisinesByRestaurant($idRestaurant);
+                            if(!empty($type_cuisines)) {
+                                $str_types_cuisine = [];
+                                foreach ($type_cuisines as $value) {
+                                    $str_types_cuisine[] = htmlspecialchars($value['nom_type']);
+                                }
+                                echo implode(", ", $str_types_cuisine);
+                            } else {
+                                echo "Inconnu";
+                            }
+                            ?>
+                         </p>
+
+                    </div>
+
+                </a>
             <?php endforeach; ?>
         <?php else: ?>
             <p class="no-results">Aucun restaurant ne correspond à votre recherche.</p>
