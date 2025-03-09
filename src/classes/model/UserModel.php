@@ -85,21 +85,32 @@ class UserModel {
     }
 
     public function getUserById($id) {
-        $query = "SELECT * FROM UTILISATEUR WHERE id_u = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        try {
+            $query = "SELECT * FROM UTILISATEUR WHERE id_u = :id";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result !== false ? $result : false;
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération de l'utilisateur par ID: " . $e->getMessage());
+            return false;
+        }
     }
     
     public function getUserPreferences($id) {
-        $query = "SELECT tc.nom_type FROM UTILISATEUR_PREFERENCES up 
-                  JOIN TYPE_CUISINE tc ON up.id_type = tc.id_type 
-                  WHERE up.id_u = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $query = "SELECT tc.id_type, tc.nom_type FROM UTILISATEUR_PREFERENCES up 
+                      JOIN TYPE_CUISINE tc ON up.id_type = tc.id_type 
+                      WHERE up.id_u = :id";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération des préférences de l'utilisateur: " . $e->getMessage());
+            return [];
+        }
     }
 
     public function getUserPreferencesId($userId): array {
@@ -180,24 +191,26 @@ class UserModel {
         }
     }
     
-    public function saveUserPreferences($userId, $preferences) {
-        $query = "INSERT INTO UTILISATEUR_PREFERENCES (id_u, id_type) VALUES (:id_u, :id_type)";
-        $stmt = $this->db->prepare($query);
-    
+    public function saveUserPreferences($userId, $preferences): bool {
         try {
             $this->db->beginTransaction();
             
-            // Supprimer les préférences existantes
+            // Suppression des préférences existantes
             $deleteQuery = "DELETE FROM UTILISATEUR_PREFERENCES WHERE id_u = :id_u";
             $deleteStmt = $this->db->prepare($deleteQuery);
             $deleteStmt->bindParam(':id_u', $userId, PDO::PARAM_INT);
             $deleteStmt->execute();
             
-            // Ajouter les nouvelles préférences
-            foreach ($preferences as $type) {
-                $stmt->bindParam(':id_u', $userId, PDO::PARAM_INT);
-                $stmt->bindParam(':id_type', $type, PDO::PARAM_INT);
-                $stmt->execute();
+            // Ajout des nouvelles préférences
+            if (!empty($preferences)) {
+                $query = "INSERT INTO UTILISATEUR_PREFERENCES (id_u, id_type) VALUES (:id_u, :id_type)";
+                $stmt = $this->db->prepare($query);
+                
+                foreach ($preferences as $type) {
+                    $stmt->bindParam(':id_u', $userId, PDO::PARAM_INT);
+                    $stmt->bindParam(':id_type', $type, PDO::PARAM_INT);
+                    $stmt->execute();
+                }
             }
             
             $this->db->commit();
