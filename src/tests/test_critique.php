@@ -83,6 +83,57 @@ final class Test_critique extends TestCase
         $this->assertSame('Testeur', $nom);
     }
 
+    public function testAddCritique(): void
+    {
+        // Vérification que les restaurants et utilisateurs de test existent
+        $this->assertIsInt($this->id_res);
+        $this->assertGreaterThan(0, $this->id_res);
+        $this->assertIsInt($this->id_u);
+        $this->assertGreaterThan(0, $this->id_u);
+        
+        // Données pour une nouvelle critique
+        $note_r = 4;
+        $commentaire = "Excellente expérience culinaire !";
+        $note_p = 4;
+        $note_s = 5;
+        
+        // Ajout de la critique
+        $result = $this->critiqueModel->addCritique(
+            note_r: $note_r,
+            commentaire: $commentaire,
+            id_res: $this->id_res,
+            id_u: $this->id_u,
+            note_p: $note_p,
+            note_s: $note_s
+        );
+        
+        // Vérification que l'ajout a réussi
+        $this->assertTrue($result);
+        
+        // Récupération des critiques pour le restaurant
+        $critiques = $this->critiqueModel->getCritiquesByRestaurant($this->id_res);
+        
+        // Vérification que la critique a bien été ajoutée
+        $this->assertIsArray($critiques);
+        $this->assertNotEmpty($critiques);
+        
+        // Recherche de la critique nouvellement ajoutée
+        $found = false;
+        foreach ($critiques as $critique) {
+            if ($critique['commentaire'] === $commentaire &&
+                $critique['note_r'] == $note_r &&
+                $critique['note_p'] == $note_p &&
+                $critique['note_s'] == $note_s &&
+                $critique['id_res'] == $this->id_res &&
+                $critique['id_u'] == $this->id_u) {
+                $found = true;
+                break;
+            }
+        }
+        
+        $this->assertTrue($found, "La critique ajoutée n'a pas été trouvée dans les critiques du restaurant");
+    }
+
     public function testUpdateCritique(): void
     {
         // On s'assure que la critique a été correctement récupéré

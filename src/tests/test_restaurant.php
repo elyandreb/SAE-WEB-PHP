@@ -124,6 +124,53 @@ public function testGetRestaurantsTriee(): void
         $this->assertLessThan($index_res_1, $index_res_2, "Le restaurant avec les meilleures notes devrait être mieux classé");
     }
 
+    public function testAddRestaurant(): void
+    {
+        // Données pour un nouveau restaurant
+        $nom = "La Bonne Fourchette";
+        $type_res = "gastronomique";
+        $commune = "Tours";
+        $departement = "Indre-et-Loire";
+        $region = "Centre-Val de Loire";
+        $coordonnees = "47.3941, 0.6848";
+        $lien_site = "http://labonnefourchette.fr";
+        $horaires = "12:00-14:30,19:00-22:30";
+        $telephone = "0256565656";
+        
+        // Ajout du restaurant
+        $id_res = $this->restaurantModel->addRestaurant(
+            nom: $nom,
+            type_res: $type_res,
+            commune: $commune,
+            departement: $departement,
+            region: $region,
+            coordonnees: $coordonnees,
+            lien_site: $lien_site,
+            horaires: $horaires,
+            telephone: $telephone
+        );
+        
+        // Vérification que l'ID retourné n'est pas false et peut être converti en entier
+        $this->assertNotFalse($id_res);
+        $this->assertIsNumeric($id_res);
+        $id_res_int = (int)$id_res;
+        $this->assertGreaterThan(0, $id_res_int);
+        
+        // Récupération du restaurant ajouté pour vérifier ses données
+        $restaurant = $this->restaurantModel->getRestaurantById($id_res);
+        
+        // Vérifications des données
+        $this->assertSame($nom, $restaurant['nom_res']);
+        $this->assertSame($type_res, $restaurant['type_res']);
+        $this->assertSame($commune, $restaurant['commune']);
+        $this->assertSame($departement, $restaurant['departement']);
+        $this->assertSame($region, $restaurant['region']);
+        $this->assertSame($coordonnees, $restaurant['coordonnees']);
+        $this->assertSame($lien_site, $restaurant['lien_site']);
+        $this->assertSame($horaires, $restaurant['horaires_ouvert']);
+        $this->assertSame($telephone, $restaurant['telephone']);
+    }
+
     public function testUpdateRestaurant(): void
     {
         // On s'assure que le restaurant a été correctement récupéré
