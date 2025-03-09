@@ -32,11 +32,9 @@ form input, form textarea {
     border-radius: 5px;
 }
 #avis {
-    margin: 20px 0;
+    margin: 40px 0;
     max-width: 1000px;
-    border-radius: 10px;
     background-color: #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 .avistitle {
     text-align: center;

@@ -170,13 +170,15 @@
             echo "Plats : " . str_repeat("<img src='../static/img/star.svg' alt='star' style='width:20px;height:20px;'>", $a['note_p']) . "<br>";
             echo "Service : " . str_repeat("<img src='../static/img/star.svg' alt='star' style='width:20px;height:20px;'>", $a['note_s']) . "<br>";
             echo "<p>" . htmlspecialchars($a['commentaire']) . "</p>";
+
             
-            echo '<div id="btns">';
                 if (($id_user_commu ===  $id_current_user) || $nom_role ===  'admin') {
+                   echo '<div id="btns">';
                    echo "<button class='btn_suppr' onclick=\"location.href='/index.php?action=remove_avis&id_c={$a['id_c']}&id_res={$a['id_res']}'\">Supprimer mon avis</button>";
-                   echo "<button class='btn_suppr' onclick=\"location.href='/index.php?action=modify_avis&id_c={$a['id_c']}&id_res={$a['id_res']}&nomRes=" . urlencode($restaurant['nom_res']) . "'\">Modifier  mon avis</button>";
+                   echo "<button class='btn_suppr' onclick=\"location.href='/index.php?action=modify_avis&id_c={$a['id_c']}&id_res={$a['id_res']}&nomRes=" . urlencode($restaurant['nom_res'] ?? $a['nom_res']) . "'\">Modifier mon avis</button>";
+                   echo "</div>";
                 }
-            echo "</div>";
+            
 
             echo "<hr></div>";
         }

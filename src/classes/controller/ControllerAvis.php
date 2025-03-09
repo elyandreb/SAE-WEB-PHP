@@ -110,7 +110,7 @@ class ControllerAvis {
                     $errorMessage = 'Erreur : Notes invalides.';
                 } else {
                     
-                    $success = $this->critiqueModel->updateCritique($id_c, $note_reception,  $commentaire, $note_plats, $note_service);
+                    $success = $this->critiqueModel->updateCritique($id_c, $commentaire,  $note_reception, $note_plats, $note_service);
                     if ($success) {
                         header("Location: index.php?action=les_avis&id_res=" . urlencode($_POST['id_res']) . '&nomRes=' . urlencode($_POST['nomRes']));
                         exit;
