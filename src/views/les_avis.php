@@ -27,7 +27,7 @@
     $controller_avis = new ControllerAvis();
     $controller_restaurant = new ControllerRestaurant();
    
-    $id_current_user = $_SESSION['user_id'];
+    $id_current_user = $_SESSION['user_id'] ?? null;
     $nom_role = $_SESSION['user_role'] ?? null;
    
     
@@ -128,14 +128,16 @@
     $nom_resto = isset($_GET['nomRes']) ? $_GET['nomRes'] : 'Inconnu';
     
     if (empty($avis) && isset($_GET["nomRes"])){
+        if (isset($_SESSION['user_id'])){
         echo "<div id='section_avis'>";
         echo '<div class ="ajout_avis_rien">';
         echo "<h1  class='avistitle'>Aucun avis pour le moment</h1>";
-        echo "<div >";
+        echo "<div >";  
         echo '<a class="btn_ajouter_avis" href="index.php?action=add_avis&id_res=' . urlencode($restaurant['id_res']) . '&nomRes=' . urlencode($restaurant['nom_res']) . '">Ajouter un avis</a>';
         echo "</div>";
         echo "</div>";
         echo "</div>";
+        }
     }
     
     else {

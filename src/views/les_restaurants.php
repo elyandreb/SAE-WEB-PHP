@@ -167,9 +167,11 @@
 
                     <div id='titre_resto'>
                         <h2><?= isset($restaurant['nom_res']) ? htmlspecialchars($restaurant['nom_res']) : 'Nom inconnu' ?></h2>
+                        <?php if (isset($_SESSION['user_id'])): ?>
                         <button onclick="toggleFavoris(event, this, '<?= $idRestaurant ?>')" id="coeur">
                             <img class="coeur" src="<?= $heartIcon ?>" alt="Favori">
                         </button>
+                        <?php endif; ?>
                     </div>
 
                     <div id="info_resto">

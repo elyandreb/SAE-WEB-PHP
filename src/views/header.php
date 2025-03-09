@@ -11,19 +11,11 @@ $nom_role = $_SESSION['user_role'] ?? '';
 </head>
 <header>
     <div class="logo-container">
-        <?php if ($isLoggedIn): ?>
             <div class="logo">
                 <button onclick="location.href='/index.php?action=home'">
                     <img src="../static/img/logo.svg" alt="IUTables'O">
                 </button>
             </div>
-        <?php else: ?>
-            <div class="logo">
-                <button>
-                    <img src="../static/img/logo.svg" alt="IUTables'O">
-                </button>
-            </div>
-        <?php endif; ?>
         <h1>IUTables’O</h1>
     </div>
     <nav class="navbar">
