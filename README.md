@@ -179,7 +179,6 @@ php -S localhost:8000
 │   │   └── restaurants_orleans.json
 │   ├── index.php
 │   ├── loadDB.php
-│   ├── restaurant.db
 │   ├── static
 │   │   ├── css
 │   │   │   ├── avis.css
@@ -221,6 +220,8 @@ php -S localhost:8000
 │       ├── preferences_form.php
 │       ├── profil.php
 │       └── register_form.php
+├── composer.json
+├── composer.lock
 └──  start.sh
 
 ```
