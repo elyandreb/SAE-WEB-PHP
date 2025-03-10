@@ -1,7 +1,5 @@
 <?php
-
 require_once __DIR__ . '/../classes/autoloader/autoload.php'; // Charge l'autoload
-
 use PHPUnit\Framework\TestCase;
 use classes\model\UserModel;
 use classes\model\TypeCuisineModel;
@@ -35,6 +33,9 @@ class UtilisateurTest extends TestCase
         $this->userId = $this->userModel->getUserIdByEmail($this->testEmail);
     }
     
+    /**
+     * @covers UserModel::addUser
+     */
     public function testAddUser(): void
     {
         // Création d'un nouvel utilisateur avec un email différent
@@ -53,9 +54,11 @@ class UtilisateurTest extends TestCase
         $newUserId = $this->userModel->getUserIdByEmail($newEmail);
         $this->assertIsNumeric($newUserId);
         $this->assertGreaterThan(0, $newUserId);
-
     }
     
+    /**
+     * @covers UserModel::loginUser
+     */
     public function testLoginUser(): void
     {
         // Test de connexion avec des identifiants corrects
@@ -75,6 +78,9 @@ class UtilisateurTest extends TestCase
         $this->assertFalse($nonExistentUser);
     }
     
+    /**
+     * @covers UserModel::checkEmailExists
+     */
     public function testCheckEmailExists(): void
     {
         // Vérification qu'un email existant est détecté
@@ -86,6 +92,9 @@ class UtilisateurTest extends TestCase
         $this->assertFalse($notExists);
     }
     
+    /**
+     * @covers UserModel::getUserById
+     */
     public function testGetUserById(): void
     {
         // Récupération de l'utilisateur par son ID
@@ -99,6 +108,9 @@ class UtilisateurTest extends TestCase
         $this->assertEquals("utilisateur", $user['le_role']);
     }
     
+    /**
+     * @covers UserModel::updateUser
+     */
     public function testUpdateUser(): void
     {
         // Mise à jour des informations de l'utilisateur
@@ -125,6 +137,9 @@ class UtilisateurTest extends TestCase
         $this->testEmail = $newEmail;
     }
     
+    /**
+     * @covers UserModel::updateUserPassword
+     */
     public function testUpdateUserPassword(): void
     {
         // Mise à jour du mot de passe
@@ -149,6 +164,9 @@ class UtilisateurTest extends TestCase
         $this->assertFalse($userFailedLogin);
     }
     
+    /**
+     * @covers UserModel::saveUserPreferences
+     */
     public function testSaveUserPreferences(): void
     {
         // Création de quelques types de cuisine pour les tests
@@ -164,7 +182,6 @@ class UtilisateurTest extends TestCase
         $userPreferences = $this->userModel->getUserPreferencesId($this->userId);
         $this->assertIsArray($userPreferences);
         $this->assertCount(2, $userPreferences);
-
         // Vérification que les IDs retournés correspondent bien aux IDs que nous avons sauvegardés
         foreach ($preferences as $prefId) {
             $this->assertContains((int)$prefId, array_map('intval', $userPreferences));
@@ -189,6 +206,9 @@ class UtilisateurTest extends TestCase
         $this->assertNotContains((int)$typeId2, array_map('intval', $updatedPreferences));
     }
     
+     /**
+     * @covers UserModel::isAdmin
+     */
     public function testIsAdmin(): void
     {
         // Vérification que l'utilisateur n'est pas admin
@@ -210,9 +230,11 @@ class UtilisateurTest extends TestCase
         // Vérification que l'utilisateur est bien admin
         $isAdmin = $this->userModel->isAdmin($adminId);
         $this->assertTrue($isAdmin);
-
     }
-    
+
+    /**
+     * @covers UserModel::deleteUser
+     */
     public function testDeleteUser(): void
     {
         // Création d'un utilisateur à supprimer
@@ -239,7 +261,10 @@ class UtilisateurTest extends TestCase
         $emailExists = $this->userModel->checkEmailExists($deleteEmail);
         $this->assertFalse($emailExists);
     }
-    
+
+    /**
+     * @covers UserModel::getUserPreferences
+     */
     public function testGetUserPreferences(): void
     {
         // Création de types de cuisine pour les tests

@@ -1,7 +1,5 @@
 <?php
-
 require_once __DIR__ . '/../classes/autoloader/autoload.php'; // Charge l'autoload
-
 use PHPUnit\Framework\TestCase;
 use classes\model\RestaurantModel;
 use classes\model\CritiqueModel;
@@ -16,88 +14,92 @@ class RestaurantTest extends TestCase
     private int $id_res_1;
     private int $id_res_2;
 
-
     protected function setUp(): void
     {
         // Création d'un restaurant de test
         $this->restaurantModel = new RestaurantModel();
         $this->id_res_1 = $this->restaurantModel->addRestaurant(
-                                        nom: "Le Gourmet",
-                                        type_res:"restaurant",
-                                        commune:"Olivet",
-                                        departement:"Loiret",
-                                        region:"Centre-Val de Loire",
-                                        coordonnees: "48.8566, 2.3522",
-                                        lien_site: "http://legourmet.fr",
-                                        horaires: "08:00-22:00",
-                                        telephone: "0245454545",
-                                        );
+            nom: "Le Gourmet",
+            type_res:"restaurant",
+            commune:"Olivet",
+            departement:"Loiret",
+            region:"Centre-Val de Loire",
+            coordonnees: "48.8566, 2.3522",
+            lien_site: "http://legourmet.fr",
+            horaires: "08:00-22:00",
+            telephone: "0245454545",
+        );
 
         // Création d'un deuxième restaurant de test
         $this->id_res_2 = $this->restaurantModel->addRestaurant(
-                                            nom: "Le Mangeur",
-                                            type_res:"restaurant",
-                                            commune:"Le Mans",
-                                            departement:"Sarthe",
-                                            region:"Pays de la Loire",
-                                            coordonnees: "58.8566, 16.3522",
-                                            lien_site: "http://lemangeur.fr",
-                                            horaires: "08:00-22:00",
-                                            telephone: "0272727272",
-                                            );
+            nom: "Le Mangeur",
+            type_res:"restaurant",
+            commune:"Le Mans",
+            departement:"Sarthe",
+            region:"Pays de la Loire",
+            coordonnees: "58.8566, 16.3522",
+            lien_site: "http://lemangeur.fr",
+            horaires: "08:00-22:00",
+            telephone: "0272727272",
+        );
 
         // Création d'un utilisateur de test
         $this->userModel = new UserModel();
         $testEmail = "testeurgourmet@waw.com";
         if (!$this->userModel->checkEmailExists($testEmail)) {
             $this->userModel->addUser(
-                                nom:"Testeur",
-                                prenom:"Gourmet",
-                                email:$testEmail,
-                                mdp:"MiamMiam45",
-                                role:"utilisateur",
-                                );
+                nom:"Testeur",
+                prenom:"Gourmet",
+                email:$testEmail,
+                mdp:"MiamMiam45",
+                role:"utilisateur",
+            );
         }
         $this->id_u = $this->userModel->getUserIdByEmail($testEmail);
 
         // Création d'une critique de test
         $this->critiqueModel = new CritiqueModel();
         $this->critiqueModel->addCritique(
-                        commentaire: 'Bon restaurant!',
-                        id_res: $this->id_res_1,
-                        id_u: $this->id_u,
-                        note_r: 3,
-                        note_p: 5,
-                        note_s: 3,
-                    );
+            commentaire: 'Bon restaurant!',
+            id_res: $this->id_res_1,
+            id_u: $this->id_u,
+            note_r: 3,
+            note_p: 5,
+            note_s: 3,
+        );
 
         // Création d'une deuxième critique de test
         $this->critiqueModel = new CritiqueModel();
         $this->critiqueModel->addCritique(
-                        commentaire: 'Divin !!!',
-                        id_res: $this->id_res_2,
-                        id_u: $this->id_u,
-                        note_r: 5,
-                        note_p: 5,
-                        note_s: 5,
-                    );
-
+            commentaire: 'Divin !!!',
+            id_res: $this->id_res_2,
+            id_u: $this->id_u,
+            note_r: 5,
+            note_p: 5,
+            note_s: 5,
+        );
     }
 
+    /**
+     * @covers RestaurantModel::getRestaurantById
+     */
     public function testGetRestaurantById(): void
-{
-    $restaurant = $this->restaurantModel->getRestaurantById($this->id_res_1);
-    $this->assertIsArray($restaurant);
-    $this->assertNotEmpty($restaurant);
-    $this->assertSame($this->id_res_1, $restaurant['id_res']);
-    
-    $restaurant2 = $this->restaurantModel->getRestaurantById($this->id_res_2);
-    $this->assertIsArray($restaurant2);
-    $this->assertNotEmpty($restaurant2);
-    $this->assertSame($this->id_res_2, $restaurant2['id_res']);
-}
+    {
+        $restaurant = $this->restaurantModel->getRestaurantById($this->id_res_1);
+        $this->assertIsArray($restaurant);
+        $this->assertNotEmpty($restaurant);
+        $this->assertSame($this->id_res_1, $restaurant['id_res']);
+        
+        $restaurant2 = $this->restaurantModel->getRestaurantById($this->id_res_2);
+        $this->assertIsArray($restaurant2);
+        $this->assertNotEmpty($restaurant2);
+        $this->assertSame($this->id_res_2, $restaurant2['id_res']);
+    }
 
-public function testGetRestaurantsTriee(): void
+    /**
+     * @covers RestaurantModel::getRestaurantsTriee
+     */
+    public function testGetRestaurantsTriee(): void
     {
         $restaurants = $this->restaurantModel->getRestaurantsTriee();
         $this->assertIsArray($restaurants);
@@ -124,6 +126,9 @@ public function testGetRestaurantsTriee(): void
         $this->assertLessThan($index_res_1, $index_res_2, "Le restaurant avec les meilleures notes devrait être mieux classé");
     }
 
+    /**
+     * @covers RestaurantModel::addRestaurant
+     */
     public function testAddRestaurant(): void
     {
         // Données pour un nouveau restaurant
@@ -171,6 +176,9 @@ public function testGetRestaurantsTriee(): void
         $this->assertSame($telephone, $restaurant['telephone']);
     }
 
+    /**
+     * @covers RestaurantModel::updateRestaurant
+     */
     public function testUpdateRestaurant(): void
     {
         // On s'assure que le restaurant a été correctement récupéré
@@ -181,16 +189,16 @@ public function testGetRestaurantsTriee(): void
         
         // Mise à jour du restaurant
         $result = $this->restaurantModel->updateRestaurant(
-                                            id_res:$this->id_res_1,
-                                            nom: "Le Grandeur",
-                                            type_res:"fast food",
-                                            commune:"Marseille",
-                                            departement:"Bouches-du-Rhônes",
-                                            region:"Provence-Alpes-Côte d'Azur",
-                                            coordonnees: "43.8566, 6.3522",
-                                            lien_site: "http://legrandeur.fr",
-                                            horaires: "09:00-23:00",
-                                            telephone: "0245454550",
+            id_res: $this->id_res_1,
+            nom: "Le Grandeur",
+            type_res: "fast food",
+            commune: "Marseille",
+            departement: "Bouches-du-Rhônes",
+            region: "Provence-Alpes-Côte d'Azur",
+            coordonnees: "43.8566, 6.3522",
+            lien_site: "http://legrandeur.fr",
+            horaires: "09:00-23:00",
+            telephone: "0245454550",
         );
         
         $this->assertTrue($result);
@@ -207,9 +215,13 @@ public function testGetRestaurantsTriee(): void
         $this->assertSame("Provence-Alpes-Côte d'Azur", $restaurant_updated['region']);
         $this->assertSame("43.8566, 6.3522", $restaurant_updated['coordonnees']);
         $this->assertSame("http://legrandeur.fr", $restaurant_updated['lien_site']);
-        $this->assertSame("09:00-23:00", $restaurant_updated['horaires_ouvert']); // Note: corrigé horaires → horaires_ouvert
+        $this->assertSame("09:00-23:00", $restaurant_updated['horaires_ouvert']);
         $this->assertSame("0245454550", $restaurant_updated['telephone']);
     }
+
+    /**
+     * @covers RestaurantModel::deleteRestaurant
+     */
     public function testDeleteRestaurant(): void
     {
         // On s'assure que les restaurants ont été correctement récupérés
@@ -217,7 +229,6 @@ public function testGetRestaurantsTriee(): void
         if (empty($restaurant_1)) {
             $this->fail("Aucun restaurant trouvé pour tester la suppression");
         }
-
         $restaurant_2 = $this->restaurantModel->getRestaurantById($this->id_res_2);
         if (empty($restaurant_2)) {
             $this->fail("Aucun restaurant trouvé pour tester la suppression");
@@ -226,14 +237,12 @@ public function testGetRestaurantsTriee(): void
         // Suppression des restaurants 
         $result_1 = $this->restaurantModel->deleteRestaurant(id_res: $this->id_res_1);
         $this->assertTrue($result_1);
-
         $result_2 = $this->restaurantModel->deleteRestaurant(id_res: $this->id_res_2);
         $this->assertTrue($result_2);
         
         // Vérification de la suppression
         $restaurant_after_1 = $this->restaurantModel->getRestaurantById($this->id_res_1);
         $this->assertFalse($restaurant_after_1);
-
         $restaurant_after_2 = $this->restaurantModel->getRestaurantById($this->id_res_2);
         $this->assertFalse($restaurant_after_2);
     }

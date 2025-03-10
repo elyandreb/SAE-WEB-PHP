@@ -1,7 +1,5 @@
 <?php
-
 require_once __DIR__ . '/../classes/autoloader/autoload.php'; // Charge l'autoload
-
 use PHPUnit\Framework\TestCase;
 use classes\model\FavoriModel;
 use classes\model\RestaurantModel;
@@ -22,41 +20,41 @@ class FavoriTest extends TestCase
         // Création d'un restaurant de test
         $this->restaurantModel = new RestaurantModel();
         $this->id_res_1 = $this->restaurantModel->addRestaurant(
-                                        nom: "Le Gourmet",
-                                        type_res:"restaurant",
-                                        commune:"Olivet",
-                                        departement:"Loiret",
-                                        region:"Centre-Val de Loire",
-                                        coordonnees: "48.8566, 2.3522",
-                                        lien_site: "http://legourmet.fr",
-                                        horaires: "08:00-22:00",
-                                        telephone: "0245454545",
-                                        );
+            nom: "Le Gourmet",
+            type_res:"restaurant",
+            commune:"Olivet",
+            departement:"Loiret",
+            region:"Centre-Val de Loire",
+            coordonnees: "48.8566, 2.3522",
+            lien_site: "http://legourmet.fr",
+            horaires: "08:00-22:00",
+            telephone: "0245454545",
+        );
 
         // Création d'un deuxième restaurant de test
         $this->id_res_2 = $this->restaurantModel->addRestaurant(
-                                            nom: "Le Mangeur",
-                                            type_res:"restaurant",
-                                            commune:"Le Mans",
-                                            departement:"Sarthe",
-                                            region:"Pays de la Loire",
-                                            coordonnees: "58.8566, 16.3522",
-                                            lien_site: "http://lemangeur.fr",
-                                            horaires: "08:00-22:00",
-                                            telephone: "0272727272",
-                                            );
+            nom: "Le Mangeur",
+            type_res:"restaurant",
+            commune:"Le Mans",
+            departement:"Sarthe",
+            region:"Pays de la Loire",
+            coordonnees: "58.8566, 16.3522",
+            lien_site: "http://lemangeur.fr",
+            horaires: "08:00-22:00",
+            telephone: "0272727272",
+        );
 
         // Création d'un utilisateur test
         $this->userModel = new UserModel();
         $testEmail = "testeurfavori@waw.com";
         if (!$this->userModel->checkEmailExists($testEmail)) {
             $this->userModel->addUser(
-                                nom:"Testeur",
-                                prenom:"Favori",
-                                email:$testEmail,
-                                mdp:"MiamMiam45",
-                                role:"utilisateur",
-                                );
+                nom:"Testeur",
+                prenom:"Favori",
+                email:$testEmail,
+                mdp:"MiamMiam45",
+                role:"utilisateur",
+            );
         }
         $this->id_u = $this->userModel->getUserIdByEmail($testEmail);
 
@@ -64,12 +62,12 @@ class FavoriTest extends TestCase
         $testEmail2 = "testeurfavori2@waw.com";
         if (!$this->userModel->checkEmailExists($testEmail2)) {
             $this->userModel->addUser(
-                                nom:"Testeur2",
-                                prenom:"Favori2",
-                                email:$testEmail2,
-                                mdp:"MiamMiam46",
-                                role:"utilisateur",
-                                );
+                nom:"Testeur2",
+                prenom:"Favori2",
+                email:$testEmail2,
+                mdp:"MiamMiam46",
+                role:"utilisateur",
+            );
         }
         $this->id_u2 = $this->userModel->getUserIdByEmail($testEmail2);
 
@@ -77,6 +75,9 @@ class FavoriTest extends TestCase
         $this->favoriModel = new FavoriModel();
     }
 
+    /**
+     * @covers FavoriModel::addFavori
+     */
     public function testAddFavori(): void
     {
         // Ajout d'un favori
@@ -88,6 +89,9 @@ class FavoriTest extends TestCase
         $this->assertTrue($isFavori);
     }
 
+    /**
+     * @covers FavoriModel::deleteFavori
+     */
     public function testDeleteFavori(): void
     {
         // Ajout d'un favori pour le test
@@ -106,27 +110,33 @@ class FavoriTest extends TestCase
         $this->assertFalse($isFavori);
     }
 
+    /**
+     * @covers FavoriModel::getFavorisByUser
+     */
     public function testGetFavorisByUser(): void
-{
-    // Comptage des favoris initiaux
-    $initialCount = count($this->favoriModel->getFavorisByUser($this->id_u));
-    
-    // Ajout de plusieurs favoris
-    $this->favoriModel->addFavori($this->id_res_1, $this->id_u);
-    $this->favoriModel->addFavori($this->id_res_2, $this->id_u);
-    
-    // Récupération des favoris de l'utilisateur
-    $favoris = $this->favoriModel->getFavorisByUser($this->id_u);
-    
-    // Vérification que le nombre a augmenté correctement
-    $this->assertCount($initialCount + 2, $favoris);
-    
-    // Vérification que les restaurants ajoutés sont présents
-    $ids_resto = array_column($favoris, 'id_res');
-    $this->assertContains($this->id_res_1, $ids_resto);
-    $this->assertContains($this->id_res_2, $ids_resto);
-}
+    {
+        // Comptage des favoris initiaux
+        $initialCount = count($this->favoriModel->getFavorisByUser($this->id_u));
+        
+        // Ajout de plusieurs favoris
+        $this->favoriModel->addFavori($this->id_res_1, $this->id_u);
+        $this->favoriModel->addFavori($this->id_res_2, $this->id_u);
+        
+        // Récupération des favoris de l'utilisateur
+        $favoris = $this->favoriModel->getFavorisByUser($this->id_u);
+        
+        // Vérification que le nombre a augmenté correctement
+        $this->assertCount($initialCount + 2, $favoris);
+        
+        // Vérification que les restaurants ajoutés sont présents
+        $ids_resto = array_column($favoris, 'id_res');
+        $this->assertContains($this->id_res_1, $ids_resto);
+        $this->assertContains($this->id_res_2, $ids_resto);
+    }
 
+    /**
+     * @covers FavoriModel::isRestaurantFavori
+     */
     public function testIsRestaurantFavori(): void
     {
         // Ajout d'un favori
@@ -141,25 +151,31 @@ class FavoriTest extends TestCase
         $this->assertFalse($isFavori2);
     }
 
+    /**
+     * @covers FavoriModel::countUserFavoris
+     */
     public function testCountUserFavoris(): void
-{
-    // Comptage des favoris initiaux
-    $initialCount = $this->favoriModel->countUserFavoris($this->id_u);
-    
-    // Ajout de plusieurs favoris
-    $this->favoriModel->addFavori($this->id_res_1, $this->id_u);
-    $this->favoriModel->addFavori($this->id_res_2, $this->id_u);
-    
-    // Comptage des favoris
-    $count = $this->favoriModel->countUserFavoris($this->id_u);
-    $this->assertEquals($initialCount + 2, $count);
-    
-    // Vérification pour un utilisateur sans favoris ou avec un compte différent
-    $initialCount2 = $this->favoriModel->countUserFavoris($this->id_u2);
-    $count2 = $this->favoriModel->countUserFavoris($this->id_u2);
-    $this->assertEquals($initialCount2, $count2);
-}
+    {
+        // Comptage des favoris initiaux
+        $initialCount = $this->favoriModel->countUserFavoris($this->id_u);
+        
+        // Ajout de plusieurs favoris
+        $this->favoriModel->addFavori($this->id_res_1, $this->id_u);
+        $this->favoriModel->addFavori($this->id_res_2, $this->id_u);
+        
+        // Comptage des favoris
+        $count = $this->favoriModel->countUserFavoris($this->id_u);
+        $this->assertEquals($initialCount + 2, $count);
+        
+        // Vérification pour un utilisateur sans favoris ou avec un compte différent
+        $initialCount2 = $this->favoriModel->countUserFavoris($this->id_u2);
+        $count2 = $this->favoriModel->countUserFavoris($this->id_u2);
+        $this->assertEquals($initialCount2, $count2);
+    }
 
+    /**
+     * @covers FavoriModel::countRestaurantFavoris
+     */
     public function testCountRestaurantFavoris(): void
     {
         // Ajout de plusieurs favoris pour le même restaurant
@@ -175,6 +191,9 @@ class FavoriTest extends TestCase
         $this->assertEquals(0, $count2);
     }
 
+    /**
+     * @covers FavoriModel::toggleFavori
+     */
     public function testToggleFavori(): void
     {
         // Vérification initiale

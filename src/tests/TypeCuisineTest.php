@@ -1,7 +1,5 @@
 <?php
-
 require_once __DIR__ . '/../classes/autoloader/autoload.php'; // Charge l'autoload
-
 use PHPUnit\Framework\TestCase;
 use classes\model\TypeCuisineModel;
 use classes\model\RestaurantModel;
@@ -22,16 +20,16 @@ class TypeCuisineTest extends TestCase
         
         // Création d'un restaurant de test
         $this->id_res = $this->restaurantModel->addRestaurant(
-                                    nom: "Le Gourmet",
-                                    type_res:"restaurant",
-                                    commune:"Olivet",
-                                    departement:"Loiret",
-                                    region:"Centre-Val de Loire",
-                                    coordonnees: "48.8566, 2.3522",
-                                    lien_site: "http://legourmet.fr",
-                                    horaires: "08:00-22:00",
-                                    telephone: "0245454545",
-            );
+            nom: "Le Gourmet",
+            type_res:"restaurant",
+            commune:"Olivet",
+            departement:"Loiret",
+            region:"Centre-Val de Loire",
+            coordonnees: "48.8566, 2.3522",
+            lien_site: "http://legourmet.fr",
+            horaires: "08:00-22:00",
+            telephone: "0245454545",
+        );
         
         // Création des types de cuisine de test
         $this->id_type_1 = $this->typeCuisineModel->getOrCreateTypeCuisine("Italien");
@@ -41,6 +39,9 @@ class TypeCuisineTest extends TestCase
         $this->typeCuisineModel->addRestaurantTypeCuisine($this->id_res, $this->id_type_1);
     }
 
+    /**
+     * @covers TypeCuisineModel::getOrCreateTypeCuisine
+     */
     public function testGetOrCreateTypeCuisine(): void
     {
         // Test de création d'un nouveau type de cuisine
@@ -52,6 +53,9 @@ class TypeCuisineTest extends TestCase
         $this->assertSame($this->id_type_1, $id_type_existing);
     }
 
+    /**
+     * @covers TypeCuisineModel::getAllTypesCuisine
+     */
     public function testGetAllTypesCuisine(): void
     {
         $types = $this->typeCuisineModel->getAllTypesCuisine();
@@ -75,6 +79,9 @@ class TypeCuisineTest extends TestCase
         $this->assertTrue($found_type_2, "Type de cuisine 2 non trouvé dans la liste");
     }
 
+    /**
+     * @covers TypeCuisineModel::getTypeCuisineById
+     */
     public function testGetTypeCuisineById(): void
     {
         $type = $this->typeCuisineModel->getTypeCuisineById($this->id_type_1);
@@ -90,6 +97,9 @@ class TypeCuisineTest extends TestCase
         $this->assertSame("Japonais", $type2['nom_type']);
     }
 
+    /**
+     * @covers TypeCuisineModel::updateTypeCuisine
+     */
     public function testUpdateTypeCuisine(): void
     {
         // Mise à jour du type de cuisine
@@ -108,6 +118,9 @@ class TypeCuisineTest extends TestCase
         $this->assertSame("Cuisine Italienne", $type_updated['nom_type']);
     }
 
+    /**
+     * @covers TypeCuisineModel::addRestaurantTypeCuisine
+     */
     public function testAddRestaurantTypeCuisine(): void
     {
         // Association d'un nouveau type de cuisine au restaurant
@@ -135,6 +148,9 @@ class TypeCuisineTest extends TestCase
         $this->assertTrue($found_type_2, "Type de cuisine 2 non trouvé pour le restaurant");
     }
 
+    /**
+     * @covers TypeCuisineModel::getTypesCuisineByRestaurant
+     */
     public function testGetTypesCuisineByRestaurant(): void
     {
         $types = $this->typeCuisineModel->getTypesCuisineByRestaurant($this->id_res);
@@ -153,6 +169,9 @@ class TypeCuisineTest extends TestCase
         $this->assertTrue($found, "Type de cuisine 1 non trouvé pour le restaurant");
     }
 
+    /**
+     * @covers TypeCuisineModel::removeRestaurantTypeCuisine
+     */
     public function testRemoveRestaurantTypeCuisine(): void
     {
         // Suppression de l'association entre le restaurant et le type de cuisine
@@ -175,6 +194,9 @@ class TypeCuisineTest extends TestCase
         $this->assertFalse($found, "L'association entre le restaurant et le type de cuisine 1 n'a pas été supprimée");
     }
 
+    /**
+     * @covers TypeCuisineModel::deleteTypeCuisine
+     */
     public function testDeleteTypeCuisine(): void
     {
         // Suppression du type de cuisine

@@ -1,14 +1,12 @@
 <?php
-
 use PHPUnit\Framework\TestCase;
 use classes\model\CritiqueModel;
 use classes\model\RestaurantModel;
 use classes\model\UserModel;
-
 require_once __DIR__ . '/../classes/autoloader/autoload.php'; // Charge l'autoload
 
 final class CritiqueTest extends TestCase
-{   
+{ 
     private CritiqueModel $critiqueModel;
     private RestaurantModel $restaurantModel;
     private UserModel $userModel;
@@ -20,43 +18,46 @@ final class CritiqueTest extends TestCase
         // Création d'un restaurant de test
         $this->restaurantModel = new RestaurantModel();
         $this->id_res = $this->restaurantModel->addRestaurant(
-                                        nom: "Le Gourmet",
-                                        type_res:"restaurant",
-                                        commune:"Olivet",
-                                        departement:"Loiret",
-                                        region:"Centre-Val de Loire",
-                                        coordonnees: "48.8566, 2.3522",
-                                        lien_site: "http://legourmet.fr",
-                                        horaires: "08:00-22:00",
-                                        telephone: "0245454545",
-                                        );
-
+            nom: "Le Gourmet",
+            type_res:"restaurant",
+            commune:"Olivet",
+            departement:"Loiret",
+            region:"Centre-Val de Loire",
+            coordonnees: "48.8566, 2.3522",
+            lien_site: "http://legourmet.fr",
+            horaires: "08:00-22:00",
+            telephone: "0245454545",
+        );
+        
         // Création d'un utilisateur de test
         $this->userModel = new UserModel();
         $testEmail = "testeurgourmet@waw.com";
         if (!$this->userModel->checkEmailExists($testEmail)) {
             $this->userModel->addUser(
-                                nom:"Testeur",
-                                prenom:"Gourmet",
-                                email:$testEmail,
-                                mdp:"MiamMiam45",
-                                role:"utilisateur",
-                                );
+                nom:"Testeur",
+                prenom:"Gourmet",
+                email:$testEmail,
+                mdp:"MiamMiam45",
+                role:"utilisateur",
+            );
         }
         $this->id_u = $this->userModel->getUserIdByEmail($testEmail);
-
+        
         // Création d'une critique de test
         $this->critiqueModel = new CritiqueModel();
         $this->critiqueModel->addCritique(
-                        note_r: 2,
-                        commentaire: 'Bon restaurant!',
-                        id_res: $this->id_res,
-                        id_u: $this->id_u,
-                        note_p: 5,
-                        note_s: 2
-                    );
+            note_r: 2,
+            commentaire: 'Bon restaurant!',
+            id_res: $this->id_res,
+            id_u: $this->id_u,
+            note_p: 5,
+            note_s: 2
+        );
     }
 
+    /**
+     * @covers CritiqueModel::getCritiquesByUser
+     */
     public function testGetCritiqueByUser(): void
     {
         $critiques = $this->critiqueModel->getCritiquesByUser($this->id_u);
@@ -65,24 +66,38 @@ final class CritiqueTest extends TestCase
         $this->assertSame($this->id_u, $critiques[0]['id_u']);
     }
 
-    public function testGetMoyenneCritiquesByRestaurant(): void {
-
+    /**
+     * @covers CritiqueModel::getMoyenneCritiquesByRestaurant
+     */
+    public function testGetMoyenneCritiquesByRestaurant(): void
+    {
         $moyenne = $this->critiqueModel->getMoyenneCritiquesByRestaurant($this->id_res);
         $this->assertSame(3.0, $moyenne);
     }
 
-    public function testGetCritiquesByRestaurant(): void {
+    /**
+     * @covers CritiqueModel::getCritiquesByRestaurant
+     */
+    public function testGetCritiquesByRestaurant(): void
+    {
         $critiques = $this->critiqueModel->getCritiquesByRestaurant($this->id_res);
         $this->assertIsArray($critiques);
         $this->assertNotEmpty($critiques);
         $this->assertSame($this->id_res, $critiques[0]['id_res']);
     }
 
-    public function testGetNameUserCritique(): void {
+    /**
+     * @covers CritiqueModel::getNameUserCritique
+     */
+    public function testGetNameUserCritique(): void
+    {
         $nom = $this->critiqueModel->getNameUserCritique($this->id_u);
         $this->assertSame('Testeur', $nom);
     }
 
+    /**
+     * @covers CritiqueModel::addCritique
+     */
     public function testAddCritique(): void
     {
         // Vérification que les restaurants et utilisateurs de test existent
@@ -134,9 +149,12 @@ final class CritiqueTest extends TestCase
         $this->assertTrue($found, "La critique ajoutée n'a pas été trouvée dans les critiques du restaurant");
     }
 
+    /**
+     * @covers CritiqueModel::updateCritique
+     */
     public function testUpdateCritique(): void
     {
-        // On s'assure que la critique a été correctement récupéré
+        // On s'assure que la critique a été correctement récupérée
         $critiques = $this->critiqueModel->getCritiquesByRestaurant($this->id_res);
         if (empty($critiques)) {
             $this->fail("Aucune critique trouvée pour tester la mise à jour");
@@ -144,7 +162,7 @@ final class CritiqueTest extends TestCase
         
         $id_c = $critiques[0]['id_c'];
         
-        // Mis à jour de la critique
+        // Mise à jour de la critique
         $result = $this->critiqueModel->updateCritique(
             id_c: $id_c,
             note_r: 5,
@@ -161,9 +179,12 @@ final class CritiqueTest extends TestCase
         $this->assertSame('Waouh !', $critiques_updated[0]['commentaire']);
     }
 
+    /**
+     * @covers CritiqueModel::deleteCritique
+     */
     public function testDeleteCritique(): void
     {
-        // On s'assure que la critique a été correctement récupéré
+        // On s'assure que la critique a été correctement récupérée
         $critiques = $this->critiqueModel->getCritiquesByRestaurant($this->id_res);
         if (empty($critiques)) {
             $this->fail("Aucune critique trouvée pour tester la suppression");
