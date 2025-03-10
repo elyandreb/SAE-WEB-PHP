@@ -138,6 +138,11 @@
         echo "</div>";
         echo "</div>";
         }
+        else {
+            echo '<div class ="ajout_avis_rien">';
+            echo "<h1  class='avistitle'>Aucun avis pour le moment</h1>";
+            echo "<div >"; 
+        }
     }
     
     else {
