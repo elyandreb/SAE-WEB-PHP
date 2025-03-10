@@ -152,7 +152,9 @@
             echo '<div class ="ajout_avis_rien">';
             echo "<h1  class='avistitle'>Les avis du restaurant $nom_resto</h1>";
             echo "<div >";
-            echo '<a class="btn_ajouter_avis" href="index.php?action=add_avis&id_res=' . urlencode($restaurant['id_res']) . '&nomRes=' . urlencode($restaurant['nom_res']) . '">Ajouter un avis</a>';
+            if (isset($_SESSION['user_id'])){
+                echo '<a class="btn_ajouter_avis" href="index.php?action=add_avis&id_res=' . urlencode($restaurant['id_res']) . '&nomRes=' . urlencode($restaurant['nom_res']) . '">Ajouter un avis</a>';
+            };
             echo "</div>";
             echo "</div>";
         }
