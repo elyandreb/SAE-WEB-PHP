@@ -1,0 +1,41 @@
+.dark-bg-red{
+    color: #340108;
+}
+
+.dark-button-red{
+    background-color: #340108;
+    color: white;
+    font-weight: bold;
+}
+
+.bg-red{
+    background-color: #6D071A;
+}
+
+.button-red{
+    background-color: #6D071A;
+    color: white;
+    font-weight: bold;
+}
+
+body{
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #F5F5F5;
+}
+.flex{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+.title{
+    font-size: 2em;
+    
+    
+}
+.subtitle{
+    font-size: 1.5em;
+}
+

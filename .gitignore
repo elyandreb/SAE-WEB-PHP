@@ -9,3 +9,7 @@
 
 # Build data
 /build/
+
+vendor/
+
+*.db
