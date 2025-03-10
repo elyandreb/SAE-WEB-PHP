@@ -221,7 +221,7 @@ php -S localhost:8000
 │       ├── preferences_form.php
 │       ├── profil.php
 │       └── register_form.php
-├── start.sh
-└── test.sh
+└──  start.sh
+
 ```
 
